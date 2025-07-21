@@ -335,5 +335,62 @@ body {
     flex-direction: column;
     gap: 10px;
   }
+
+  .taskbar {
+    bottom: 80px !important;
+  }
+}
+
+.taskbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
+  border-top: 2px solid var(--accent-cyan);
+  padding: 10px 20px;
+  z-index: 150;
+  box-shadow: 0 -2px 20px rgba(0, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.taskbar-items {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.taskbar-item {
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid var(--accent-cyan);
+  color: var(--text-primary);
+  padding: 8px 15px;
+  cursor: pointer;
+  border-radius: 3px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  animation: taskbarSlideIn 0.3s ease-out;
+}
+
+.taskbar-item:hover {
+  background: rgba(0, 255, 255, 0.2);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+@keyframes taskbarSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
