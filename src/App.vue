@@ -82,6 +82,27 @@
         @minimize="minimizeWindow('terminal')"
         @move="updateWindowPosition('terminal', $event)"
       />
+
+      <!-- Taskbar -->
+      <div 
+        v-if="Object.values(minimizedWindows).some(minimized => minimized)"
+        class="taskbar"
+      >
+        <div class="taskbar-items">
+          <button 
+            v-for="windowType in Object.keys(minimizedWindows).filter(key => minimizedWindows[key as keyof typeof minimizedWindows])"
+            :key="windowType"
+            class="taskbar-item"
+            @click="restoreWindow(windowType as string)"
+          >
+            <span v-if="windowType === 'about'">👤 PERSONNEL</span>
+            <span v-else-if="windowType === 'projects'">📁 CASE FILES</span>
+            <span v-else-if="windowType === 'resume'">📄 DOSSIER</span>
+            <span v-else-if="windowType === 'contact'">📡 COMMS</span>
+            <span v-else-if="windowType === 'terminal'">💻 TERMINAL</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
