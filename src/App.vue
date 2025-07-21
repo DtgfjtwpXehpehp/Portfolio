@@ -113,6 +113,14 @@ const activeWindows = reactive({
   terminal: false
 })
 
+const minimizedWindows = reactive({
+  about: false,
+  projects: false,
+  resume: false,
+  contact: false,
+  terminal: false
+})
+
 const windowPositions = reactive({
   about: { x: 200, y: 100 },
   projects: { x: 230, y: 130 },
@@ -143,10 +151,14 @@ const closeWindow = (windowType: string) => {
 
 const minimizeWindow = (windowType: string) => {
   playSound('click')
-  // Temporary minimize effect - could be enhanced
-  setTimeout(() => {
-    // Window minimize animation would go here
-  }, 100)
+  activeWindows[windowType as keyof typeof activeWindows] = false
+  minimizedWindows[windowType as keyof typeof minimizedWindows] = true
+}
+
+const restoreWindow = (windowType: string) => {
+  playSound('beep')
+  minimizedWindows[windowType as keyof typeof minimizedWindows] = false
+  activeWindows[windowType as keyof typeof activeWindows] = true
 }
 
 const updateWindowPosition = (windowType: string, position: { x: number, y: number }) => {
