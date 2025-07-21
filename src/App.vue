@@ -7,11 +7,6 @@
     />
 
     <!-- Sound Toggle -->
-    <SoundToggle 
-      :enabled="soundEnabled"
-      @toggle="toggleSound"
-    />
-
     <!-- Scanlines effect -->
     <div class="scanlines"></div>
 
@@ -31,6 +26,12 @@
           <div class="status-item">
             <div class="status-dot"></div>
             <span>ENCRYPTED</span>
+          </div>
+          <div class="audio-toggle-container">
+            <SoundToggle 
+              :enabled="soundEnabled"
+              @toggle="toggleSound"
+            />
           </div>
           <div class="status-item">
             <div class="status-dot"></div>
@@ -335,6 +336,10 @@ body {
   align-items: center;
   gap: 8px;
   font-size: 0.9em;
+}
+
+.audio-toggle-container {
+  margin-left: 10px;
 }
 
 .status-dot {
