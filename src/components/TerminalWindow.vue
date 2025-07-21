@@ -37,7 +37,7 @@ import { ref, reactive, nextTick, watch } from 'vue'
 import BaseWindow from './BaseWindow.vue'
 import { useSoundEffects } from '../composables/useSoundEffects'
 
-defineProps<{
+const props = defineProps<{
   active: boolean
   position: { x: number, y: number }
 }>()
