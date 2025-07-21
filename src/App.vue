@@ -17,7 +17,7 @@
     >
       <!-- Header -->
       <header class="header">
-        <div class="logo glitch">AGENT PORTFOLIO v2.7</div>
+        <div class="logo glitch">AGENT PORTFOLI v2.7</div>
         <div class="status-panel">
           <div class="status-item">
             <div class="status-dot"></div>
@@ -27,15 +27,15 @@
             <div class="status-dot"></div>
             <span>ENCRYPTED</span>
           </div>
-          <div class="audio-toggle-container">
+          
+          <div class="status-item">
+            <div class="status-dot"></div>
+            <span>CLASSIFIED</span>
+          </div><div class="audio-toggle-container">
             <SoundToggle 
               :enabled="soundEnabled"
               @toggle="toggleSound"
             />
-          </div>
-          <div class="status-item">
-            <div class="status-dot"></div>
-            <span>CLASSIFIED</span>
           </div>
         </div>
       </header>
@@ -268,7 +268,7 @@ body {
   font-family: 'Share Tech Mono', monospace;
   background: var(--bg-primary);
   color: var(--text-primary);
-  overflow-x: hidden;
+  overflow: hidden;
   cursor: crosshair;
 }
 
@@ -313,6 +313,7 @@ body {
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 2px 20px rgba(0, 255, 255, 0.3);
+  width: 100%;
 }
 
 .logo {
