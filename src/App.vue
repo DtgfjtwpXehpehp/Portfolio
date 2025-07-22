@@ -44,95 +44,45 @@
       <ControlPanel @open-window="openWindow" />
 
       <!-- Central Interactive Display -->
-      <div class="central-display">
-        <div class="holographic-interface" @click="triggerHoloEffect">
-          <div class="holo-container">
-            <!-- Central Hologram -->
-            <div class="central-hologram" :class="{ activated: holoActivated }">
-              <div class="holo-ring outer-ring"></div>
-              <div class="holo-ring middle-ring"></div>
-              <div class="holo-ring inner-ring"></div>
-              <div class="holo-core">
-                <div class="core-symbol">⬢</div>
-              </div>
-            </div>
-            
-            <!-- Floating Data Nodes -->
-            <div class="data-nodes">
-              <div 
-                v-for="(node, index) in dataNodes" 
-                :key="index"
-                class="data-node"
-                :class="{ active: node.active }"
-                :style="{ 
-                  left: node.x + '%', 
-                  top: node.y + '%',
-                  animationDelay: node.delay + 's'
-                }"
-                @click="activateNode(index)"
-                @mouseenter="highlightNode(index)"
-                @mouseleave="unhighlightNode(index)"
-              >
-                <div class="node-icon">{{ node.icon }}</div>
-                <div class="node-label">{{ node.label }}</div>
-              </div>
-            </div>
-            
-            <!-- Circuit Connections -->
-            <svg class="circuit-overlay" viewBox="0 0 400 400">
-              <defs>
-                <linearGradient id="circuitGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" style="stop-color:var(--accent-cyan);stop-opacity:0.8" />
-                  <stop offset="100%" style="stop-color:var(--accent-green);stop-opacity:0.3" />
-                </linearGradient>
-              </defs>
-              <path 
-                v-for="(path, index) in circuitPaths" 
-                :key="index"
-                :d="path.d"
-                stroke="url(#circuitGradient)"
-                stroke-width="2"
-                fill="none"
-                :class="{ energized: path.energized }"
-                class="circuit-path"
-              />
-            </svg>
-          </div>
-        </div>
-        
-        <div class="system-status">
-          <div class="status-line">
-            <span class="status-label">SYSTEM STATUS:</span>
-            <span class="status-value">{{ systemStatus }}</span>
-          </div>
-          <div class="status-line">
-            <span class="status-label">ACTIVE CONNECTIONS:</span>
-            <span class="status-value">{{ activeConnections }}</span>
-          </div>
-          <div class="status-line">
-            <span class="status-label">SECURITY LEVEL:</span>
-            <span class="status-value text-cyan">MAXIMUM</span>
-          </div>
-          <div class="status-line">
-            <span class="status-label">HOLO-INTERFACE:</span>
-            <span class="status-value" :class="{ 'text-cyan': holoActivated }">
-              {{ holoActivated ? 'ACTIVE' : 'STANDBY' }}
+      <!-- Welcome Landing -->
+      <div class="welcome-landing">
+        <div class="welcome-text">
+          <h1>
+            Hi, I'm 
+            <span 
+              class="name-cipher"
+              @mouseenter="showRealName = true"
+              @mouseleave="showRealName = false"
+            >
+              {{ showRealName ? realName : cipherName }}
             </span>
-          </div>
+          </h1>
+          <h2>a <span class="role">Full-Stack Developer</span></h2>
         </div>
         
-        <div class="mission-briefing">
-          <h3>MISSION BRIEFING</h3>
-          <p>Welcome to the holographic command interface. Interact with the data nodes to access classified information and mission parameters.</p>
-          <div class="briefing-actions">
-            <button class="action-btn" @click="openWindow('about')">
-              <span class="btn-icon">👤</span>
-              ACCESS PERSONNEL FILE
-            </button>
-            <button class="action-btn" @click="openWindow('projects')">
-              <span class="btn-icon">📁</span>
-              VIEW CASE FILES
-            </button>
+        <div class="id-card-container">
+          <div 
+            class="id-card"
+            :class="{ dangling: isDangling }"
+            @click="triggerDangle"
+          >
+            <div class="card-header">
+              <div class="card-title">CLASSIFIED</div>
+              <div class="security-level">TOP SECRET</div>
+            </div>
+            <div class="card-content">
+              <div class="agent-photo">
+                <div class="photo-placeholder">👤</div>
+              </div>
+              <div class="agent-info">
+                <div class="agent-name">{{ realName }}</div>
+                <div class="agent-role">FULL-STACK DEVELOPER</div>
+                <div class="agent-id">ID: {{ agentId }}</div>
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="clearance">SECURITY CLEARANCE: MAXIMUM</div>
+            </div>
           </div>
         </div>
       </div>
@@ -219,26 +169,14 @@ const { initKonamiCode } = useKonamiCode()
 
 const systemInitialized = ref(false)
 const soundEnabled = ref(true)
-const holoActivated = ref(false)
-const systemStatus = ref('OPERATIONAL')
-const activeConnections = ref(7)
 
-const dataNodes = ref([
-  { x: 20, y: 30, delay: 0, active: false, icon: '🛡️', label: 'SECURITY' },
-  { x: 80, y: 25, delay: 0.5, active: false, icon: '📊', label: 'ANALYTICS' },
-  { x: 15, y: 70, delay: 1, active: false, icon: '🔐', label: 'ENCRYPTION' },
-  { x: 85, y: 75, delay: 1.5, active: false, icon: '🌐', label: 'NETWORK' },
-  { x: 50, y: 15, delay: 2, active: false, icon: '⚡', label: 'POWER' },
-  { x: 50, y: 85, delay: 2.5, active: false, icon: '🎯', label: 'TARGET' }
-])
 
-const circuitPaths = ref([
-  { d: 'M200,200 L80,120 L320,100', energized: false },
-  { d: 'M200,200 L60,280 L340,300', energized: false },
-  { d: 'M200,200 L200,60 L380,60', energized: false },
-  { d: 'M200,200 L200,340 L20,340', energized: false },
-  { d: 'M200,200 L320,120 L320,280', energized: false }
-])
+// Welcome landing data
+const realName = ref('Agent Smith')
+const cipherName = ref('Ntrpg Fzvgu') // Caesar cipher with key 11
+const showRealName = ref(false)
+const isDangling = ref(false)
+const agentId = ref('A-' + Math.random().toString(36).substr(2, 6).toUpperCase())
 const activeWindows = reactive({
   about: false,
   projects: false,
@@ -299,79 +237,15 @@ const updateWindowPosition = (windowType: string, position: { x: number, y: numb
   windowPositions[windowType as keyof typeof windowPositions] = position
 }
 
-const triggerHoloEffect = () => {
+const triggerDangle = () => {
   playSound('beep')
-  holoActivated.value = true
-  
-  // Energize random circuit paths
-  circuitPaths.value.forEach((path, index) => {
-    setTimeout(() => {
-      path.energized = true
-      setTimeout(() => {
-        path.energized = false
-      }, 1000)
-    }, index * 200)
-  })
-  
+  isDangling.value = true
   setTimeout(() => {
-    holoActivated.value = false
-  }, 3000)
-  
-  // Update system status randomly
-  const statuses = ['OPERATIONAL', 'PROCESSING', 'ANALYZING', 'SYNCHRONIZING']
-  systemStatus.value = statuses[Math.floor(Math.random() * statuses.length)]
-  
-  // Update active connections
-  activeConnections.value = Math.floor(Math.random() * 10) + 5
-}
 
-const activateNode = (index: number) => {
-  playSound('click')
-  dataNodes.value[index].active = !dataNodes.value[index].active
-  
-  const messages = [
-    'Security protocols activated',
-    'Data stream established',
-    'Encryption layer enabled',
-    'Network connection secured',
-    'Power systems optimized',
-    'Target parameters locked'
-  ]
-  
-  // Show temporary message
-  const message = document.createElement('div')
-  message.style.cssText = `
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: var(--window-bg);
-    border: 1px solid var(--accent-cyan);
-    padding: 10px 20px;
-    color: var(--accent-cyan);
-    font-family: 'Share Tech Mono', monospace;
-    z-index: 9999;
-    border-radius: 3px;
-    backdrop-filter: blur(15px);
-  `
-  message.textContent = messages[index] || 'Node activated'
-  document.body.appendChild(message)
-  
-  setTimeout(() => {
-    if (document.body.contains(message)) {
-      document.body.removeChild(message)
-    }
-  }, 2000)
-}
 
-const highlightNode = (index: number) => {
-  dataNodes.value[index].active = true
-}
 
-const unhighlightNode = (index: number) => {
-  if (!dataNodes.value[index].active) {
-    dataNodes.value[index].active = false
-  }
+    isDangling.value = false
+  }, 1000)
 }
 const handleKeydown = (e: KeyboardEvent) => {
   if (e.ctrlKey || e.metaKey) {
@@ -571,159 +445,188 @@ body {
   }
 }
 
-.central-display {
+.welcome-landing {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 30px;
+  gap: 80px;
   z-index: 10;
 }
 
-.radar-container {
-  cursor: pointer;
-  transition: transform 0.3s ease;
+.welcome-text h1 {
+  font-size: 4rem;
+  font-family: 'Orbitron', monospace;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  line-height: 1.2;
 }
 
-.radar-container:hover {
+.welcome-text h2 {
+  font-size: 2.5rem;
+  font-family: 'Orbitron', monospace;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.name-cipher {
+  color: var(--accent-cyan);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-shadow: 0 0 10px var(--accent-cyan);
+}
+
+.name-cipher:hover {
+  color: var(--accent-green);
+  text-shadow: 0 0 15px var(--accent-green);
   transform: scale(1.05);
 }
 
-.radar-screen {
+.role {
+  color: var(--accent-cyan);
+  text-shadow: 0 0 5px var(--accent-cyan);
+}
+
+.id-card-container {
+  perspective: 1000px;
+}
+
+.id-card {
   width: 300px;
-  height: 300px;
+  height: 400px;
+  background: var(--window-bg);
   border: 2px solid var(--accent-cyan);
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 255, 255, 0.1) 0%, rgba(0, 31, 63, 0.8) 70%);
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
-  backdrop-filter: blur(10px);
-}
-
-.radar-sweep {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 2px;
-  height: 50%;
-  background: linear-gradient(to bottom, var(--accent-cyan), transparent);
-  transform-origin: bottom center;
-  animation: radarSweep 4s linear infinite;
-  box-shadow: 0 0 10px var(--accent-cyan);
-}
-
-.radar-sweep.pulsing {
-  animation: radarSweep 1s linear infinite, radarPulse 2s ease-out;
-}
-
-@keyframes radarSweep {
-  from { transform: translate(-50%, -100%) rotate(0deg); }
-  to { transform: translate(-50%, -100%) rotate(360deg); }
-}
-
-@keyframes radarPulse {
-  0% { box-shadow: 0 0 10px var(--accent-cyan); }
-  50% { box-shadow: 0 0 30px var(--accent-cyan), 0 0 60px var(--accent-cyan); }
-  100% { box-shadow: 0 0 10px var(--accent-cyan); }
-}
-
-.radar-grid {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.grid-line {
-  position: absolute;
-  background: rgba(0, 255, 255, 0.3);
-}
-
-.grid-line.horizontal {
-  width: 100%;
-  height: 1px;
-}
-
-.grid-line.vertical {
-  width: 1px;
-  height: 100%;
-}
-
-.radar-blips {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.radar-blip {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  background: var(--accent-green);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  animation: blipPulse 2s infinite;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
+  transform-origin: top center;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  backdrop-filter: blur(15px);
 }
 
-.radar-blip:hover {
-  background: var(--accent-cyan);
-  box-shadow: 0 0 15px var(--accent-cyan);
-  transform: translate(-50%, -50%) scale(1.5);
+.id-card:hover {
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+  transform: translateY(-5px);
 }
 
-@keyframes blipPulse {
-  0%, 100% { opacity: 1; box-shadow: 0 0 5px var(--accent-green); }
-  50% { opacity: 0.3; box-shadow: 0 0 15px var(--accent-green); }
+.id-card.dangling {
+  animation: dangle 1s ease-in-out;
 }
 
-.center-crosshair {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+@keyframes dangle {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(5deg); }
+  50% { transform: rotate(-3deg); }
+  75% { transform: rotate(2deg); }
+  100% { transform: rotate(0deg); }
 }
 
-.crosshair-line {
-  position: absolute;
-  background: var(--accent-cyan);
+.card-header {
+  background: linear-gradient(135deg, var(--accent-cyan), var(--bg-secondary));
+  color: var(--bg-primary);
+  padding: 15px;
+  text-align: center;
+  border-radius: 8px 8px 0 0;
 }
 
-.crosshair-line.horizontal {
-  width: 20px;
-  height: 1px;
-  left: -10px;
+.card-title {
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  font-size: 1.2em;
+  letter-spacing: 2px;
 }
 
-.crosshair-line.vertical {
-  width: 1px;
-  height: 20px;
-  top: -10px;
+.security-level {
+  font-size: 0.8em;
+  margin-top: 5px;
+  color: var(--danger-red);
+  font-weight: bold;
 }
 
-.system-status {
-  background: var(--window-bg);
-  border: 1px solid var(--accent-cyan);
-  border-radius: 5px;
-  padding: 20px;
-  font-family: 'Share Tech Mono', monospace;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+.card-content {
+  padding: 30px 20px;
+  text-align: center;
 }
 
-.status-line {
+.agent-photo {
+  width: 120px;
+  height: 120px;
+  border: 2px solid var(--accent-cyan);
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  background: rgba(0, 255, 255, 0.1);
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  min-width: 300px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.photo-placeholder {
+  font-size: 3em;
+  color: var(--accent-cyan);
+}
+
+.agent-info {
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.agent-name {
+  font-size: 1.2em;
+  color: var(--accent-cyan);
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.agent-role {
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  font-size: 0.9em;
+}
+
+.agent-id {
+  color: var(--text-secondary);
+  font-size: 0.8em;
+}
+
+.card-footer {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 15px;
+  border-radius: 0 0 8px 8px;
+  border-top: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+.clearance {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8em;
+  color: var(--accent-green);
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 768px) {
+  .welcome-landing {
+    flex-direction: column;
+    gap: 40px;
+    padding: 20px;
+  }
+  
+  .welcome-text h1 {
+    font-size: 2.5rem;
+    text-align: center;
+  }
+  
+  .welcome-text h2 {
+    font-size: 1.8rem;
+    text-align: center;
+  }
+  
+  .id-card {
+    width: 280px;
+    height: 360px;
+  }
 }
 
 .status-line:last-child {
