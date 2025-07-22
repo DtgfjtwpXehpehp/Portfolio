@@ -1,5 +1,13 @@
 import { ref } from 'vue';
-import { About, aboutApi } from '../services/api';
+
+export interface About {
+  id?: number;
+  name: string;
+  title: string;
+  content: string;
+  skills: string[];
+  image_url?: string;
+}
 
 export function useAbout() {
   const about = ref<About | null>(null);
@@ -10,20 +18,18 @@ export function useAbout() {
     loading.value = true;
     error.value = null;
     try {
-      const response = await aboutApi.get();
-      const data = response.data;
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Parse skills from JSON string if needed
-      if (typeof data.skills === 'string') {
-        try {
-          data.skills = JSON.parse(data.skills);
-        } catch (e) {
-          console.warn('Failed to parse skills JSON:', e);
-          data.skills = [];
-        }
-      }
-      
-      about.value = data;
+      // Mock data for the spy portfolio
+      about.value = {
+        id: 1,
+        name: 'Agent [REDACTED]',
+        title: 'Full-Stack Developer',
+        content: 'Highly skilled operative specializing in digital infrastructure and web-based intelligence systems. Expertise in creating secure, scalable applications for mission-critical operations. Proven track record in cybersecurity protocols and data encryption methodologies.',
+        skills: ['JavaScript', 'Python', 'React', 'Node.js', 'MongoDB', 'AWS', 'Docker', 'Cybersecurity'],
+        image_url: undefined
+      };
     } catch (e) {
       error.value = 'Failed to fetch about information';
       console.error(e);
@@ -37,4 +43,5 @@ export function useAbout() {
     loading,
     error,
     fetchAbout
-  }}
+  };
+}
