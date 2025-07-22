@@ -1,4 +1,5 @@
 import { ref } from 'vue';
+import axios from 'axios';
 
 export interface About {
   id?: number;
@@ -18,18 +19,26 @@ export function useAbout() {
     loading.value = true;
     error.value = null;
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
+      const response = await axios.get('http://localhost:3000/api/about');
       
-      // Mock data for the spy portfolio
-      about.value = {
-        id: 1,
-        name: 'Agent [REDACTED]',
-        title: 'Full-Stack Developer',
-        content: 'Highly skilled operative specializing in digital infrastructure and web-based intelligence systems. Expertise in creating secure, scalable applications for mission-critical operations. Proven track record in cybersecurity protocols and data encryption methodologies.',
-        skills: ['JavaScript', 'Python', 'React', 'Node.js', 'MongoDB', 'AWS', 'Docker', 'Cybersecurity'],
-        image_url: undefined
-      };
+      // Ensure skills is always an array
+      const data = response.data;
+      if (data.skills && typeof data.skills === 'string') {
+        // Parse JSON string if skills come as a string
+        try {
+          data.skills = JSON.parse(data.skills);
+        } catch {
+          // If parsing fails, split by comma
+          data.skills = data.skills.split(',').map((skill: string) => skill.trim());
+        }
+      }
+      
+      // Ensure skills is an array even if it's empty
+      if (!Array.isArray(data.skills)) {
+        data.skills = [];
+      }
+
+      about.value = data;
     } catch (e) {
       error.value = 'Failed to fetch about information';
       console.error(e);

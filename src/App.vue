@@ -31,33 +31,41 @@
           <div class="status-item">
             <div class="status-dot"></div>
             <span>CLASSIFIED</span>
-          </div><div class="audio-toggle-container">
+          </div>
+          <div class="audio-toggle-container">
             <SoundToggle 
               :enabled="soundEnabled"
-              @toggle="toggleSound"
+              @toggle="handleToggleSound"
             />
           </div>
         </div>
       </header>
 
       <!-- Control Panel -->
-      <ControlPanel @open-window="openWindow" />
+      <ControlPanel @open-window="handleWindowOpen" />
 
       <!-- Central Interactive Display -->
       <!-- Welcome Landing -->
       <div class="welcome-landing">
         <div class="welcome-text">
-          <h1>
+          <h1 v-if="loading">
+            ACCESSING PERSONNEL FILES...
+          </h1>
+          <h1 v-else-if="error">
+            ERROR: PERSONNEL FILE NOT FOUND
+          </h1>
+          <h1 v-else>
             Hi, I'm 
             <span 
               class="name-cipher"
-              @mouseenter="showRealName = true"
-              @mouseleave="showRealName = false"
+              ref="nameElement"
+              @mouseenter="startScrambleEffect"
             >
-              {{ showRealName ? realName : cipherName }}
+              <span class="scramble-text">{{ currentDisplayName }}</span>
+              <span class="scramble-cursor" :class="{ 'cursor-hidden': isDecrypted }">_</span>
             </span>
           </h1>
-          <h2>a <span class="role">Full-Stack Developer</span></h2>
+          <h2>a <span class="role">{{ about?.title || 'Full-Stack Developer' }}</span></h2>
         </div>
         
         <div class="id-card-container">
@@ -72,11 +80,18 @@
             </div>
             <div class="card-content">
               <div class="agent-photo">
-                <div class="photo-placeholder">👤</div>
+                <img 
+                  v-if="about?.image_url" 
+                  :src="about.image_url" 
+                  :alt="realName"
+                  class="agent-image"
+                  @error="handleImageError"
+                >
+                <div v-else class="photo-placeholder">👤</div>
               </div>
               <div class="agent-info">
                 <div class="agent-name">{{ realName }}</div>
-                <div class="agent-role">FULL-STACK DEVELOPER</div>
+                <div class="agent-role">{{ about?.title?.toUpperCase() || 'FULL-STACK DEVELOPER' }}</div>
                 <div class="agent-id">ID: {{ agentId }}</div>
               </div>
             </div>
@@ -86,73 +101,53 @@
           </div>
         </div>
       </div>
+
       <!-- Windows -->
-      <AboutWindow 
+      <AboutWindow
         :active="activeWindows.about"
+        :minimized="minimizedWindows.about"
         :position="windowPositions.about"
-        @close="closeWindow('about')"
-        @minimize="minimizeWindow('about')"
-        @move="updateWindowPosition('about', $event)"
+        @close="() => closeWindow('about')"
+        @minimize="() => minimizeWindow('about')"
+        @restore="() => restoreWindow('about')"
+        @update:position="(pos) => updateWindowPosition('about', pos)"
       />
 
-      <ProjectsWindow 
+      <ProjectsWindow
         :active="activeWindows.projects"
+        :minimized="minimizedWindows.projects"
         :position="windowPositions.projects"
-        @close="closeWindow('projects')"
-        @minimize="minimizeWindow('projects')"
-        @move="updateWindowPosition('projects', $event)"
+        @close="() => closeWindow('projects')"
+        @minimize="() => minimizeWindow('projects')"
+        @restore="() => restoreWindow('projects')"
+        @update:position="(pos) => updateWindowPosition('projects', pos)"
       />
 
-      <ResumeWindow 
+      <ResumeWindow
         :active="activeWindows.resume"
+        :minimized="minimizedWindows.resume"
         :position="windowPositions.resume"
-        @close="closeWindow('resume')"
-        @minimize="minimizeWindow('resume')"
-        @move="updateWindowPosition('resume', $event)"
+        @close="() => closeWindow('resume')"
+        @minimize="() => minimizeWindow('resume')"
+        @restore="() => restoreWindow('resume')"
+        @update:position="(pos) => updateWindowPosition('resume', pos)"
       />
 
-      <ContactWindow 
+      <ContactWindow
         :active="activeWindows.contact"
+        :minimized="minimizedWindows.contact"
         :position="windowPositions.contact"
-        @close="closeWindow('contact')"
-        @minimize="minimizeWindow('contact')"
-        @move="updateWindowPosition('contact', $event)"
+        @close="() => closeWindow('contact')"
+        @minimize="() => minimizeWindow('contact')"
+        @restore="() => restoreWindow('contact')"
+        @update:position="(pos) => updateWindowPosition('contact', pos)"
       />
-
-      <TerminalWindow 
-        :active="activeWindows.terminal"
-        :position="windowPositions.terminal"
-        @close="closeWindow('terminal')"
-        @minimize="minimizeWindow('terminal')"
-        @move="updateWindowPosition('terminal', $event)"
-      />
-
-      <!-- Taskbar -->
-      <div 
-        v-if="Object.values(minimizedWindows).some(minimized => minimized)"
-        class="taskbar"
-      >
-        <div class="taskbar-items">
-          <button 
-            v-for="windowType in Object.keys(minimizedWindows).filter(key => minimizedWindows[key as keyof typeof minimizedWindows])"
-            :key="windowType"
-            class="taskbar-item"
-            @click="restoreWindow(windowType as string)"
-          >
-            <span v-if="windowType === 'about'">👤 PERSONNEL</span>
-            <span v-else-if="windowType === 'projects'">📁 CASE FILES</span>
-            <span v-else-if="windowType === 'resume'">📄 DOSSIER</span>
-            <span v-else-if="windowType === 'contact'">📡 COMMS</span>
-            <span v-else-if="windowType === 'terminal'">💻 TERMINAL</span>
-          </button>
-        </div>
-      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import LoadingScreen from './components/LoadingScreen.vue'
 import SoundToggle from './components/SoundToggle.vue'
 import ControlPanel from './components/ControlPanel.vue'
@@ -160,131 +155,133 @@ import AboutWindow from './components/AboutWindow.vue'
 import ProjectsWindow from './components/ProjectsWindow.vue'
 import ResumeWindow from './components/ResumeWindow.vue'
 import ContactWindow from './components/ContactWindow.vue'
-import TerminalWindow from './components/TerminalWindow.vue'
 import { useSoundEffects } from './composables/useSoundEffects'
 import { useKonamiCode } from './composables/useKonamiCode'
+import { useAbout } from './composables/useAbout'
+import { useWindowManagement } from './composables/useWindowManagement'
+import type { WindowType } from './types/windows'
 
+// Load composables
 const { playSound } = useSoundEffects()
 const { initKonamiCode } = useKonamiCode()
+const {
+  minimizedWindows,
+  activeWindows,
+  windowPositions,
+  isDangling,
+  openWindow,
+  closeWindow,
+  minimizeWindow,
+  restoreWindow,
+  updateWindowPosition,
+  triggerDangle
+} = useWindowManagement()
 
+// Application state
 const systemInitialized = ref(false)
 const soundEnabled = ref(true)
+const nameElement = ref<HTMLElement | null>(null)
+const scrambleInterval = ref<number | null>(null)
+const isDecrypted = ref(false)
+const targetName = computed(() => about.value?.name || 'Agent [REDACTED]')
+const currentDisplayName = ref('CZPYE [CPONXEPO]')
 
+const encryptName = (name: string) => {
+  return name.split('').map(char => {
+    if (char === ' ') return ' '
+    if (char === '[' || char === ']') return char
+    if (!/[A-Za-z]/.test(char)) return char
+    const isUpperCase = char === char.toUpperCase()
+    const code = char.toUpperCase().charCodeAt(0)
+    const shifted = String.fromCharCode(((code - 65 + 11) % 26) + 65)
+    return isUpperCase ? shifted : shifted.toLowerCase()
+  }).join('')
+}
 
-// Welcome landing data
-const realName = ref('Agent Smith')
-const cipherName = ref('Ntrpg Fzvgu') // Caesar cipher with key 11
-const showRealName = ref(false)
-const isDangling = ref(false)
+// Data management
+const { about, loading, error, fetchAbout } = useAbout()
+
+const realName = computed(() => about.value?.name || 'Agent [REDACTED]')
+
+const generateRandomChar = (char: string) => {
+  if (char === ' ') return ' '
+  if (!/[A-Za-z]/.test(char)) return char
+  
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+  return chars[Math.floor(Math.random() * chars.length)]
+}
+
+const startScrambleEffect = () => {
+  if (scrambleInterval.value || isDecrypted.value) return
+  
+  const target = targetName.value
+  let iterations = 0
+  const maxIterations = 15
+  
+  // Start with the current cipher text
+  const startText = currentDisplayName.value
+  
+  scrambleInterval.value = window.setInterval(() => {
+    iterations++
+    
+    currentDisplayName.value = startText
+      .split('')
+      .map((char, index) => {
+        if (char === target[index]) return char
+        if (Math.random() < iterations / maxIterations) return target[index]
+        return generateRandomChar(char)
+      })
+      .join('')
+    
+    if (currentDisplayName.value === target) {
+      if (scrambleInterval.value) {
+        clearInterval(scrambleInterval.value)
+        scrambleInterval.value = null
+        isDecrypted.value = true // Set decrypted state to true
+      }
+    }
+  }, 50)
+}
+
 const agentId = ref('A-' + Math.random().toString(36).substr(2, 6).toUpperCase())
-const activeWindows = reactive({
-  about: false,
-  projects: false,
-  resume: false,
-  contact: false,
-  terminal: false
-})
 
-const minimizedWindows = reactive({
-  about: false,
-  projects: false,
-  resume: false,
-  contact: false,
-  terminal: false
-})
+// Watch for changes in about data
+watch(() => about.value?.name, (newName) => {
+  if (!scrambleInterval.value) {
+    currentDisplayName.value = newName ? encryptName(newName) : 'Agent [REDACTED]'
+  }
+}, { immediate: true })
 
-const windowPositions = reactive({
-  about: { x: 200, y: 100 },
-  projects: { x: 230, y: 130 },
-  resume: { x: 260, y: 160 },
-  contact: { x: 290, y: 190 },
-  terminal: { x: 320, y: 220 }
-})
-
+// Event handlers
 const handleSystemReady = () => {
   systemInitialized.value = true
   playSound('systemReady')
 }
 
-const toggleSound = () => {
-  soundEnabled.value = !soundEnabled.value
-  playSound('click')
-}
-
-const openWindow = (windowType: string) => {
-  playSound('beep')
-  activeWindows[windowType as keyof typeof activeWindows] = true
-}
-
-const closeWindow = (windowType: string) => {
-  playSound('click')
-  activeWindows[windowType as keyof typeof activeWindows] = false
-}
-
-const minimizeWindow = (windowType: string) => {
-  playSound('click')
-  activeWindows[windowType as keyof typeof activeWindows] = false
-  minimizedWindows[windowType as keyof typeof minimizedWindows] = true
-}
-
-const restoreWindow = (windowType: string) => {
-  playSound('beep')
-  minimizedWindows[windowType as keyof typeof minimizedWindows] = false
-  activeWindows[windowType as keyof typeof activeWindows] = true
-}
-
-const updateWindowPosition = (windowType: string, position: { x: number, y: number }) => {
-  windowPositions[windowType as keyof typeof windowPositions] = position
-}
-
-const triggerDangle = () => {
-  playSound('beep')
-  isDangling.value = true
-  setTimeout(() => {
-
-
-
-    isDangling.value = false
-  }, 1000)
-}
-const handleKeydown = (e: KeyboardEvent) => {
-  if (e.ctrlKey || e.metaKey) {
-    switch(e.key) {
-      case '1':
-        e.preventDefault()
-        openWindow('about')
-        break
-      case '2':
-        e.preventDefault()
-        openWindow('projects')
-        break
-      case '3':
-        e.preventDefault()
-        openWindow('resume')
-        break
-      case '4':
-        e.preventDefault()
-        openWindow('contact')
-        break
-      case '5':
-        e.preventDefault()
-        openWindow('terminal')
-        break
-    }
-  }
-  
-  if (e.key === 'Escape') {
-    Object.keys(activeWindows).forEach(window => {
-      activeWindows[window as keyof typeof activeWindows] = false
-    })
+const handleImageError = (event: Event) => {
+  const target = event.target as HTMLImageElement
+  if (target) {
+    target.src = '👤'
   }
 }
 
-onMounted(() => {
-  document.addEventListener('keydown', handleKeydown)
+const handleToggleSound = (enabled: boolean) => {
+  soundEnabled.value = enabled
+  playSound(enabled ? 'click' : 'beep')
+}
+
+const handleWindowOpen = (type: WindowType) => {
+  openWindow(type)
+}
+
+// Glitch effect interval
+onMounted(async () => {
+  await fetchAbout()
+  if (about.value?.name) {
+    currentDisplayName.value = encryptName(about.value.name)
+  }
   initKonamiCode()
-  
-  // Glitch effect interval
+
   setInterval(() => {
     const glitchElements = document.querySelectorAll('.glitch')
     glitchElements.forEach(el => {
@@ -297,11 +294,8 @@ onMounted(() => {
     })
   }, 5000)
 })
-
-onUnmounted(() => {
-  document.removeEventListener('keydown', handleKeydown)
-})
 </script>
+
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
@@ -475,14 +469,39 @@ body {
 .name-cipher {
   color: var(--accent-cyan);
   cursor: pointer;
-  transition: all 0.3s ease;
   text-shadow: 0 0 10px var(--accent-cyan);
+  position: relative;
+  display: inline-block;
 }
 
 .name-cipher:hover {
   color: var(--accent-green);
   text-shadow: 0 0 15px var(--accent-green);
-  transform: scale(1.05);
+}
+
+.scramble-text {
+  display: inline-block;
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 0.05em;
+  transition: color 0.3s ease;
+}
+
+.scramble-cursor {
+  display: inline-block;
+  width: 0.5em;
+  animation: blink 1s step-end infinite;
+  opacity: 1;
+  color: var(--accent-cyan);
+  transition: opacity 0.3s ease;
+}
+
+.scramble-cursor.cursor-hidden {
+  opacity: 0;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
 .role {
