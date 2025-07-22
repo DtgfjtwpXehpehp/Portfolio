@@ -303,6 +303,7 @@ body {
   min-height: 100vh;
   position: relative;
   z-index: 2;
+  padding-top: 70px;
 }
 
 .header {
@@ -313,7 +314,13 @@ body {
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 2px 20px rgba(0, 255, 255, 0.3);
-  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100vw;
+  z-index: 200;
+}
 }
 
 .logo {
@@ -400,8 +407,8 @@ body {
   justify-content: center;
   flex-wrap: wrap;
 }
-
-.taskbar-item {
+  top: calc(50% + 35px);
+  transform: translateY(-50%);
   background: rgba(0, 255, 255, 0.1);
   border: 1px solid var(--accent-cyan);
   color: var(--text-primary);
