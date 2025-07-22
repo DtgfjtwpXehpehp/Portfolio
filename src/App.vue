@@ -45,36 +45,58 @@
 
       <!-- Central Interactive Display -->
       <div class="central-display">
-        <div class="radar-container" @click="triggerRadarPulse">
-          <div class="radar-screen">
-            <div class="radar-sweep" :class="{ pulsing: radarPulsing }"></div>
-            <div class="radar-grid">
-              <div class="grid-line horizontal" style="top: 25%"></div>
-              <div class="grid-line horizontal" style="top: 50%"></div>
-              <div class="grid-line horizontal" style="top: 75%"></div>
-              <div class="grid-line vertical" style="left: 25%"></div>
-              <div class="grid-line vertical" style="left: 50%"></div>
-              <div class="grid-line vertical" style="left: 75%"></div>
+        <div class="holographic-interface" @click="triggerHoloEffect">
+          <div class="holo-container">
+            <!-- Central Hologram -->
+            <div class="central-hologram" :class="{ activated: holoActivated }">
+              <div class="holo-ring outer-ring"></div>
+              <div class="holo-ring middle-ring"></div>
+              <div class="holo-ring inner-ring"></div>
+              <div class="holo-core">
+                <div class="core-symbol">⬢</div>
+              </div>
             </div>
-            <div class="radar-blips">
+            
+            <!-- Floating Data Nodes -->
+            <div class="data-nodes">
               <div 
-                v-for="(blip, index) in radarBlips" 
+                v-for="(node, index) in dataNodes" 
                 :key="index"
-                class="radar-blip"
+                class="data-node"
+                :class="{ active: node.active }"
                 :style="{ 
-                  left: blip.x + '%', 
-                  top: blip.y + '%',
-                  animationDelay: blip.delay + 's'
+                  left: node.x + '%', 
+                  top: node.y + '%',
+                  animationDelay: node.delay + 's'
                 }"
-                @click="activateBlip(index)"
-                @mouseenter="highlightBlip(index)"
-                @mouseleave="unhighlightBlip(index)"
-              ></div>
+                @click="activateNode(index)"
+                @mouseenter="highlightNode(index)"
+                @mouseleave="unhighlightNode(index)"
+              >
+                <div class="node-icon">{{ node.icon }}</div>
+                <div class="node-label">{{ node.label }}</div>
+              </div>
             </div>
-            <div class="center-crosshair">
-              <div class="crosshair-line horizontal"></div>
-              <div class="crosshair-line vertical"></div>
-            </div>
+            
+            <!-- Circuit Connections -->
+            <svg class="circuit-overlay" viewBox="0 0 400 400">
+              <defs>
+                <linearGradient id="circuitGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:var(--accent-cyan);stop-opacity:0.8" />
+                  <stop offset="100%" style="stop-color:var(--accent-green);stop-opacity:0.3" />
+                </linearGradient>
+              </defs>
+              <path 
+                v-for="(path, index) in circuitPaths" 
+                :key="index"
+                :d="path.d"
+                stroke="url(#circuitGradient)"
+                stroke-width="2"
+                fill="none"
+                :class="{ energized: path.energized }"
+                class="circuit-path"
+              />
+            </svg>
           </div>
         </div>
         
@@ -91,11 +113,17 @@
             <span class="status-label">SECURITY LEVEL:</span>
             <span class="status-value text-cyan">MAXIMUM</span>
           </div>
+          <div class="status-line">
+            <span class="status-label">HOLO-INTERFACE:</span>
+            <span class="status-value" :class="{ 'text-cyan': holoActivated }">
+              {{ holoActivated ? 'ACTIVE' : 'STANDBY' }}
+            </span>
+          </div>
         </div>
         
         <div class="mission-briefing">
           <h3>MISSION BRIEFING</h3>
-          <p>Welcome to the classified portfolio system. Use the command center to access personnel files, case studies, and secure communications.</p>
+          <p>Welcome to the holographic command interface. Interact with the data nodes to access classified information and mission parameters.</p>
           <div class="briefing-actions">
             <button class="action-btn" @click="openWindow('about')">
               <span class="btn-icon">👤</span>
@@ -191,16 +219,25 @@ const { initKonamiCode } = useKonamiCode()
 
 const systemInitialized = ref(false)
 const soundEnabled = ref(true)
-const radarPulsing = ref(false)
+const holoActivated = ref(false)
 const systemStatus = ref('OPERATIONAL')
 const activeConnections = ref(7)
 
-const radarBlips = ref([
-  { x: 30, y: 40, delay: 0, highlighted: false },
-  { x: 70, y: 25, delay: 0.5, highlighted: false },
-  { x: 45, y: 70, delay: 1, highlighted: false },
-  { x: 80, y: 60, delay: 1.5, highlighted: false },
-  { x: 20, y: 80, delay: 2, highlighted: false }
+const dataNodes = ref([
+  { x: 20, y: 30, delay: 0, active: false, icon: '🛡️', label: 'SECURITY' },
+  { x: 80, y: 25, delay: 0.5, active: false, icon: '📊', label: 'ANALYTICS' },
+  { x: 15, y: 70, delay: 1, active: false, icon: '🔐', label: 'ENCRYPTION' },
+  { x: 85, y: 75, delay: 1.5, active: false, icon: '🌐', label: 'NETWORK' },
+  { x: 50, y: 15, delay: 2, active: false, icon: '⚡', label: 'POWER' },
+  { x: 50, y: 85, delay: 2.5, active: false, icon: '🎯', label: 'TARGET' }
+])
+
+const circuitPaths = ref([
+  { d: 'M200,200 L80,120 L320,100', energized: false },
+  { d: 'M200,200 L60,280 L340,300', energized: false },
+  { d: 'M200,200 L200,60 L380,60', energized: false },
+  { d: 'M200,200 L200,340 L20,340', energized: false },
+  { d: 'M200,200 L320,120 L320,280', energized: false }
 ])
 const activeWindows = reactive({
   about: false,
@@ -262,29 +299,43 @@ const updateWindowPosition = (windowType: string, position: { x: number, y: numb
   windowPositions[windowType as keyof typeof windowPositions] = position
 }
 
-const triggerRadarPulse = () => {
+const triggerHoloEffect = () => {
   playSound('beep')
-  radarPulsing.value = true
+  holoActivated.value = true
+  
+  // Energize random circuit paths
+  circuitPaths.value.forEach((path, index) => {
+    setTimeout(() => {
+      path.energized = true
+      setTimeout(() => {
+        path.energized = false
+      }, 1000)
+    }, index * 200)
+  })
+  
   setTimeout(() => {
-    radarPulsing.value = false
-  }, 2000)
+    holoActivated.value = false
+  }, 3000)
   
   // Update system status randomly
-  const statuses = ['OPERATIONAL', 'SCANNING', 'ANALYZING', 'MONITORING']
+  const statuses = ['OPERATIONAL', 'PROCESSING', 'ANALYZING', 'SYNCHRONIZING']
   systemStatus.value = statuses[Math.floor(Math.random() * statuses.length)]
   
   // Update active connections
   activeConnections.value = Math.floor(Math.random() * 10) + 5
 }
 
-const activateBlip = (index: number) => {
+const activateNode = (index: number) => {
   playSound('click')
+  dataNodes.value[index].active = !dataNodes.value[index].active
+  
   const messages = [
-    'Target acquired',
-    'Signal intercepted',
-    'Data encrypted',
-    'Connection secured',
-    'Mission updated'
+    'Security protocols activated',
+    'Data stream established',
+    'Encryption layer enabled',
+    'Network connection secured',
+    'Power systems optimized',
+    'Target parameters locked'
   ]
   
   // Show temporary message
@@ -303,7 +354,7 @@ const activateBlip = (index: number) => {
     border-radius: 3px;
     backdrop-filter: blur(15px);
   `
-  message.textContent = messages[index] || 'Signal detected'
+  message.textContent = messages[index] || 'Node activated'
   document.body.appendChild(message)
   
   setTimeout(() => {
@@ -313,12 +364,14 @@ const activateBlip = (index: number) => {
   }, 2000)
 }
 
-const highlightBlip = (index: number) => {
-  radarBlips.value[index].highlighted = true
+const highlightNode = (index: number) => {
+  dataNodes.value[index].active = true
 }
 
-const unhighlightBlip = (index: number) => {
-  radarBlips.value[index].highlighted = false
+const unhighlightNode = (index: number) => {
+  if (!dataNodes.value[index].active) {
+    dataNodes.value[index].active = false
+  }
 }
 const handleKeydown = (e: KeyboardEvent) => {
   if (e.ctrlKey || e.metaKey) {
