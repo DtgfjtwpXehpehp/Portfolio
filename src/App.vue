@@ -93,6 +93,24 @@
                 <div class="agent-name">{{ realName }}</div>
                 <div class="agent-role">{{ about?.title?.toUpperCase() || 'FULL-STACK DEVELOPER' }}</div>
                 <div class="agent-id">ID: {{ agentId }}</div>
+                <div class="social-links">
+                  <template v-if="contacts?.length">
+                    <a 
+                      v-for="contact in contacts" 
+                      :key="contact.id"
+                      :href="contact.url"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="social-button"
+                      :title="contact.platform"
+                    >
+                      <i :class="getSocialIcon(contact.platform)"></i>
+                    </a>
+                  </template>
+                  <div v-else class="social-button" style="opacity: 0.5;">
+                    <i class="fas fa-share-alt"></i>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="card-footer">
@@ -159,6 +177,7 @@ import { useSoundEffects } from './composables/useSoundEffects'
 import { useKonamiCode } from './composables/useKonamiCode'
 import { useAbout } from './composables/useAbout'
 import { useWindowManagement } from './composables/useWindowManagement'
+import { useContact } from './composables/useContact'
 import type { WindowType } from './types/windows'
 
 // Load composables
@@ -200,8 +219,24 @@ const encryptName = (name: string) => {
 
 // Data management
 const { about, loading, error, fetchAbout } = useAbout()
+const { contacts, fetchContacts } = useContact()
 
 const realName = computed(() => about.value?.name || 'Agent [REDACTED]')
+
+const getSocialIcon = (platform: string) => {
+  const iconMap: Record<string, string> = {
+    'github': 'fab fa-github',
+    'linkedin': 'fab fa-linkedin',
+    // 'twitter': 'fab fa-twitter',
+    'email': 'fas fa-envelope',
+    // 'discord': 'fab fa-discord',
+    // 'portfolio': 'fas fa-globe',
+    // 'instagram': 'fab fa-instagram',
+    // 'facebook': 'fab fa-facebook',
+    // Add more mappings as needed
+  }
+  return iconMap[platform.toLowerCase()] || 'fas fa-link'
+}
 
 const generateRandomChar = (char: string) => {
   if (char === ' ') return ' '
@@ -275,14 +310,15 @@ const handleWindowOpen = (type: WindowType) => {
 }
 
 // Glitch effect interval
-onMounted(async () => {
-  await fetchAbout()
-  if (about.value?.name) {
-    currentDisplayName.value = encryptName(about.value.name)
-  }
-  initKonamiCode()
-
-  setInterval(() => {
+  onMounted(async () => {
+    await Promise.all([
+      fetchAbout(),
+      fetchContacts()
+    ]);
+    if (about.value?.name) {
+      currentDisplayName.value = encryptName(about.value.name);
+    }
+    initKonamiCode();  setInterval(() => {
     const glitchElements = document.querySelectorAll('.glitch')
     glitchElements.forEach(el => {
       if (Math.random() < 0.1) {
@@ -581,6 +617,19 @@ body {
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+
+.agent-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.agent-photo:hover .agent-image {
+  transform: scale(1.1);
 }
 
 .photo-placeholder {
@@ -608,6 +657,37 @@ body {
 .agent-id {
   color: var(--text-secondary);
   font-size: 0.8em;
+  margin-bottom: 15px;
+}
+
+  .social-links {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 15px;
+  min-height: 36px; /* Ensure the container is visible even when empty */
+}
+
+.social-button {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--accent-cyan);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-cyan);
+  background: rgba(0, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  font-size: 1.1em;
+  text-decoration: none;
+  position: relative; /* For debugging */
+  z-index: 10; /* Ensure buttons are above other elements */
+}.social-button:hover {
+  background: var(--accent-cyan);
+  color: var(--bg-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
 }
 
 .card-footer {

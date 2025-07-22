@@ -28,7 +28,13 @@ export interface About {
   image_url?: string;
 }
 
-export interface Contact {
+export interface SocialContact {
+  id: number;
+  platform: string;
+  url: string;
+}
+
+export interface ContactForm {
   name: string;
   email: string;
   message: string;
@@ -73,8 +79,12 @@ export const aboutApi = {
   },
 };
 
+export const socialApi = {
+  getAll: () => api.get<SocialContact[]>('/contacts').then(res => res.data),
+};
+
 export const contactApi = {
-  send: (data: Contact) => api.post('/contact', data),
+  send: (data: ContactForm) => api.post('/contact', data),
 };
 
 export const resumeApi = {
