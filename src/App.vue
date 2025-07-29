@@ -72,7 +72,6 @@
           <div 
             class="id-card"
             :class="{ dangling: isDangling }"
-            @click="triggerDangle"
           >
             <div class="card-header">
               <div class="card-title">CLASSIFIED</div>
@@ -94,21 +93,23 @@
                 <div class="agent-role">{{ about?.title?.toUpperCase() || 'FULL-STACK DEVELOPER' }}</div>
                 <div class="agent-id">ID: {{ agentId }}</div>
                 <div class="social-links">
-                  <template v-if="contacts?.length">
-                    <a 
-                      v-for="contact in contacts" 
-                      :key="contact.id"
-                      :href="contact.url"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="social-button"
-                      :title="contact.platform"
-                    >
-                      <i :class="getSocialIcon(contact.platform)"></i>
-                    </a>
-                  </template>
-                  <div v-else class="social-button" style="opacity: 0.5;">
-                    <i class="fas fa-share-alt"></i>
+                  <a 
+                    v-for="contact in contacts" 
+                    :key="contact.id"
+                    :href="contact.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="social-button"
+                    :title="contact.platform"
+                  >
+                    <i :class="getSocialIcon(contact.platform)"></i>
+                  </a>
+                  <div v-if="!contacts || !contacts.length" class="social-button" style="opacity: 0.5;">
+                    <!-- Placeholder for social buttons -->
+                    <i class="fa-solid fa-ban"></i>
+                    <span class="tooltip">No contacts found</span>
+                    
+              
                   </div>
                 </div>
               </div>
@@ -225,17 +226,12 @@ const realName = computed(() => about.value?.name || 'Agent [REDACTED]')
 
 const getSocialIcon = (platform: string) => {
   const iconMap: Record<string, string> = {
-    'github': 'fab fa-github',
-    'linkedin': 'fab fa-linkedin',
-    // 'twitter': 'fab fa-twitter',
-    'email': 'fas fa-envelope',
-    // 'discord': 'fab fa-discord',
-    // 'portfolio': 'fas fa-globe',
-    // 'instagram': 'fab fa-instagram',
-    // 'facebook': 'fab fa-facebook',
+    'github': 'devicon-github-original colored',
+    'linkedin': 'devicon-linkedin-plain',
+    'email': 'fa-solid fa-envelope',
     // Add more mappings as needed
   }
-  return iconMap[platform.toLowerCase()] || 'fas fa-link'
+  return iconMap[platform.toLowerCase()] || ''
 }
 
 const generateRandomChar = (char: string) => {
