@@ -1,20 +1,19 @@
 import { ref } from 'vue';
-import { contactApi, socialApi, type SocialContact, type ContactForm } from '../services/api';
+import { contactApi, type ContactForm, type Contact } from '../services/api';
 
 export function useContact() {
   const loading = ref(false);
   const error = ref<string | null>(null);
   const success = ref(false);
-  const contacts = ref<SocialContact[]>([]);
+  const contact = ref<Contact | null>(null);
 
-  const fetchContacts = async () => {
+  const fetchContact = async () => {
     loading.value = true;
     error.value = null;
-    
     try {
-      contacts.value = await socialApi.getAll();
+      contact.value = await contactApi.get();
     } catch (e) {
-      error.value = 'Failed to fetch contacts';
+      error.value = 'Failed to fetch contact';
       console.error(e);
     } finally {
       loading.value = false;
@@ -41,8 +40,8 @@ export function useContact() {
     loading,
     error,
     success,
-    contacts,
-    fetchContacts,
+    contact,
+    fetchContact,
     sendMessage
   };
 }

@@ -68,53 +68,54 @@
           <h2>a <span class="role">{{ about?.title || 'Full-Stack Developer' }}</span></h2>
         </div>
         
-        <div class="id-card-container">
-          <div 
-            class="id-card"
-            :class="{ dangling: isDangling }"
-            @click="triggerDangle"
-          >
-            <div class="card-header">
-              <div class="card-title">CLASSIFIED</div>
-              <div class="security-level">TOP SECRET</div>
+        <div class="card-container">
+          <div class="photo-card floating">
+            <!-- <div class="decorative-element"></div> -->
+            <div class="photo-frame">
+              <img
+                v-if="about?.image_url"
+                :src="about.image_url"
+                :alt="realName"
+                id="photoImage"
+                @error="handleImageError"
+              >
+              <div v-else class="photo-placeholder photo-placeholder-rect">👤</div>
             </div>
-            <div class="card-content">
-              <div class="agent-photo">
-                <img 
-                  v-if="about?.image_url" 
-                  :src="about.image_url" 
-                  :alt="realName"
-                  class="agent-image"
-                  @error="handleImageError"
+            <div class="card-info">
+              <h2 class="card-title">{{ about?.title || 'Professional Profile' }}</h2>
+              <p class="card-subtitle">Creative • Innovative • Dedicated</p>
+              <div class="social-icons">
+                <a
+                  v-if="contact && contact.email"
+                  :href="`mailto:${contact.email}`"
+                  class="social-icon"
+                  :title="contact.email"
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                <div v-else class="photo-placeholder">👤</div>
+                  <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                </a>
+                <a
+                  v-if="contact && contact.linkedin_url"
+                  :href="contact.linkedin_url"
+                  class="social-icon"
+                  :title="contact.linkedin_url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <svg viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+                </a>
+                <a
+                  v-if="contact && contact.github_url"
+                  :href="contact.github_url"
+                  class="social-icon"
+                  :title="contact.github_url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <svg viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5c.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34c-.46-1.16-1.11-1.47-1.11-1.47c-.91-.62.07-.6.07-.6c1 .07 1.53 1.03 1.53 1.03c.87 1.52 2.34 1.07 2.91.83c.09-.65.35-1.09.63-1.34c-2.22-.25-4.55-1.11-4.55-4.92c0-1.11.38-2 1.03-2.71c-.1-.25-.45-1.29.1-2.64c0 0 .84-.27 2.75 1.02c.79-.22 1.65-.33 2.5-.33c.85 0 1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02c.55 1.35.2 2.39.1 2.64c.65.71 1.03 1.6 1.03 2.71c0 3.82-2.34 4.66-4.57 4.91c.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+                </a>
               </div>
-              <div class="agent-info">
-                <div class="agent-name">{{ realName }}</div>
-                <div class="agent-role">{{ about?.title?.toUpperCase() || 'FULL-STACK DEVELOPER' }}</div>
-                <div class="agent-id">ID: {{ agentId }}</div>
-                <div class="social-links">
-                  <template v-if="contacts?.length">
-                    <a 
-                      v-for="contact in contacts" 
-                      :key="contact.id"
-                      :href="contact.url"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="social-button"
-                      :title="contact.platform"
-                    >
-                      <i :class="getSocialIcon(contact.platform)"></i>
-                    </a>
-                  </template>
-                  <div v-else class="social-button" style="opacity: 0.5;">
-                    <i class="fas fa-share-alt"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="card-footer">
-              <div class="clearance">SECURITY CLEARANCE: MAXIMUM</div>
             </div>
           </div>
         </div>
@@ -219,7 +220,7 @@ const encryptName = (name: string) => {
 
 // Data management
 const { about, loading, error, fetchAbout } = useAbout()
-const { contacts, fetchContacts } = useContact()
+const { contact, fetchContact } = useContact()
 
 const realName = computed(() => about.value?.name || 'Agent [REDACTED]')
 
@@ -313,7 +314,7 @@ const handleWindowOpen = (type: WindowType) => {
   onMounted(async () => {
     await Promise.all([
       fetchAbout(),
-      fetchContacts()
+      fetchContact()
     ]);
     if (about.value?.name) {
       currentDisplayName.value = encryptName(about.value.name);
@@ -475,16 +476,35 @@ body {
   }
 }
 
+/* Move the landing content to the right to avoid overlap with command center */
 .welcome-landing {
   position: fixed;
   top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: flex-end;
   gap: 80px;
   z-index: 10;
+  width: 100vw;
+  padding: 0 6vw;
+}
+
+/* Ensure welcome-text stays left */
+.welcome-text {
+  flex: 1 1 0%;
+  min-width: 0;
+  max-width: 520px;
+  margin-left: 260px; /* Push text to the right to clear command center */
+}
+
+.card-container {
+  perspective: 1000px;
+  min-width: 400px;
+  flex: 0 0 auto;
 }
 
 .welcome-text h1 {
@@ -548,18 +568,27 @@ body {
 .id-card-container {
   perspective: 1000px;
 }
+.card-centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
 
-.id-card {
-  width: 300px;
-  height: 400px;
-  background: var(--window-bg);
-  border: 2px solid var(--accent-cyan);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  transform-origin: top center;
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-  backdrop-filter: blur(15px);
+/* W3.CSS card style */
+.id-card.card-w3.card-example {
+  width: 370px;
+  min-height: 420px;
+  background: var(--bg-secondary);
+  border: none;
+  border-radius: 2px;
+  box-shadow: 4px 8px 16px 0 rgba(0,0,0,0.3);
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: box-shadow 0.3s;
 }
 
 .id-card:hover {
@@ -580,18 +609,20 @@ body {
 }
 
 .card-header {
-  background: linear-gradient(135deg, var(--accent-cyan), var(--bg-secondary));
-  color: var(--bg-primary);
-  padding: 15px;
+  background: transparent;
+  color: var(--text-primary);
+  padding: 22px 0 10px 0;
   text-align: center;
-  border-radius: 8px 8px 0 0;
+  border-radius: 0;
+  width: 100%;
 }
 
 .card-title {
-  font-family: 'Orbitron', monospace;
-  font-weight: 700;
-  font-size: 1.2em;
-  letter-spacing: 2px;
+  font-family: Arial, sans-serif;
+  font-weight: 400;
+  font-size: 2em;
+  letter-spacing: 0;
+  color: var(--text-primary);
 }
 
 .security-level {
@@ -602,23 +633,42 @@ body {
 }
 
 .card-content {
-  padding: 30px 20px;
+  padding: 0 0 0 0;
   text-align: center;
+  width: 100%;
 }
 
-.agent-photo {
-  width: 120px;
-  height: 120px;
-  border: 2px solid var(--accent-cyan);
-  border-radius: 50%;
-  margin: 0 auto 20px;
-  background: rgba(0, 255, 255, 0.1);
+.agent-photo.agent-photo-square {
+  width: 90%;
+  max-width: 280px;
+  height: 220px;
+  border: none;
+  border-radius: 0;
+  margin: 0 auto 0 auto;
+  background: var(--accent-cyan);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+  box-shadow: none;
+}
+.agent-image.agent-image-square {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 0;
+  background: #4682a9;
+}
+.photo-placeholder.photo-placeholder-square {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 5em;
+  color: #222;
+  background: #4682a9;
 }
 
 .agent-image {
@@ -639,12 +689,13 @@ body {
 
 .agent-info {
   font-family: 'Share Tech Mono', monospace;
+  margin-bottom: 0;
 }
 
 .agent-name {
   font-size: 1.2em;
-  color: var(--accent-cyan);
-  margin-bottom: 10px;
+  color: #fff;
+  margin-bottom: 0;
   font-weight: bold;
 }
 
@@ -654,18 +705,17 @@ body {
   font-size: 0.9em;
 }
 
-.agent-id {
-  color: var(--text-secondary);
-  font-size: 0.8em;
-  margin-bottom: 15px;
+.agent-info.agent-info-centered {
+  font-family: Arial, sans-serif;
+  margin: 18px 0 0 0;
 }
-
-  .social-links {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
+.agent-name.agent-name-white {
+  font-size: 1.3em;
+  color: var(--text-primary);
+  margin-bottom: 0;
+  font-weight: normal;
   margin-top: 15px;
-  min-height: 36px; /* Ensure the container is visible even when empty */
+  min-height: 36px;
 }
 
 .social-button {
@@ -683,7 +733,20 @@ body {
   text-decoration: none;
   position: relative; /* For debugging */
   z-index: 10; /* Ensure buttons are above other elements */
-}.social-button:hover {
+}
+.social-button.prominent {
+  background: var(--accent-cyan);
+  color: var(--bg-primary);
+  border: 2px solid var(--accent-cyan);
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0,255,255,0.2);
+}
+.social-button.prominent:hover {
+  background: var(--accent-green);
+  color: var(--bg-primary);
+  border-color: var(--accent-green);
+}
+.social-button:hover {
   background: var(--accent-cyan);
   color: var(--bg-primary);
   transform: translateY(-2px);
@@ -691,10 +754,11 @@ body {
 }
 
 .card-footer {
-  background: rgba(0, 0, 0, 0.3);
-  padding: 15px;
+  background: #333;
+  padding: 15px 0;
   border-radius: 0 0 8px 8px;
-  border-top: 1px solid rgba(0, 255, 255, 0.3);
+  border-top: 1px solid #444;
+  width: 100%;
 }
 
 .clearance {
@@ -712,47 +776,73 @@ body {
     padding: 20px;
   }
   
-  .welcome-text h1 {
-    font-size: 2.5rem;
-    text-align: center;
-  }
-  
-  .welcome-text h2 {
-    font-size: 1.8rem;
-    text-align: center;
-  }
-  
-  .id-card {
-    width: 280px;
-    height: 360px;
-  }
+.card-actions.card-actions-row.contact-icons-row {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin: 18px 0 0 0;
 }
-
-.status-line:last-child {
-  margin-bottom: 0;
+.contact-icon-btn {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 1.7em;
+  color: var(--accent-cyan);
+  background: rgba(0,255,255,0.08);
+  border: 2px solid var(--accent-cyan);
+  transition: background 0.2s, color 0.2s, border 0.2s;
+  text-decoration: none;
 }
-
-.status-label {
-  color: var(--text-secondary);
+.contact-icon-btn.email:hover {
+  background: var(--accent-cyan);
+  color: var(--bg-primary);
+  border-color: var(--accent-cyan);
 }
-
-.status-value {
-  color: var(--accent-green);
-  font-weight: bold;
+.contact-icon-btn.linkedin {
+  color: #0a66c2;
+  border-color: #0a66c2;
 }
-
-.text-cyan {
-  color: var(--accent-cyan) !important;
+.contact-icon-btn.linkedin:hover {
+  background: #0a66c2;
+  color: #fff;
 }
-
-.mission-briefing {
-  background: var(--window-bg);
-  border: 1px solid var(--accent-green);
-  border-radius: 5px;
-  padding: 25px;
-  text-align: center;
-  max-width: 500px;
-  backdrop-filter: blur(10px);
+.contact-icon-btn.github {
+  color: #fff;
+  border-color: #fff;
+}
+.contact-icon-btn.github:hover {
+  background: #fff;
+  color: #222;
+}
+.social-links-rect {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+  min-height: 36px;
+}
+.social-button-rect {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #555;
+  color: #fff;
+  border-radius: 4px;
+  padding: 6px 14px;
+  font-size: 1em;
+  text-decoration: none;
+  border: 1px solid #888;
+  transition: background 0.2s, color 0.2s;
+  font-family: 'Share Tech Mono', monospace;
+}
+.social-button-rect:hover {
+  background: #00FFFF;
+  color: #222;
+  border-color: #00FFFF;
+}
   box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
 }
 
@@ -894,4 +984,140 @@ body {
     transform: translateY(0);
   }
 }
+
+
+
+/* Card container and card styles from provided HTML/CSS */
+.card-container {
+  perspective: 1000px;
+  margin-left: auto;
+}
+
+/* Card overrides for portfolio theme */
+.photo-card {
+  width: 400px;
+  height: 550px;
+  background: var(--bg-secondary);
+  border-radius: 25px;
+  box-shadow: 0 25px 50px rgba(0, 255, 255, 0.08), 0 0 0 1px var(--accent-cyan), inset 0 1px 0 rgba(0,255,255,0.05);
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--accent-cyan);
+}
+.photo-card:hover {
+  transform: translateY(-10px) rotateX(5deg);
+  box-shadow: 0 35px 70px rgba(0,255,255,0.12), 0 0 0 1px var(--accent-cyan), inset 0 1px 0 rgba(0,255,255,0.08);
+}
+.photo-frame {
+  width: 280px;
+  height: 350px;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 30px;
+  box-shadow: 0 15px 35px rgba(0,255,255,0.08), inset 0 0 0 3px var(--accent-cyan);
+  transition: all 0.3s ease;
+  background: var(--bg-primary);
+}
+.photo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: contrast(1.1) saturate(1.1);
+  transition: all 0.3s ease;
+}
+.photo-frame:hover img {
+  filter: contrast(1.2) saturate(1.2) brightness(1.05);
+}
+.photo-placeholder-rect {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 5em;
+  color: var(--accent-cyan);
+  background: var(--bg-primary);
+}
+.card-info {
+  text-align: center;
+  color: var(--text-primary);
+  width: 100%;
+}
+.card-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--accent-cyan);
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
+  text-shadow: 0 2px 4px rgba(0,255,255,0.08);
+}
+.card-subtitle {
+  font-size: 16px;
+  font-weight: 300;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+.social-icons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 10px;
+}
+.social-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 1px solid var(--accent-cyan);
+}
+.social-icon:hover {
+  background: var(--accent-cyan);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,255,255,0.18);
+}
+.social-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: var(--accent-cyan);
+}
+.social-icon:hover svg {
+  fill: var(--bg-primary);
+}
+.floating {
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+@media (max-width: 480px) {
+  .photo-card {
+    width: 350px;
+    height: 500px;
+    padding: 25px;
+  }
+  .photo-frame {
+    width: 240px;
+    height: 300px;
+  }
+  .card-title {
+    font-size: 20px;
+  }
+}
+
 </style>
