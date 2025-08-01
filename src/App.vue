@@ -656,7 +656,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 60px;
+  gap: 120px;
 }
 
 .welcome-text {
@@ -1091,8 +1091,8 @@ body {
 @media (max-width: 768px) {  
   .taskbar {
     position: fixed;
-    top: 70px;
-    bottom: auto;
+    bottom: 0;
+    top: auto;
     height: 50px;
     padding: 0 15px;
   }
@@ -1102,8 +1102,8 @@ body {
   }
   
   .main-interface {
-    padding-top: 120px;
-    padding-bottom: 0;
+    padding-top: 70px;
+    padding-bottom: 50px;
   }
   
   .start-text {
@@ -1195,13 +1195,17 @@ body {
 @media (max-width: 600px) {
   .landing-content {
     flex-direction: column;
-    gap: 30px;
+    gap: 40px;
     text-align: center;
   }
   
   .welcome-text {
     text-align: center;
     min-width: auto;
+  }
+  
+  .card-container {
+    margin-left: 0;
   }
   
   .welcome-landing {
@@ -1380,6 +1384,7 @@ body {
 .card-container {
   perspective: 1000px;
   flex: 0 0 auto;
+  margin-left: auto;
 }
 
 /* Card overrides for portfolio theme */
