@@ -10,233 +10,236 @@
     <!-- Scanlines effect -->
     <div class="scanlines"></div>
 
-    <!-- Main Interface -->
-    <div 
-      v-if="systemInitialized"
-      class="main-interface"
-    >
-      <!-- Header -->
-      <header class="header">
-        <!-- Mobile Layout -->
-        <div class="header-mobile" v-if="isMobile">
-          <div class="header-top">
-            <div class="logo-mobile glitch">{{ realName || 'AGENT [REDACTED]' }}</div>
-          </div>
-          <div class="header-middle">
-            <div class="weather-time-widget">
-              <span class="weather-icon">{{ currentWeather.condition }}</span>
-              <span class="weather-location">{{ currentWeather.location }}</span>
-              <span class="current-time">{{ currentTime }}</span>
+    <!-- Desktop Layout -->
+    <div class="desktop-layout">
+      <!-- Main Interface -->
+      <div 
+        v-if="systemInitialized"
+        class="main-interface"
+      >
+        <!-- Header -->
+        <header class="header">
+          <!-- Mobile Layout -->
+          <div class="header-mobile" v-if="isMobile">
+            <div class="header-top">
+              <div class="logo-mobile glitch">{{ realName || 'AGENT [REDACTED]' }}</div>
             </div>
-          </div>
-          <div class="header-bottom">
-            <SoundToggle 
-              :enabled="soundEnabled"
-              @toggle="handleToggleSound"
-            />
-            <button class="mobile-menu-btn" @click="toggleCommandCenter">
-              <span class="hamburger-icon" :class="{ active: showCommandCenter }">
-                <span></span>
-                <span></span>
-                <span></span>
-              </span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Desktop Layout -->
-        <div class="header-desktop" v-else>
-          <div class="logo glitch">AGENT PORTFOLI v2.7</div>
-          <div class="status-panel">
-            <div class="status-item">
-              <div class="status-dot"></div>
-              <span>SECURE</span>
+            <div class="header-middle">
+              <div class="weather-time-widget">
+                <span class="weather-icon">{{ currentWeather.condition }}</span>
+                <span class="weather-location">{{ currentWeather.location }}</span>
+                <span class="current-time">{{ currentTime }}</span>
+              </div>
             </div>
-            <div class="status-item">
-              <div class="status-dot"></div>
-              <span>ENCRYPTED</span>
-            </div>
-            
-            <div class="status-item">
-              <div class="status-dot"></div>
-              <span>CLASSIFIED</span>
-            </div>
-            <div class="audio-toggle-container">
+            <div class="header-bottom">
               <SoundToggle 
                 :enabled="soundEnabled"
                 @toggle="handleToggleSound"
               />
+              <button class="mobile-menu-btn" @click="toggleCommandCenter">
+                <span class="hamburger-icon" :class="{ active: showCommandCenter }">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </span>
+              </button>
             </div>
           </div>
-        </div>
-      </header>
 
-      <!-- Control Panel -->
-      <ControlPanel 
-        v-show="showCommandCenter"
-        @open-window="handleWindowOpen" 
-      />
-
-      <!-- Central Interactive Display -->
-      <!-- Welcome Landing -->
-      <div class="welcome-landing">
-        <div class="landing-content">
-          <div class="welcome-text">
-            <h1 v-if="loading">
-              ACCESSING PERSONNEL FILES...
-            </h1>
-            <h1 v-else-if="error">
-              ERROR: PERSONNEL FILE NOT FOUND
-            </h1>
-            <h1 v-else>
-              Hi, I'm 
-              <span 
-                class="name-cipher"
-                ref="nameElement"
-                @mouseenter="startScrambleEffect"
-              >
-                <span class="scramble-text">{{ currentDisplayName }}</span>
-                <span class="scramble-cursor" :class="{ 'cursor-hidden': isDecrypted }">_</span>
-              </span>
-            </h1>
-            <h2>a <span class="role">{{ about?.title || 'Full-Stack Developer' }}</span></h2>
-          </div>
-          
-          <div class="card-container">
-            <div class="photo-card floating" @click="triggerDangle">
-              <div class="photo-frame">
-                <img
-                  v-if="about?.image_url"
-                  :src="about.image_url"
-                  :alt="realName"
-                  id="photoImage"
-                  @error="handleImageError"
-                >
-                <div v-else class="photo-placeholder photo-placeholder-rect">👤</div>
+          <!-- Desktop Layout -->
+          <div class="header-desktop" v-else>
+            <div class="logo glitch">AGENT PORTFOLI v2.7</div>
+            <div class="status-panel">
+              <div class="status-item">
+                <div class="status-dot"></div>
+                <span>SECURE</span>
               </div>
-              <div class="card-info">
-                <h2 class="card-title">{{ about?.title || 'Professional Profile' }}</h2>
-                <p class="card-subtitle">Creative • Innovative • Dedicated</p>
-                <div class="social-icons">
-                  <a
-                    v-if="contact && contact.email"
-                    :href="`mailto:${contact.email}`"
-                    class="social-icon"
-                    :title="contact.email"
-                    target="_blank"
-                    rel="noopener noreferrer"
+              <div class="status-item">
+                <div class="status-dot"></div>
+                <span>ENCRYPTED</span>
+              </div>
+              
+              <div class="status-item">
+                <div class="status-dot"></div>
+                <span>CLASSIFIED</span>
+              </div>
+              <div class="audio-toggle-container">
+                <SoundToggle 
+                  :enabled="soundEnabled"
+                  @toggle="handleToggleSound"
+                />
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Control Panel -->
+        <ControlPanel 
+          v-show="showCommandCenter"
+          @open-window="handleWindowOpen" 
+        />
+
+        <!-- Central Interactive Display -->
+        <!-- Welcome Landing -->
+        <div class="welcome-landing">
+          <div class="landing-content">
+            <div class="welcome-text">
+              <h1 v-if="loading">
+                ACCESSING PERSONNEL FILES...
+              </h1>
+              <h1 v-else-if="error">
+                ERROR: PERSONNEL FILE NOT FOUND
+              </h1>
+              <h1 v-else>
+                Hi, I'm 
+                <span 
+                  class="name-cipher"
+                  ref="nameElement"
+                  @mouseenter="startScrambleEffect"
+                >
+                  <span class="scramble-text">{{ currentDisplayName }}</span>
+                  <span class="scramble-cursor" :class="{ 'cursor-hidden': isDecrypted }">_</span>
+                </span>
+              </h1>
+              <h2>a <span class="role">{{ about?.title || 'Full-Stack Developer' }}</span></h2>
+            </div>
+            
+            <div class="card-container">
+              <div class="photo-card floating" @click="triggerDangle">
+                <div class="photo-frame">
+                  <img
+                    v-if="about?.image_url"
+                    :src="about.image_url"
+                    :alt="realName"
+                    id="photoImage"
+                    @error="handleImageError"
                   >
-                    <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-                  </a>
-                  <a
-                    v-if="contact && contact.linkedin_url"
-                    :href="contact.linkedin_url"
-                    class="social-icon"
-                    :title="contact.linkedin_url"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <svg viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
-                  </a>
-                  <a
-                    v-if="contact && contact.github_url"
-                    :href="contact.github_url"
-                    class="social-icon"
-                    :title="contact.github_url"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <svg viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5c.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34c-.46-1.16-1.11-1.47-1.11-1.47c-.91-.62.07-.6.07-.6c1 .07 1.53 1.03 1.53 1.03c.87 1.52 2.34 1.07 2.91.83c.09-.65.35-1.09.63-1.34c-2.22-.25-4.55-1.11-4.55-4.92c0-1.11.38-2 1.03-2.71c-.1-.25-.45-1.29.1-2.64c0 0 .84-.27 2.75 1.02c.79-.22 1.65-.33 2.5-.33c.85 0 1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02c.55 1.35.2 2.39.1 2.64c.65.71 1.03 1.6 1.03 2.71c0 3.82-2.34 4.66-4.57 4.91c.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
-                  </a>
+                  <div v-else class="photo-placeholder photo-placeholder-rect">👤</div>
+                </div>
+                <div class="card-info">
+                  <h2 class="card-title">{{ about?.title || 'Professional Profile' }}</h2>
+                  <p class="card-subtitle">Creative • Innovative • Dedicated</p>
+                  <div class="social-icons">
+                    <a
+                      v-if="contact && contact.email"
+                      :href="`mailto:${contact.email}`"
+                      class="social-icon"
+                      :title="contact.email"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                    </a>
+                    <a
+                      v-if="contact && contact.linkedin_url"
+                      :href="contact.linkedin_url"
+                      class="social-icon"
+                      :title="contact.linkedin_url"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <svg viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+                    </a>
+                    <a
+                      v-if="contact && contact.github_url"
+                      :href="contact.github_url"
+                      class="social-icon"
+                      :title="contact.github_url"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <svg viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5c.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34c-.46-1.16-1.11-1.47-1.11-1.47c-.91-.62.07-.6.07-.6c1 .07 1.53 1.03 1.53 1.03c.87 1.52 2.34 1.07 2.91.83c.09-.65.35-1.09.63-1.34c-2.22-.25-4.55-1.11-4.55-4.92c0-1.11.38-2 1.03-2.71c-.1-.25-.45-1.29.1-2.64c0 0 .84-.27 2.75 1.02c.79-.22 1.65-.33 2.5-.33c.85 0 1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02c.55 1.35.2 2.39.1 2.64c.65.71 1.03 1.6 1.03 2.71c0 3.82-2.34 4.66-4.57 4.91c.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Windows -->
-      <AboutWindow
-        :active="activeWindows.about"
-        :maximized="maximizedWindows.about"
-        :minimized="minimizedWindows.about"
-        :position="windowPositions.about"
-        @close="() => closeWindow('about')"
-        @minimize="() => minimizeWindow('about')"
-        @maximize="() => maximizeWindow('about')"
-        @restore="() => restoreWindow('about')"
-        @move="(pos) => updateWindowPosition('about', pos)"
-      />
+        <!-- Windows -->
+        <AboutWindow
+          :active="activeWindows.about"
+          :maximized="maximizedWindows.about"
+          :minimized="minimizedWindows.about"
+          :position="windowPositions.about"
+          @close="() => closeWindow('about')"
+          @minimize="() => minimizeWindow('about')"
+          @maximize="() => maximizeWindow('about')"
+          @restore="() => restoreWindow('about')"
+          @move="(pos) => updateWindowPosition('about', pos)"
+        />
 
-      <ProjectsWindow
-        :active="activeWindows.projects"
-        :maximized="maximizedWindows.projects"
-        :minimized="minimizedWindows.projects"
-        :position="windowPositions.projects"
-        @close="() => closeWindow('projects')"
-        @minimize="() => minimizeWindow('projects')"
-        @maximize="() => maximizeWindow('projects')"
-        @restore="() => restoreWindow('projects')"
-        @move="(pos) => updateWindowPosition('projects', pos)"
-      />
+        <ProjectsWindow
+          :active="activeWindows.projects"
+          :maximized="maximizedWindows.projects"
+          :minimized="minimizedWindows.projects"
+          :position="windowPositions.projects"
+          @close="() => closeWindow('projects')"
+          @minimize="() => minimizeWindow('projects')"
+          @maximize="() => maximizeWindow('projects')"
+          @restore="() => restoreWindow('projects')"
+          @move="(pos) => updateWindowPosition('projects', pos)"
+        />
 
-      <ResumeWindow
-        :active="activeWindows.resume"
-        :maximized="maximizedWindows.resume"
-        :minimized="minimizedWindows.resume"
-        :position="windowPositions.resume"
-        @close="() => closeWindow('resume')"
-        @minimize="() => minimizeWindow('resume')"
-        @maximize="() => maximizeWindow('resume')"
-        @restore="() => restoreWindow('resume')"
-        @move="(pos) => updateWindowPosition('resume', pos)"
-      />
+        <ResumeWindow
+          :active="activeWindows.resume"
+          :maximized="maximizedWindows.resume"
+          :minimized="minimizedWindows.resume"
+          :position="windowPositions.resume"
+          @close="() => closeWindow('resume')"
+          @minimize="() => minimizeWindow('resume')"
+          @maximize="() => maximizeWindow('resume')"
+          @restore="() => restoreWindow('resume')"
+          @move="(pos) => updateWindowPosition('resume', pos)"
+        />
 
-      <ContactWindow
-        :active="activeWindows.contact"
-        :maximized="maximizedWindows.contact"
-        :minimized="minimizedWindows.contact"
-        :position="windowPositions.contact"
-        @close="() => closeWindow('contact')"
-        @minimize="() => minimizeWindow('contact')"
-        @maximize="() => maximizeWindow('contact')"
-        @restore="() => restoreWindow('contact')"
-        @move="(pos) => updateWindowPosition('contact', pos)"
-      />
+        <ContactWindow
+          :active="activeWindows.contact"
+          :maximized="maximizedWindows.contact"
+          :minimized="minimizedWindows.contact"
+          :position="windowPositions.contact"
+          @close="() => closeWindow('contact')"
+          @minimize="() => minimizeWindow('contact')"
+          @maximize="() => maximizeWindow('contact')"
+          @restore="() => restoreWindow('contact')"
+          @move="(pos) => updateWindowPosition('contact', pos)"
+        />
 
-      <!-- Taskbar -->
-      <div class="taskbar" v-if="!isMobile">
-        <div class="taskbar-left">
-          <button class="start-button" @click="toggleCommandCenter">
-            <span class="start-icon">⚡</span>
-            <span class="start-text">COMMAND</span>
-          </button>
-        </div>
-        
-        <div class="taskbar-center">
-          <!-- Minimized Windows -->
-          <div class="minimized-windows">
-            <button 
-              v-for="(isMinimized, windowType) in minimizedWindows" 
-              :key="windowType"
-              v-show="isMinimized"
-              class="minimized-window-btn"
-              @click="restoreWindow(windowType as WindowType)"
-            >
-              <span class="window-icon">{{ getWindowIcon(windowType) }}</span>
-              <span class="window-name">{{ getWindowName(windowType) }}</span>
+        <!-- Taskbar -->
+        <div class="taskbar" v-if="!isMobile">
+          <div class="taskbar-left">
+            <button class="start-button" @click="toggleCommandCenter">
+              <span class="start-icon">⚡</span>
+              <span class="start-text">COMMAND</span>
             </button>
           </div>
-        </div>
-        
-        <div class="taskbar-right">
-          <div class="weather-widget">
-            <span class="weather-icon">{{ currentWeather.condition }}</span>
-            <span class="weather-temp">{{ currentWeather.temp }}°C</span>
-            <span class="weather-location">{{ currentWeather.location }}</span>
+          
+          <div class="taskbar-center">
+            <!-- Minimized Windows -->
+            <div class="minimized-windows">
+              <button 
+                v-for="(isMinimized, windowType) in minimizedWindows" 
+                :key="windowType"
+                v-show="isMinimized"
+                class="minimized-window-btn"
+                @click="restoreWindow(windowType as WindowType)"
+              >
+                <span class="window-icon">{{ getWindowIcon(windowType) }}</span>
+                <span class="window-name">{{ getWindowName(windowType) }}</span>
+              </button>
+            </div>
           </div>
-          <div class="time-widget">
-            <span class="current-time">{{ currentTime }}</span>
+          
+          <div class="taskbar-right">
+            <div class="weather-widget">
+              <span class="weather-icon">{{ currentWeather.condition }}</span>
+              <span class="weather-temp">{{ currentWeather.temp }}°C</span>
+              <span class="weather-location">{{ currentWeather.location }}</span>
+            </div>
+            <div class="time-widget">
+              <span class="current-time">{{ currentTime }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -1005,26 +1008,6 @@ const processMobileCommand = (command: string): string => {
   }
 }
 
-const sendMobileMessage = (event: Event) => {
-  event.preventDefault()
-  playSound('beep')
-  
-  isMobileTransmitting.value = true
-  mobileButtonText.value = 'TRANSMITTING...'
-  
-  setTimeout(() => {
-    mobileButtonText.value = 'MESSAGE SENT ✓'
-    setTimeout(() => {
-      mobileButtonText.value = 'TRANSMIT SECURE MESSAGE'
-      isMobileTransmitting.value = false
-      // Reset form
-      mobileForm.agentId = ''
-      mobileForm.email = ''
-      mobileForm.message = ''
-    }, 2000)
-  }, 2000)
-}
-
 // Watch for changes in about data
 watch(() => about.value?.name, (newName) => {
   if (!scrambleInterval.value) {
@@ -1180,6 +1163,15 @@ body {
 @keyframes scanlineMove {
   0% { transform: translateY(0); }
   100% { transform: translateY(4px); }
+}
+
+/* Desktop styles remain unchanged */
+.desktop-layout {
+  display: block;
+}
+
+.mobile-layout {
+  display: none;
 }
 
 .main-interface {
@@ -1626,7 +1618,586 @@ body {
   93% { transform: translate(-1px, 2px); }
 }
 
+/* Mobile Styles (≤768px) */
 @media (max-width: 768px) {
+  .desktop-layout {
+    display: none;
+  }
+  
+  .mobile-layout {
+    display: block;
+  }
+  
+  /* Mobile Header */
+  .mobile-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background: var(--window-bg);
+    border-bottom: 2px solid var(--accent-cyan);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 1000;
+    backdrop-filter: blur(15px);
+  }
+  
+  .mobile-logo {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.2em;
+    color: var(--accent-cyan);
+    margin: 0;
+  }
+  
+  .mobile-system-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7em;
+    color: var(--text-secondary);
+  }
+  
+  .mobile-weather,
+  .mobile-location,
+  .mobile-time {
+    margin: 1px 0;
+  }
+  
+  .mobile-header-right {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .mobile-sound-toggle,
+  .mobile-hamburger {
+    background: transparent;
+    border: 1px solid var(--accent-cyan);
+    color: var(--text-primary);
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1em;
+    transition: background 0.3s ease;
+  }
+  
+  .mobile-sound-toggle:hover,
+  .mobile-hamburger:hover {
+    background: rgba(0, 255, 255, 0.2);
+  }
+  
+  /* Command Drawer */
+  .command-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2000;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .command-drawer.open {
+    pointer-events: all;
+    opacity: 1;
+  }
+  
+  .drawer-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+  }
+  
+  .drawer-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 280px;
+    height: 100%;
+    background: var(--window-bg);
+    border-left: 2px solid var(--accent-cyan);
+    padding: 80px 20px 20px;
+    backdrop-filter: blur(15px);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .command-drawer.open .drawer-content {
+    transform: translateX(0);
+  }
+  
+  .drawer-content h3 {
+    font-family: 'Orbitron', monospace;
+    color: var(--accent-cyan);
+    margin-bottom: 30px;
+    text-align: center;
+    font-size: 1.1em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .drawer-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .drawer-link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid var(--accent-cyan);
+    color: var(--text-primary);
+    text-decoration: none;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+  }
+  
+  .drawer-link:hover {
+    background: rgba(0, 255, 255, 0.2);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    transform: translateX(5px);
+  }
+  
+  .drawer-link i {
+    font-size: 1.2em;
+    color: var(--accent-cyan);
+  }
+  
+  /* Mobile Content */
+  .mobile-content {
+    margin-top: 70px;
+    padding-bottom: 20px;
+  }
+  
+  .mobile-section {
+    min-height: 100vh;
+    padding: 40px 20px;
+    border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+  }
+  
+  .mobile-section:last-child {
+    border-bottom: none;
+  }
+  
+  .section-content {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    color: var(--accent-cyan);
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.3em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  /* About Section */
+  .mobile-photo-card {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .agent-avatar {
+    width: 200px;
+    height: 200px;
+    border: 3px solid var(--accent-cyan);
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    background: rgba(0, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4em;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+  }
+  
+  .agent-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .avatar-placeholder {
+    color: var(--accent-cyan);
+  }
+  
+  .agent-info {
+    margin-top: 20px;
+  }
+  
+  .agent-name {
+    font-family: 'Orbitron', monospace;
+    color: var(--accent-cyan);
+    margin-bottom: 10px;
+    font-size: 1.4em;
+  }
+  
+  .agent-title {
+    color: var(--text-secondary);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1em;
+  }
+  
+  .mobile-terminal {
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid var(--accent-green);
+    border-radius: 8px;
+    padding: 20px;
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--accent-green);
+    margin-top: 30px;
+  }
+  
+  .terminal-header {
+    color: var(--accent-cyan);
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .terminal-content .terminal-line {
+    margin-bottom: 8px;
+    font-size: 0.9em;
+  }
+  
+  .terminal-prompt {
+    color: var(--accent-cyan);
+  }
+  
+  .mission-brief {
+    margin-top: 10px;
+    padding: 10px;
+    background: rgba(0, 255, 255, 0.1);
+    border-radius: 3px;
+    line-height: 1.5;
+  }
+  
+  /* Skills Section */
+  .skills-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+  }
+  
+  .skill-category {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: 8px;
+    padding: 20px;
+  }
+  
+  .skill-category h3 {
+    color: var(--accent-green);
+    font-family: 'Orbitron', monospace;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .skill-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .skill-tag {
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid var(--accent-cyan);
+    color: var(--text-primary);
+    padding: 8px 12px;
+    border-radius: 15px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8em;
+    transition: all 0.3s ease;
+  }
+  
+  .skill-tag:hover {
+    background: rgba(0, 255, 255, 0.2);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  }
+  
+  /* Projects Section */
+  .mobile-projects {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+  }
+  
+  .project-card {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.3s ease;
+  }
+  
+  .project-card:hover {
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  }
+  
+  .project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .project-header h3 {
+    font-family: 'Orbitron', monospace;
+    color: var(--accent-cyan);
+    font-size: 1.1em;
+    margin: 0;
+  }
+  
+  .classification {
+    background: var(--danger-red);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 3px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .project-brief {
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+    line-height: 1.5;
+  }
+  
+  .project-tech {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--accent-green);
+    font-size: 0.9em;
+    margin-bottom: 10px;
+  }
+  
+  .project-status {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+  }
+  
+  .project-status.success {
+    color: var(--accent-green);
+  }
+  
+  .project-status.active {
+    color: var(--accent-cyan);
+  }
+  
+  /* Contact Section */
+  .contact-warning {
+    color: var(--danger-red);
+    text-align: center;
+    font-size: 0.9em;
+    margin-bottom: 30px;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  
+  .mobile-contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group label {
+    color: var(--accent-cyan);
+    margin-bottom: 8px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.9em;
+  }
+  
+  .form-input,
+  .form-textarea {
+    width: 100%;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--accent-cyan);
+    color: var(--text-primary);
+    font-family: 'Share Tech Mono', monospace;
+    border-radius: 3px;
+    font-size: 1em;
+    box-sizing: border-box;
+  }
+  
+  .form-input:focus,
+  .form-textarea:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  }
+  
+  .form-textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+  
+  .mobile-submit-btn {
+    padding: 15px;
+    background: var(--accent-cyan);
+    color: var(--bg-primary);
+    border: none;
+    font-family: 'Orbitron', monospace;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+    font-size: 1em;
+  }
+  
+  .mobile-submit-btn:hover:not(:disabled) {
+    background: var(--accent-green);
+    box-shadow: 0 0 15px var(--accent-cyan);
+  }
+  
+  .mobile-submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+  
+  .mobile-contact-info {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: 8px;
+    padding: 20px;
+  }
+  
+  .mobile-contact-info h4 {
+    color: var(--accent-green);
+    margin-bottom: 15px;
+    font-family: 'Orbitron', monospace;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .contact-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .contact-method {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-secondary);
+    font-family: 'Share Tech Mono', monospace;
+  }
+  
+  .contact-method i {
+    color: var(--accent-cyan);
+    width: 20px;
+  }
+  
+  /* Terminal Section */
+  .terminal-section {
+    background: rgba(0, 0, 0, 0.2);
+  }
+  
+  .mobile-terminal-container {
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid var(--accent-green);
+    border-radius: 8px;
+    padding: 20px;
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--accent-green);
+  }
+  
+  .mobile-terminal-output {
+    min-height: 200px;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+    padding-right: 10px;
+  }
+  
+  .mobile-terminal-output::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .mobile-terminal-output::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+  }
+  
+  .mobile-terminal-output::-webkit-scrollbar-thumb {
+    background-color: var(--accent-green);
+    border-radius: 3px;
+  }
+  
+  .mobile-terminal-output .terminal-line {
+    margin-bottom: 5px;
+    word-wrap: break-word;
+    font-size: 0.9em;
+  }
+  
+  .mobile-terminal-output .terminal-prompt {
+    color: var(--accent-cyan);
+  }
+  
+  .mobile-terminal-output .blinking-cursor::after {
+    content: '█';
+    animation: blink 1s infinite;
+  }
+  
+  .mobile-terminal-input {
+    width: 100%;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid var(--accent-green);
+    color: var(--accent-green);
+    font-family: 'Share Tech Mono', monospace;
+    border-radius: 3px;
+    font-size: 1em;
+    box-sizing: border-box;
+  }
+  
+  .mobile-terminal-input:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+  }
+  
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
   .header {
     padding: 12px 20px;
   }
@@ -2900,4 +3471,16 @@ body {
   }
 }
 
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
 </style>
