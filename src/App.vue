@@ -73,6 +73,29 @@
           </div>
         </header>
 
+        <!-- Hero Section -->
+        <section id="hero" class="mobile-section hero-section">
+          <div class="hero-content">
+            <div class="hero-card">
+              <div class="agent-avatar">
+                <img v-if="about?.image_url" :src="about.image_url" :alt="about.name" class="agent-image">
+                <span v-else>👤</span>
+              </div>
+              <h2 class="agent-name">AGENT {{ about?.name || '[REDACTED]' }}</h2>
+              <p class="agent-title">{{ about?.title || 'Web Developer' }}</p>
+              <div class="clearance-level">CLEARANCE LEVEL: TOP SECRET</div>
+            </div>
+            
+            <div class="hero-terminal">
+              <div class="terminal-line"><span class="terminal-prompt">></span> cat agent_status.txt</div>
+              <div class="terminal-line">STATUS: ACTIVE</div>
+              <div class="terminal-line">MISSION: CREATE INNOVATIVE WEB SOLUTIONS</div>
+              <div class="terminal-line">SPECIALIZATION: FULL-STACK DEVELOPMENT</div>
+              <div class="terminal-line"><span class="blinking-cursor"></span></div>
+            </div>
+          </div>
+        </section>
+
         <!-- Control Panel -->
         <ControlPanel 
           v-show="showCommandCenter"
