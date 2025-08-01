@@ -17,26 +17,56 @@
     >
       <!-- Header -->
       <header class="header">
-        <div class="logo glitch">AGENT PORTFOLI v2.7</div>
-        <div class="status-panel">
-          <div class="status-item">
-            <div class="status-dot"></div>
-            <span>SECURE</span>
+        <!-- Mobile Layout -->
+        <div class="header-mobile" v-if="isMobile">
+          <div class="header-top">
+            <div class="logo-mobile glitch">{{ realName || 'AGENT [REDACTED]' }}</div>
           </div>
-          <div class="status-item">
-            <div class="status-dot"></div>
-            <span>ENCRYPTED</span>
+          <div class="header-middle">
+            <div class="weather-time-widget">
+              <span class="weather-icon">{{ currentWeather.condition }}</span>
+              <span class="weather-location">{{ currentWeather.location }}</span>
+              <span class="current-time">{{ currentTime }}</span>
+            </div>
           </div>
-          
-          <div class="status-item">
-            <div class="status-dot"></div>
-            <span>CLASSIFIED</span>
-          </div>
-          <div class="audio-toggle-container">
+          <div class="header-bottom">
             <SoundToggle 
               :enabled="soundEnabled"
               @toggle="handleToggleSound"
             />
+            <button class="mobile-menu-btn" @click="toggleCommandCenter">
+              <span class="hamburger-icon" :class="{ active: showCommandCenter }">
+                <span></span>
+                <span></span>
+                <span></span>
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Desktop Layout -->
+        <div class="header-desktop" v-else>
+          <div class="logo glitch">AGENT PORTFOLI v2.7</div>
+          <div class="status-panel">
+            <div class="status-item">
+              <div class="status-dot"></div>
+              <span>SECURE</span>
+            </div>
+            <div class="status-item">
+              <div class="status-dot"></div>
+              <span>ENCRYPTED</span>
+            </div>
+            
+            <div class="status-item">
+              <div class="status-dot"></div>
+              <span>CLASSIFIED</span>
+            </div>
+            <div class="audio-toggle-container">
+              <SoundToggle 
+                :enabled="soundEnabled"
+                @toggle="handleToggleSound"
+              />
+            </div>
           </div>
         </div>
       </header>
@@ -175,7 +205,7 @@
       />
 
       <!-- Taskbar -->
-      <div class="taskbar">
+      <div class="taskbar" v-if="!isMobile">
         <div class="taskbar-left">
           <button class="start-button" @click="toggleCommandCenter">
             <span class="start-icon">⚡</span>
@@ -348,6 +378,7 @@ const agentId = ref('A-' + Math.random().toString(36).substr(2, 6).toUpperCase()
 const showCommandCenter = ref(false)
 const currentTime = ref('')
 const currentWeather = ref({ temp: '--', location: 'Loading...', condition: '🌤️' })
+const isMobile = ref(false)
 
 // Weather and time functions
 const updateTime = () => {
@@ -625,6 +656,14 @@ const getWindowName = (windowType: string) => {
   return names[windowType] || windowType.toUpperCase()
 }
 
+// Check if mobile
+const checkMobile = () => {
+  isMobile.value = window.innerWidth <= 768
+}
+
+// Listen for resize events
+window.addEventListener('resize', checkMobile)
+
 // Glitch effect interval
   onMounted(async () => {
     await Promise.all([
@@ -634,6 +673,9 @@ const getWindowName = (windowType: string) => {
     if (about.value?.name) {
       currentDisplayName.value = encryptName(about.value.name);
     }
+    
+    // Check mobile on mount
+    checkMobile()
     initKonamiCode();
     
     // Initialize time and weather
@@ -721,7 +763,13 @@ body {
   min-height: 100vh;
   position: relative;
   z-index: 2;
-  padding-bottom: 60px; /* Space for taskbar */
+  padding-bottom: 60px; /* Space for taskbar on desktop */
+}
+
+@media (max-width: 768px) {
+  .main-interface {
+    padding-bottom: 0; /* No taskbar on mobile */
+  }
 }
 
 .header {
@@ -738,6 +786,129 @@ body {
   right: 0;
   width: 100vw;
   z-index: 200;
+}
+
+@media (max-width: 768px) {
+  .taskbar {
+    display: none;
+  }
+}
+
+/* Mobile Header Layout */
+.header-mobile {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 8px;
+}
+
+.header-top {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.logo-mobile {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.2em;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  text-shadow: 0 0 10px var(--accent-cyan);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.header-middle {
+  display: flex;
+  justify-content: center;
+  flex: 1;
+}
+
+.weather-time-widget {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.85em;
+  color: var(--text-primary);
+  background: rgba(0, 255, 255, 0.1);
+  padding: 6px 12px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+.weather-location {
+  color: var(--text-secondary);
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.current-time {
+  color: var(--accent-green);
+  font-weight: bold;
+  min-width: 45px;
+}
+
+.header-bottom {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+}
+
+.mobile-menu-btn {
+  background: transparent;
+  border: 1px solid var(--accent-cyan);
+  color: var(--text-primary);
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+  width: 40px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-menu-btn:hover {
+  background: rgba(0, 255, 255, 0.2);
+}
+
+.hamburger-icon {
+  display: flex;
+  flex-direction: column;
+  width: 18px;
+  height: 12px;
+  justify-content: space-between;
+}
+
+.hamburger-icon span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: var(--accent-cyan);
+  transition: all 0.3s ease;
+}
+
+.hamburger-icon.active span:nth-child(1) {
+  transform: rotate(45deg) translate(3px, 3px);
+}
+
+.hamburger-icon.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-icon.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(3px, -3px);
+}
+
+.header-desktop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
 .logo {
@@ -794,7 +965,15 @@ body {
 
 @media (max-width: 768px) {
   .header {
-    padding: 10px 15px;
+    padding: 12px 20px;
+  }
+  
+  .header-mobile {
+    gap: 10px;
+  }
+  
+  .weather-time-widget {
+    font-size: 0.8em;
   }
 
 
@@ -804,6 +983,10 @@ body {
   
   .status-item {
     font-size: 0.8em;
+  }
+  
+  .logo-mobile {
+    font-size: 1.1em;
   }
 }
 

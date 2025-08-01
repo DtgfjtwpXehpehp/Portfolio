@@ -80,11 +80,21 @@ const buttons = [
 @media (max-width: 768px) {
   .control-panel {
     position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    top: auto;
-    padding: 15px;
+    top: 70px;
+    left: 0;
+    right: 0;
+    transform: none;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    padding: 20px;
+    background: var(--window-bg);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 20px rgba(0, 255, 255, 0.3);
+  }
+  
+  .control-btn {
+    margin-bottom: 8px;
   }
 }
 </style>
