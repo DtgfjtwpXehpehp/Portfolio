@@ -42,7 +42,10 @@
       </header>
 
       <!-- Control Panel -->
-      <ControlPanel @open-window="handleWindowOpen" />
+      <ControlPanel 
+        v-show="showCommandCenter"
+        @open-window="handleWindowOpen" 
+      />
 
       <!-- Central Interactive Display -->
       <!-- Welcome Landing -->
@@ -161,6 +164,34 @@
         @restore="() => restoreWindow('contact')"
         @update:position="(pos) => updateWindowPosition('contact', pos)"
       />
+
+      <!-- Taskbar -->
+      <div class="taskbar">
+        <div class="taskbar-left">
+          <button class="start-button" @click="toggleCommandCenter">
+            <span class="start-icon">⚡</span>
+            <span class="start-text">COMMAND</span>
+          </button>
+        </div>
+        
+        <div class="taskbar-center">
+          <div class="system-info">
+            <span class="agent-id">{{ agentId }}</span>
+            <span class="status-indicator">ONLINE</span>
+          </div>
+        </div>
+        
+        <div class="taskbar-right">
+          <div class="weather-widget">
+            <span class="weather-icon">{{ currentWeather.condition }}</span>
+            <span class="weather-temp">{{ currentWeather.temp }}°C</span>
+            <span class="weather-location">{{ currentWeather.location }}</span>
+          </div>
+          <div class="time-widget">
+            <span class="current-time">{{ currentTime }}</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -251,11 +282,22 @@ const startScrambleEffect = () => {
   if (scrambleInterval.value || isDecrypted.value) return
   
   // Play text scrambling sound
-  const audio = new Audio('/src/assets/sounds/textsound.mp3')
-  audio.volume = 0.3
-  audio.play().catch(() => {
-    // Silently handle audio play errors (e.g., user hasn't interacted with page yet)
-  })
+  try {
+    const audio = new Audio('/src/assets/sounds/textsound.mp3')
+    audio.volume = 0.3
+    // Force audio to play
+    const playPromise = audio.play()
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        // Create user interaction to enable audio
+        document.addEventListener('click', () => {
+          audio.play()
+        }, { once: true })
+      })
+    }
+  } catch (error) {
+    console.log('Audio not available')
+  }
   
   const target = targetName.value
   let iterations = 0
@@ -287,6 +329,58 @@ const startScrambleEffect = () => {
 }
 
 const agentId = ref('A-' + Math.random().toString(36).substr(2, 6).toUpperCase())
+
+// Taskbar state
+const showCommandCenter = ref(false)
+const currentTime = ref('')
+const currentWeather = ref({ temp: '--', location: 'Loading...', condition: '🌤️' })
+
+// Weather and time functions
+const updateTime = () => {
+  const now = new Date()
+  currentTime.value = now.toLocaleTimeString([], { 
+    hour: '2-digit', 
+    minute: '2-digit',
+    hour12: false 
+  })
+}
+
+const fetchWeather = async () => {
+  try {
+    // Get user's location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        const { latitude, longitude } = position.coords
+        
+        // Use a free weather API (OpenWeatherMap requires API key, using a mock for demo)
+        // In production, you'd use: `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=YOUR_API_KEY&units=metric`
+        
+        // Mock weather data for demo
+        const mockWeather = {
+          temp: Math.floor(Math.random() * 30) + 5, // 5-35°C
+          location: 'Current Location',
+          condition: ['☀️', '⛅', '🌤️', '🌧️', '❄️'][Math.floor(Math.random() * 5)]
+        }
+        
+        currentWeather.value = mockWeather
+      }, () => {
+        // Fallback if location access denied
+        currentWeather.value = {
+          temp: 22,
+          location: 'Unknown Location',
+          condition: '🌤️'
+        }
+      })
+    }
+  } catch (error) {
+    console.log('Weather not available')
+  }
+}
+
+const toggleCommandCenter = () => {
+  showCommandCenter.value = !showCommandCenter.value
+  playSound('click')
+}
 
 // Watch for changes in about data
 watch(() => about.value?.name, (newName) => {
@@ -326,7 +420,19 @@ const handleWindowOpen = (type: WindowType) => {
     if (about.value?.name) {
       currentDisplayName.value = encryptName(about.value.name);
     }
-    initKonamiCode();  setInterval(() => {
+    initKonamiCode();
+    
+    // Initialize time and weather
+    updateTime()
+    fetchWeather()
+    
+    // Update time every second
+    setInterval(updateTime, 1000)
+    
+    // Update weather every 10 minutes
+    setInterval(fetchWeather, 600000)
+    
+    setInterval(() => {
     const glitchElements = document.querySelectorAll('.glitch')
     glitchElements.forEach(el => {
       if (Math.random() < 0.1) {
@@ -401,6 +507,7 @@ body {
   min-height: 100vh;
   position: relative;
   z-index: 2;
+  padding-bottom: 60px; /* Space for taskbar */
 }
 
 .header {
@@ -487,35 +594,25 @@ body {
 .welcome-landing {
   position: fixed;
   top: 50%;
-  left: 0;
-  right: 0;
-  transform: translateY(-50%);
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  gap: 80px;
+  justify-content: center;
+  gap: 40px;
   z-index: 10;
-  width: 100vw;
-  padding: 0 6vw;
+  width: auto;
+  max-width: 90vw;
 }
 
-/* Ensure welcome-text stays left */
 .welcome-text {
-  flex: 1 1 0%;
-  min-width: 0;
-  max-width: 520px;
-  margin-left: 260px; /* Push text to the right to clear command center */
+  text-align: center;
 }
 
-.card-container {
-  perspective: 1000px;
-  min-width: 400px;
-  flex: 0 0 auto;
-}
 
 .welcome-text h1 {
-  font-size: 4rem;
+  font-size: clamp(2rem, 8vw, 4rem);
   font-family: 'Orbitron', monospace;
   color: var(--text-primary);
   margin-bottom: 20px;
@@ -523,7 +620,7 @@ body {
 }
 
 .welcome-text h2 {
-  font-size: 2.5rem;
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
   font-family: 'Orbitron', monospace;
   color: var(--text-secondary);
   font-weight: 400;
@@ -584,8 +681,8 @@ body {
 
 /* W3.CSS card style */
 .id-card.card-w3.card-example {
-  width: 370px;
-  min-height: 420px;
+  width: min(370px, 90vw);
+  min-height: min(420px, 60vh);
   background: var(--bg-secondary);
   border: none;
   border-radius: 2px;
@@ -646,9 +743,8 @@ body {
 }
 
 .agent-photo.agent-photo-square {
-  width: 90%;
-  max-width: 280px;
-  height: 220px;
+  width: min(90%, 280px);
+  height: min(220px, 25vh);
   border: none;
   border-radius: 0;
   margin: 0 auto 0 auto;
@@ -776,11 +872,165 @@ body {
   letter-spacing: 1px;
 }
 
+/* Taskbar Styles */
+.taskbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
+  border-top: 2px solid var(--accent-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 200;
+  box-shadow: 0 -2px 20px rgba(0, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.taskbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.start-button {
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid var(--accent-cyan);
+  color: var(--text-primary);
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 3px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.start-button:hover {
+  background: rgba(0, 255, 255, 0.2);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.start-icon {
+  font-size: 1.2em;
+}
+
+.taskbar-center {
+  display: flex;
+  align-items: center;
+}
+
+.system-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8em;
+}
+
+.agent-id {
+  color: var(--accent-cyan);
+  font-weight: bold;
+}
+
+.status-indicator {
+  color: var(--accent-green);
+  position: relative;
+}
+
+.status-indicator::before {
+  content: '●';
+  margin-right: 5px;
+  animation: pulse 2s infinite;
+}
+
+.taskbar-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.weather-widget {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8em;
+  color: var(--text-primary);
+}
+
+.weather-icon {
+  font-size: 1.2em;
+}
+
+.weather-temp {
+  color: var(--accent-cyan);
+  font-weight: bold;
+}
+
+.weather-location {
+  color: var(--text-secondary);
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.time-widget {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1em;
+  color: var(--accent-green);
+  font-weight: bold;
+  min-width: 60px;
+  text-align: center;
+}
+
+/* Mobile Responsive */
 @media (max-width: 768px) {
+  .taskbar {
+    position: fixed;
+    top: 70px;
+    bottom: auto;
+    height: 50px;
+    padding: 0 15px;
+  }
+  
+  .main-interface {
+    padding-top: 120px;
+    padding-bottom: 0;
+  }
+  
   .welcome-landing {
-    flex-direction: column;
-    gap: 40px;
-    padding: 20px;
+    top: 60%;
+    gap: 30px;
+  }
+  
+  .start-text {
+    display: none;
+  }
+  
+  .weather-location {
+    display: none;
+  }
+  
+  .system-info {
+    gap: 10px;
+    font-size: 0.7em;
+  }
+  
+  .taskbar-right {
+    gap: 15px;
+  }
+  
+  .weather-widget {
+    font-size: 0.7em;
+    gap: 5px;
   }
   
 .card-actions.card-actions-row.contact-icons-row {
@@ -850,9 +1100,21 @@ body {
   color: #222;
   border-color: #00FFFF;
 }
-  box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
-}
 
+@media (max-width: 480px) {
+  .agent-id {
+    display: none;
+  }
+  
+  .weather-temp {
+    font-size: 0.9em;
+  }
+  
+  .time-widget {
+    font-size: 0.9em;
+    min-width: 50px;
+  }
+}
 .mission-briefing h3 {
   color: var(--accent-green);
   font-family: 'Orbitron', monospace;
