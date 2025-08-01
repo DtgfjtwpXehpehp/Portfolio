@@ -603,6 +603,100 @@ const toggleCommandCenter = () => {
   playSound('click')
 }
 
+const closeCommandCenter = () => {
+  showCommandCenter.value = false
+}
+
+const scrollToSection = (sectionId: string) => {
+  closeCommandCenter()
+  const element = document.getElementById(sectionId)
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth' })
+  }
+  playSound('click')
+}
+
+const sendMobileMessage = (event: Event) => {
+  event.preventDefault()
+  playSound('beep')
+  
+  isMobileTransmitting.value = true
+  mobileButtonText.value = 'TRANSMITTING...'
+  
+  setTimeout(() => {
+    mobileButtonText.value = 'MESSAGE SENT ✓'
+    setTimeout(() => {
+      mobileButtonText.value = 'TRANSMIT SECURE MESSAGE'
+      isMobileTransmitting.value = false
+      // Reset form
+      mobileForm.agentId = ''
+      mobileForm.email = ''
+      mobileForm.message = ''
+    }, 2000)
+  }, 2000)
+}
+
+const handleMobileCommand = () => {
+  const command = mobileCurrentInput.value.trim()
+  if (!command) return
+
+  // Remove blinking cursor from last line
+  const lastIndex = mobileTerminalLines.length - 1
+  mobileTerminalLines[lastIndex] = mobileTerminalLines[lastIndex].replace('<span class="blinking-cursor"></span>', '')
+
+  // Add command to terminal
+  mobileTerminalLines.push(`<span class="terminal-prompt">root@classified:~$</span> ${command}`)
+
+  // Process command and add response
+  const response = processMobileCommand(command)
+  if (response) {
+    mobileTerminalLines.push(response)
+  }
+
+  // Add new prompt with cursor
+  mobileTerminalLines.push('<span class="terminal-prompt">root@classified:~$</span> <span class="blinking-cursor"></span>')
+
+  mobileCurrentInput.value = ''
+  
+  nextTick(() => {
+    if (mobileTerminalOutput.value) {
+      mobileTerminalOutput.value.scrollTop = mobileTerminalOutput.value.scrollHeight
+    }
+  })
+  
+  playSound('beep')
+}
+
+const processMobileCommand = (command: string): string => {
+  const cmd = command.toLowerCase()
+  
+  switch(cmd) {
+    case 'help':
+      return 'Available commands: help, status, skills, clear, date, whoami, ls, cat, history'
+    case 'status':
+      return 'All systems operational. Security status: GREEN'
+    case 'skills':
+      return 'JavaScript, Python, React, Node.js, MongoDB, AWS, Docker, Cybersecurity'
+    case 'clear':
+      setTimeout(() => {
+        mobileTerminalLines.splice(0, mobileTerminalLines.length)
+        mobileTerminalLines.push('<span class="terminal-prompt">root@classified:~$</span> <span class="blinking-cursor"></span>')
+      }, 100)
+      return ''
+    case 'date':
+      return new Date().toString()
+    case 'whoami':
+      return 'Agent [REDACTED] - Full-Stack Developer'
+    case 'ls':
+      return 'projects/ skills/ contacts/ classified/'
+    case 'cat classified/mission.txt':
+      return 'Mission: Create innovative web solutions. Status: IN PROGRESS'
+    case 'history':
+      return 'Command history: [ENCRYPTED]'
+    default:
+      return `Command not found: ${command}`
+  }
+}
 // Watch for changes in about data
 watch(() => about.value?.name, (newName) => {
   if (!scrambleInterval.value) {
