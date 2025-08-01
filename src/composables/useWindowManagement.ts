@@ -21,6 +21,14 @@ export function useWindowManagement() {
     terminal: false
   })
 
+  const maximizedWindows = reactive<Record<WindowType, boolean>>({
+    about: false,
+    projects: false,
+    resume: false,
+    contact: false,
+    terminal: false
+  })
+
   const windowPositions = reactive<WindowState>({
     about: { x: 100, y: 100 },
     projects: { x: 150, y: 150 },
@@ -34,24 +42,31 @@ export function useWindowManagement() {
   const openWindow = (windowType: WindowType) => {
     activeWindows[windowType] = true
     minimizedWindows[windowType] = false
-    playSound('open')
+    playSound('click')
   }
 
   const closeWindow = (windowType: WindowType) => {
     activeWindows[windowType] = false
-    playSound('close')
+    maximizedWindows[windowType] = false
+    playSound('click')
   }
 
   const minimizeWindow = (windowType: WindowType) => {
     activeWindows[windowType] = false
     minimizedWindows[windowType] = true
-    playSound('minimize')
+    maximizedWindows[windowType] = false
+    playSound('click')
   }
 
   const restoreWindow = (windowType: WindowType) => {
     activeWindows[windowType] = true
     minimizedWindows[windowType] = false
-    playSound('restore')
+    playSound('click')
+  }
+
+  const maximizeWindow = (windowType: WindowType) => {
+    maximizedWindows[windowType] = !maximizedWindows[windowType]
+    playSound('click')
   }
 
   const updateWindowPosition = (windowType: WindowType, position: WindowPosition) => {
@@ -60,7 +75,7 @@ export function useWindowManagement() {
 
   const triggerDangle = () => {
     isDangling.value = true
-    playSound('dangle')
+    playSound('click')
     setTimeout(() => {
       isDangling.value = false
     }, 1000)
@@ -69,12 +84,14 @@ export function useWindowManagement() {
   return {
     minimizedWindows,
     activeWindows,
+    maximizedWindows,
     windowPositions,
     isDangling,
     openWindow,
     closeWindow,
     minimizeWindow,
     restoreWindow,
+    maximizeWindow,
     updateWindowPosition,
     triggerDangle
   }

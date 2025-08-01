@@ -1,10 +1,12 @@
 <template>
   <BaseWindow
     :active="active"
+    :maximized="maximized"
     :position="position"
     title="SECURE COMMUNICATION CHANNEL"
     @close="$emit('close')"
     @minimize="$emit('minimize')"
+    @maximize="$emit('maximize')"
     @move="$emit('move', $event)"
   >
     <div class="contact-content">
@@ -70,12 +72,14 @@ import { useSoundEffects } from '../composables/useSoundEffects'
 
 defineProps<{
   active: boolean
+  maximized?: boolean
   position: { x: number, y: number }
 }>()
 
 defineEmits<{
   close: []
   minimize: []
+  maximize: []
   move: [position: { x: number, y: number }]
 }>()
 

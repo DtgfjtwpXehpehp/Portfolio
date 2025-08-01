@@ -1,10 +1,12 @@
 <template>
   <BaseWindow
     :active="active"
+    :maximized="maximized"
     :position="position"
     title="PERSONNEL FILE - CLASSIFIED"
     @close="$emit('close')"
     @minimize="$emit('minimize')"
+    @maximize="$emit('maximize')"
     @move="$emit('move', $event)"
   >
     <div class="about-content">
@@ -55,12 +57,14 @@ import { useAbout } from '../composables/useAbout';
 
 defineProps<{
   active: boolean
+  maximized?: boolean
   position: { x: number, y: number }
 }>();
 
 defineEmits<{
   close: []
   minimize: []
+  maximize: []
   move: [position: { x: number, y: number }]
 }>();
 

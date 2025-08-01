@@ -128,42 +128,50 @@
       <!-- Windows -->
       <AboutWindow
         :active="activeWindows.about"
+        :maximized="maximizedWindows.about"
         :minimized="minimizedWindows.about"
         :position="windowPositions.about"
         @close="() => closeWindow('about')"
         @minimize="() => minimizeWindow('about')"
+        @maximize="() => maximizeWindow('about')"
         @restore="() => restoreWindow('about')"
-        @update:position="(pos) => updateWindowPosition('about', pos)"
+        @move="(pos) => updateWindowPosition('about', pos)"
       />
 
       <ProjectsWindow
         :active="activeWindows.projects"
+        :maximized="maximizedWindows.projects"
         :minimized="minimizedWindows.projects"
         :position="windowPositions.projects"
         @close="() => closeWindow('projects')"
         @minimize="() => minimizeWindow('projects')"
+        @maximize="() => maximizeWindow('projects')"
         @restore="() => restoreWindow('projects')"
-        @update:position="(pos) => updateWindowPosition('projects', pos)"
+        @move="(pos) => updateWindowPosition('projects', pos)"
       />
 
       <ResumeWindow
         :active="activeWindows.resume"
+        :maximized="maximizedWindows.resume"
         :minimized="minimizedWindows.resume"
         :position="windowPositions.resume"
         @close="() => closeWindow('resume')"
         @minimize="() => minimizeWindow('resume')"
+        @maximize="() => maximizeWindow('resume')"
         @restore="() => restoreWindow('resume')"
-        @update:position="(pos) => updateWindowPosition('resume', pos)"
+        @move="(pos) => updateWindowPosition('resume', pos)"
       />
 
       <ContactWindow
         :active="activeWindows.contact"
+        :maximized="maximizedWindows.contact"
         :minimized="minimizedWindows.contact"
         :position="windowPositions.contact"
         @close="() => closeWindow('contact')"
         @minimize="() => minimizeWindow('contact')"
+        @maximize="() => maximizeWindow('contact')"
         @restore="() => restoreWindow('contact')"
-        @update:position="(pos) => updateWindowPosition('contact', pos)"
+        @move="(pos) => updateWindowPosition('contact', pos)"
       />
 
       <!-- Taskbar -->
@@ -228,12 +236,14 @@ const { initKonamiCode } = useKonamiCode()
 const {
   minimizedWindows,
   activeWindows,
+  maximizedWindows,
   windowPositions,
   isDangling,
   openWindow,
   closeWindow,
   minimizeWindow,
   restoreWindow,
+  maximizeWindow,
   updateWindowPosition,
   triggerDangle
 } = useWindowManagement()
@@ -435,6 +445,8 @@ const handleToggleSound = (enabled: boolean) => {
 }
 
 const handleWindowOpen = (type: WindowType) => {
+  // Close command center when opening a window
+  showCommandCenter.value = false
   openWindow(type)
 }
 

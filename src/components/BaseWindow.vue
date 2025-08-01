@@ -1,8 +1,8 @@
 <template>
   <div 
     v-if="active"
-    class="window"
-    :class="{ active }"
+    class="window" 
+    :class="{ active, maximized }"
     :style="{ left: position.x + 'px', top: position.y + 'px' }"
     ref="windowRef"
   >
@@ -10,9 +10,11 @@
       class="window-header"
       @mousedown="startDrag"
       @touchstart="startDrag"
+      @dblclick="toggleMaximize"
     >
       <div class="window-title">{{ title }}</div>
       <div class="window-controls">
+        <button class="window-btn maximize-btn" @click="toggleMaximize">{{ maximized ? '🗗' : '🗖' }}</button>
         <button class="window-btn minimize-btn" @click="$emit('minimize')">−</button>
         <button class="window-btn close-btn" @click="$emit('close')">×</button>
       </div>
@@ -35,20 +37,37 @@ const props = defineProps<{
   active: boolean
   position: Position
   title: string
+  maximized?: boolean
 }>()
 
 const emit = defineEmits<{
   close: []
   minimize: []
   move: [position: Position]
+  maximize: []
 }>()
 
 const windowRef = ref<HTMLElement>()
 const isDragging = ref(false)
 const dragOffset = ref({ x: 0, y: 0 })
+const originalPosition = ref<Position>({ x: 0, y: 0 })
+const originalSize = ref({ width: 0, height: 0 })
+
+const toggleMaximize = () => {
+  if (!windowRef.value) return
+  
+  if (!props.maximized) {
+    // Store original position and size before maximizing
+    originalPosition.value = { ...props.position }
+    const rect = windowRef.value.getBoundingClientRect()
+    originalSize.value = { width: rect.width, height: rect.height }
+  }
+  
+  emit('maximize')
+}
 
 const startDrag = (e: MouseEvent | TouchEvent) => {
-  if (!windowRef.value) return
+  if (!windowRef.value || props.maximized) return // Don't drag if maximized
   
   isDragging.value = true
   const rect = windowRef.value.getBoundingClientRect()
@@ -69,7 +88,7 @@ const startDrag = (e: MouseEvent | TouchEvent) => {
 }
 
 const drag = (e: MouseEvent | TouchEvent) => {
-  if (!isDragging.value || !windowRef.value) return
+  if (!isDragging.value || !windowRef.value || props.maximized) return
   
   const clientX = 'clientX' in e ? e.clientX : e.touches[0].clientX
   const clientY = 'clientY' in e ? e.clientY : e.touches[0].clientY
@@ -96,6 +115,27 @@ const stopDrag = () => {
   document.removeEventListener('touchend', stopDrag)
 }
 
+// Update window position and size when maximized state changes
+watch(() => props.maximized, (isMaximized) => {
+  if (!windowRef.value) return
+  
+  if (isMaximized) {
+    // Maximize window
+    windowRef.value.style.left = '0px'
+    windowRef.value.style.top = '70px' // Account for header
+    windowRef.value.style.width = '100vw'
+    windowRef.value.style.height = 'calc(100vh - 120px)' // Account for header and taskbar
+    windowRef.value.style.borderRadius = '0'
+  } else {
+    // Restore window
+    windowRef.value.style.left = originalPosition.value.x + 'px'
+    windowRef.value.style.top = originalPosition.value.y + 'px'
+    windowRef.value.style.width = originalSize.value.width ? originalSize.value.width + 'px' : 'auto'
+    windowRef.value.style.height = originalSize.value.height ? originalSize.value.height + 'px' : 'auto'
+    windowRef.value.style.borderRadius = '8px'
+  }
+})
+
 watch(() => props.active, (newActive) => {
   if (newActive && windowRef.value) {
     windowRef.value.style.animation = 'windowAppear 0.5s ease-out'
@@ -114,6 +154,11 @@ watch(() => props.active, (newActive) => {
   box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
   backdrop-filter: blur(15px);
   z-index: 50;
+}
+
+.window.maximized {
+  border-radius: 0 !important;
+  box-shadow: none;
 }
 
 @keyframes windowAppear {
@@ -172,6 +217,11 @@ watch(() => props.active, (newActive) => {
   color: #000;
 }
 
+.maximize-btn {
+  background: #00FF41;
+  color: #000;
+}
+
 .close-btn {
   background: var(--danger-red);
   color: white;
@@ -188,6 +238,17 @@ watch(() => props.active, (newActive) => {
     min-width: 90vw;
     left: 5vw !important;
     top: 10vh !important;
+  }
+  
+  .window.maximized {
+    left: 0 !important;
+    top: 70px !important;
+    width: 100vw !important;
+    height: calc(100vh - 120px) !important;
+  }
+  
+  .maximize-btn {
+    display: none; /* Hide maximize button on mobile */
   }
 }
 </style>
