@@ -764,6 +764,8 @@ const scrambleInterval = ref<number | null>(null)
 const isDecrypted = ref(false)
 const targetName = computed(() => about.value?.name || 'Agent [REDACTED]')
 const currentDisplayName = ref('CZPYE [CPONXEPO]')
+const isMobile = ref(false)
+const mobileMenuOpen = ref(false)
 
 const encryptName = (name: string) => {
   return name.split('').map(char => {
@@ -855,10 +857,8 @@ const agentId = ref('A-' + Math.random().toString(36).substr(2, 6).toUpperCase()
 const showCommandCenter = ref(false)
 const currentTime = ref('')
 const currentWeather = ref({ temp: '--', location: 'Loading...', condition: '🌤️' })
-const isMobile = ref(false)
 
 // Mobile state
-const mobileMenuOpen = ref(false)
 const mobileContactForm = reactive({
   name: '',
   email: '',
@@ -866,6 +866,15 @@ const mobileContactForm = reactive({
 })
 const mobileContactSubmitting = ref(false)
 const mobileContactButtonText = ref('TRANSMIT SECURE MESSAGE')
+
+// Mobile form
+const mobileForm = reactive({
+  agentId: '',
+  email: '',
+  message: ''
+})
+const mobileTransmitting = ref(false)
+const mobileButtonText = ref('TRANSMIT SECURE MESSAGE')
 
 // Mobile terminal state
 const mobileTerminalOutput = ref<HTMLElement>()
@@ -1111,9 +1120,15 @@ const closeCommandCenter = () => {
   showCommandCenter.value = false
 }
 
+// Check if mobile
+const checkMobile = () => {
+  isMobile.value = window.innerWidth <= 768
+}
+
 // Mobile functions
 const toggleMobileMenu = () => {
   mobileMenuOpen.value = !mobileMenuOpen.value
+  playSound('click')
 }
 
 const closeMobileMenu = () => {
@@ -1121,15 +1136,10 @@ const closeMobileMenu = () => {
 }
 
 const scrollToSection = (sectionId: string) => {
-  closeMobileMenu()
   const element = document.getElementById(sectionId)
   if (element) {
-    const headerHeight = 70 // Account for fixed header
-    const elementPosition = element.offsetTop - headerHeight
-    window.scrollTo({
-      top: elementPosition,
-      behavior: 'smooth'
-    })
+    element.scrollIntoView({ behavior: 'smooth' })
+    mobileMenuOpen.value = false
   }
 }
 
@@ -1148,6 +1158,27 @@ const handleMobileContactSubmit = (event: Event) => {
       mobileContactForm.name = ''
       mobileContactForm.email = ''
       mobileContactForm.message = ''
+    }, 2000)
+  }, 2000)
+}
+
+// Mobile form submission
+const sendMobileMessage = (event: Event) => {
+  event.preventDefault()
+  playSound('beep')
+  
+  mobileTransmitting.value = true
+  mobileButtonText.value = 'TRANSMITTING...'
+  
+  setTimeout(() => {
+    mobileButtonText.value = 'MESSAGE SENT ✓'
+    setTimeout(() => {
+      mobileButtonText.value = 'TRANSMIT SECURE MESSAGE'
+      mobileTransmitting.value = false
+      // Reset form
+      mobileForm.agentId = ''
+      mobileForm.email = ''
+      mobileForm.message = ''
     }, 2000)
   }, 2000)
 }
@@ -1264,11 +1295,6 @@ const getWindowName = (windowType: string) => {
   return names[windowType] || windowType.toUpperCase()
 }
 
-// Check if mobile
-const checkMobile = () => {
-  isMobile.value = window.innerWidth <= 768
-}
-
 // Listen for resize events
 window.addEventListener('resize', checkMobile)
 
@@ -1284,6 +1310,7 @@ window.addEventListener('resize', checkMobile)
     
     // Check mobile on mount
     checkMobile()
+    window.addEventListener('resize', checkMobile)
     initKonamiCode();
     
     // Initialize time and weather
