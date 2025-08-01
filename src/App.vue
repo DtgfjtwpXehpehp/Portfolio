@@ -764,8 +764,6 @@ const scrambleInterval = ref<number | null>(null)
 const isDecrypted = ref(false)
 const targetName = computed(() => about.value?.name || 'Agent [REDACTED]')
 const currentDisplayName = ref('CZPYE [CPONXEPO]')
-const isMobile = ref(false)
-const mobileMenuOpen = ref(false)
 
 const encryptName = (name: string) => {
   return name.split('').map(char => {
@@ -857,8 +855,10 @@ const agentId = ref('A-' + Math.random().toString(36).substr(2, 6).toUpperCase()
 const showCommandCenter = ref(false)
 const currentTime = ref('')
 const currentWeather = ref({ temp: '--', location: 'Loading...', condition: '🌤️' })
+const isMobile = ref(false)
 
 // Mobile state
+const mobileMenuOpen = ref(false)
 const mobileContactForm = reactive({
   name: '',
   email: '',
@@ -866,15 +866,6 @@ const mobileContactForm = reactive({
 })
 const mobileContactSubmitting = ref(false)
 const mobileContactButtonText = ref('TRANSMIT SECURE MESSAGE')
-
-// Mobile form
-const mobileForm = reactive({
-  agentId: '',
-  email: '',
-  message: ''
-})
-const mobileTransmitting = ref(false)
-const mobileButtonText = ref('TRANSMIT SECURE MESSAGE')
 
 // Mobile terminal state
 const mobileTerminalOutput = ref<HTMLElement>()
@@ -1120,15 +1111,9 @@ const closeCommandCenter = () => {
   showCommandCenter.value = false
 }
 
-// Check if mobile
-const checkMobile = () => {
-  isMobile.value = window.innerWidth <= 768
-}
-
 // Mobile functions
 const toggleMobileMenu = () => {
   mobileMenuOpen.value = !mobileMenuOpen.value
-  playSound('click')
 }
 
 const closeMobileMenu = () => {
@@ -1136,10 +1121,15 @@ const closeMobileMenu = () => {
 }
 
 const scrollToSection = (sectionId: string) => {
+  closeMobileMenu()
   const element = document.getElementById(sectionId)
   if (element) {
-    element.scrollIntoView({ behavior: 'smooth' })
-    mobileMenuOpen.value = false
+    const headerHeight = 70 // Account for fixed header
+    const elementPosition = element.offsetTop - headerHeight
+    window.scrollTo({
+      top: elementPosition,
+      behavior: 'smooth'
+    })
   }
 }
 
@@ -1158,27 +1148,6 @@ const handleMobileContactSubmit = (event: Event) => {
       mobileContactForm.name = ''
       mobileContactForm.email = ''
       mobileContactForm.message = ''
-    }, 2000)
-  }, 2000)
-}
-
-// Mobile form submission
-const sendMobileMessage = (event: Event) => {
-  event.preventDefault()
-  playSound('beep')
-  
-  mobileTransmitting.value = true
-  mobileButtonText.value = 'TRANSMITTING...'
-  
-  setTimeout(() => {
-    mobileButtonText.value = 'MESSAGE SENT ✓'
-    setTimeout(() => {
-      mobileButtonText.value = 'TRANSMIT SECURE MESSAGE'
-      mobileTransmitting.value = false
-      // Reset form
-      mobileForm.agentId = ''
-      mobileForm.email = ''
-      mobileForm.message = ''
     }, 2000)
   }, 2000)
 }
@@ -1295,6 +1264,11 @@ const getWindowName = (windowType: string) => {
   return names[windowType] || windowType.toUpperCase()
 }
 
+// Check if mobile
+const checkMobile = () => {
+  isMobile.value = window.innerWidth <= 768
+}
+
 // Listen for resize events
 window.addEventListener('resize', checkMobile)
 
@@ -1310,7 +1284,6 @@ window.addEventListener('resize', checkMobile)
     
     // Check mobile on mount
     checkMobile()
-    window.addEventListener('resize', checkMobile)
     initKonamiCode();
     
     // Initialize time and weather
@@ -1338,7 +1311,533 @@ window.addEventListener('resize', checkMobile)
 </script>
 
 
-<style>
+<style scoped>
+/* Mobile Layout Styles (≤768px) */
+@media (max-width: 768px) {
+  .desktop-layout {
+    display: none;
+  }
+  
+  .mobile-layout {
+    display: block;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-layout {
+    display: none;
+  }
+  
+  .desktop-layout {
+    display: block;
+  }
+}
+
+/* Mobile Header */
+.mobile-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
+  border-bottom: 2px solid var(--accent-cyan);
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+  box-shadow: 0 2px 20px rgba(0, 255, 255, 0.3);
+}
+
+.mobile-logo {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.2em;
+  font-weight: 900;
+  color: var(--accent-cyan);
+  text-shadow: 0 0 10px var(--accent-cyan);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.mobile-header-center {
+  text-align: center;
+  font-size: 0.8em;
+}
+
+.mobile-weather {
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.mobile-time {
+  color: var(--accent-green);
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.mobile-header-right {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.mobile-sound-toggle,
+.mobile-hamburger {
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid var(--accent-cyan);
+  color: var(--text-primary);
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 3px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.9em;
+  transition: all 0.3s ease;
+}
+
+.mobile-sound-toggle:hover,
+.mobile-hamburger:hover {
+  background: rgba(0, 255, 255, 0.2);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+/* Mobile Drawer */
+.mobile-drawer {
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 300px;
+  height: 100vh;
+  background: var(--window-bg);
+  border-left: 2px solid var(--accent-cyan);
+  z-index: 200;
+  transition: right 0.3s ease;
+  backdrop-filter: blur(15px);
+  box-shadow: -5px 0 20px rgba(0, 255, 255, 0.3);
+}
+
+.mobile-drawer.open {
+  right: 0;
+}
+
+.mobile-nav {
+  padding: 100px 30px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.mobile-nav-btn {
+  display: block;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid var(--accent-cyan);
+  color: var(--text-primary);
+  padding: 15px 20px;
+  text-decoration: none;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.9em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.mobile-nav-btn:hover {
+  background: rgba(0, 255, 255, 0.2);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  transform: translateX(-5px);
+}
+
+/* Mobile Main Content */
+.mobile-main {
+  margin-top: 80px;
+  position: relative;
+  z-index: 2;
+}
+
+.mobile-section {
+  min-height: 100vh;
+  padding: 60px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.mobile-section-title {
+  font-family: 'Orbitron', monospace;
+  color: var(--accent-cyan);
+  font-size: 2em;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
+  text-shadow: 0 0 20px var(--accent-cyan);
+}
+
+.mobile-hero {
+  background: radial-gradient(circle at center, rgba(0, 255, 255, 0.1) 0%, transparent 50%);
+}
+
+/* Mobile Photo Card - Matching Desktop Style */
+.mobile-agent-profile {
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+}
+
+.mobile-agent-card {
+  perspective: 1000px;
+  margin-bottom: 30px;
+}
+
+.mobile-photo-card {
+  width: 280px;
+  height: 350px;
+  background: linear-gradient(145deg, rgba(0, 31, 63, 0.8), rgba(0, 15, 31, 0.9));
+  border-radius: 15px;
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.4),
+    0 0 0 1px var(--accent-cyan),
+    inset 0 1px 0 rgba(0, 255, 255, 0.2);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  margin: 0 auto;
+}
+
+.mobile-photo-card:hover {
+  transform: translateY(-10px) rotateX(5deg);
+  box-shadow: 
+    0 35px 70px rgba(0, 0, 0, 0.5),
+    0 0 0 2px var(--accent-cyan),
+    inset 0 1px 0 rgba(0, 255, 255, 0.3);
+}
+
+.mobile-photo-frame {
+  width: 180px;
+  height: 220px;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 20px;
+  box-shadow: 
+    0 15px 35px rgba(0, 0, 0, 0.4),
+    inset 0 0 0 2px rgba(0, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.mobile-photo-frame:hover {
+  transform: scale(1.02);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.5),
+    inset 0 0 0 2px var(--accent-cyan);
+}
+
+.mobile-photo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: contrast(1.1) saturate(0.8);
+  transition: all 0.3s ease;
+}
+
+.mobile-photo-frame:hover .mobile-photo-image {
+  filter: contrast(1.2) saturate(1.0) brightness(1.1);
+}
+
+.mobile-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4em;
+  background: rgba(0, 255, 255, 0.1);
+}
+
+.mobile-photo-frame::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, 
+    rgba(0, 255, 255, 0.1) 0%, 
+    transparent 30%, 
+    transparent 70%, 
+    rgba(0, 255, 255, 0.05) 100%);
+  pointer-events: none;
+}
+
+.mobile-agent-info {
+  text-align: center;
+}
+
+.mobile-agent-name {
+  font-family: 'Orbitron', monospace;
+  color: var(--accent-cyan);
+  font-size: 1.4em;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+
+.mobile-agent-title {
+  color: var(--text-secondary);
+  font-size: 0.9em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.mobile-classification {
+  color: var(--danger-red);
+  font-size: 0.9em;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 30px;
+}
+
+.mobile-terminal {
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid var(--accent-green);
+  border-radius: 5px;
+  padding: 20px;
+  font-family: 'Share Tech Mono', monospace;
+  color: var(--accent-green);
+  margin: 20px 0;
+  text-align: left;
+  width: 100%;
+  max-width: 500px;
+}
+
+.mobile-bio {
+  line-height: 1.8;
+  font-size: 1em;
+  max-width: 500px;
+  margin: 20px auto 0;
+  color: var(--text-secondary);
+}
+
+/* Mobile Skills */
+.mobile-skills-container {
+  max-width: 600px;
+  width: 100%;
+}
+
+.mobile-skills-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.mobile-skill-category {
+  background: rgba(0, 31, 63, 0.3);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 5px;
+  padding: 20px;
+  text-align: center;
+}
+
+.mobile-skill-category h4 {
+  color: var(--accent-green);
+  margin-bottom: 15px;
+  font-family: 'Orbitron', monospace;
+  text-transform: uppercase;
+}
+
+.mobile-skill-list {
+  list-style: none;
+  padding: 0;
+}
+
+.mobile-skill-list li {
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+}
+
+/* Mobile Projects */
+.mobile-projects-container {
+  max-width: 600px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.mobile-project-card {
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(0, 31, 63, 0.3);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.mobile-project-card:hover {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+  transform: translateY(-5px);
+}
+
+.mobile-project-header {
+  background: rgba(0, 255, 255, 0.1);
+  padding: 20px;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+.mobile-project-title {
+  font-family: 'Orbitron', monospace;
+  color: var(--accent-cyan);
+  font-size: 1.1em;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+
+.mobile-project-classification {
+  color: var(--danger-red);
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.mobile-project-content {
+  padding: 20px;
+}
+
+/* Mobile Contact */
+.mobile-contact-container {
+  max-width: 500px;
+  width: 100%;
+}
+
+.mobile-warning {
+  color: var(--danger-red);
+  font-size: 0.9em;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.mobile-contact-form {
+  background: rgba(0, 31, 63, 0.3);
+  border: 1px solid var(--accent-cyan);
+  border-radius: 8px;
+  padding: 30px;
+  backdrop-filter: blur(10px);
+  margin-bottom: 30px;
+}
+
+.mobile-form-group {
+  margin-bottom: 20px;
+}
+
+.mobile-form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--accent-cyan);
+  font-family: 'Orbitron', monospace;
+  text-transform: uppercase;
+  font-size: 0.9em;
+}
+
+.mobile-form-input,
+.mobile-form-textarea {
+  width: 100%;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--accent-cyan);
+  color: var(--text-primary);
+  font-family: 'Share Tech Mono', monospace;
+  border-radius: 3px;
+}
+
+.mobile-form-input:focus,
+.mobile-form-textarea:focus {
+  outline: none;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.mobile-submit-btn {
+  width: 100%;
+  padding: 15px;
+  background: var(--accent-cyan);
+  color: var(--bg-primary);
+  border: none;
+  font-family: 'Orbitron', monospace;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.mobile-submit-btn:hover:not(:disabled) {
+  background: var(--accent-green);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+}
+
+.mobile-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.mobile-contact-info {
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 5px;
+  text-align: center;
+}
+
+.mobile-contact-info h4 {
+  color: var(--accent-green);
+  margin-bottom: 15px;
+  font-family: 'Orbitron', monospace;
+  text-transform: uppercase;
+}
+
+.mobile-contact-info p {
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+}
+
+/* Glitch effect for mobile */
+.glitch {
+  animation: glitch 2s infinite;
+}
+
+@keyframes glitch {
+  0%, 90%, 100% { transform: translate(0); }
+  91% { transform: translate(-1px, 1px); }
+  92% { transform: translate(1px, -1px); }
+  93% { transform: translate(-1px, 1px); }
+}
+
+/* Terminal effects */
+.terminal-line {
+  margin-bottom: 5px;
+}
+
+.terminal-prompt {
+  color: var(--accent-cyan);
+}
+
+.blinking-cursor::after {
+  content: '█';
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Desktop styles remain unchanged */
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
 
 :root {
