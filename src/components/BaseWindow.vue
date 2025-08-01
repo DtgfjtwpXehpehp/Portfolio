@@ -25,16 +25,10 @@
     
     <!-- Resize Handles -->
     <div v-if="!maximized" class="resize-handles">
-      <!-- Corner handles -->
-      <div class="resize-handle resize-nw" @mousedown="startResize($event, 'top-left')" @touchstart="startResize($event, 'top-left')"></div>
-      <div class="resize-handle resize-ne" @mousedown="startResize($event, 'top-right')" @touchstart="startResize($event, 'top-right')"></div>
-      <div class="resize-handle resize-sw" @mousedown="startResize($event, 'bottom-left')" @touchstart="startResize($event, 'bottom-left')"></div>
+      <!-- Working resize handles only -->
       <div class="resize-handle resize-se" @mousedown="startResize($event, 'bottom-right')" @touchstart="startResize($event, 'bottom-right')"></div>
       
-      <!-- Edge handles -->
-      <div class="resize-handle resize-n" @mousedown="startResize($event, 'top')" @touchstart="startResize($event, 'top')"></div>
       <div class="resize-handle resize-s" @mousedown="startResize($event, 'bottom')" @touchstart="startResize($event, 'bottom')"></div>
-      <div class="resize-handle resize-w" @mousedown="startResize($event, 'left')" @touchstart="startResize($event, 'left')"></div>
       <div class="resize-handle resize-e" @mousedown="startResize($event, 'right')" @touchstart="startResize($event, 'right')"></div>
     </div>
   </div>
@@ -168,38 +162,16 @@ const handleResize = (e: MouseEvent | TouchEvent) => {
   
   let newWidth = resizeStartSize.value.width
   let newHeight = resizeStartSize.value.height
-  let newX = props.position.x
-  let newY = props.position.y
   
   const minWidth = 300
   const minHeight = 200
-  const minX = 0
-  const minY = 70 // Account for header
   const maxY = window.innerHeight - 120 // Account for taskbar
   
-  // Calculate new dimensions and position based on resize direction
+  // Calculate new dimensions based on resize direction
   if (resizeDirection.value.includes('right')) {
     newWidth = Math.max(minWidth, resizeStartSize.value.width + deltaX)
     // Ensure doesn't go beyond right edge
     newWidth = Math.min(newWidth, window.innerWidth - props.position.x)
-  }
-  
-  if (resizeDirection.value.includes('left')) {
-    const proposedWidth = resizeStartSize.value.width - deltaX
-    const proposedX = props.position.x + deltaX
-    
-    if (proposedX >= minX && proposedWidth >= minWidth) {
-      newWidth = proposedWidth
-      newX = proposedX
-    } else if (proposedX < minX) {
-      // Hit left boundary
-      newX = minX
-      newWidth = resizeStartSize.value.width + (props.position.x - minX)
-    } else {
-      // Hit minimum width
-      newWidth = minWidth
-      newX = props.position.x + (resizeStartSize.value.width - minWidth)
-    }
   }
   
   if (resizeDirection.value.includes('bottom')) {
@@ -208,31 +180,9 @@ const handleResize = (e: MouseEvent | TouchEvent) => {
     newHeight = Math.min(newHeight, maxY - props.position.y)
   }
   
-  if (resizeDirection.value.includes('top')) {
-    const proposedHeight = resizeStartSize.value.height - deltaY
-    const proposedY = props.position.y + deltaY
-    
-    if (proposedY >= minY && proposedHeight >= minHeight) {
-      newHeight = proposedHeight
-      newY = proposedY
-    } else if (proposedY < minY) {
-      // Hit top boundary
-      newY = minY
-      newHeight = resizeStartSize.value.height + (props.position.y - minY)
-    } else {
-      // Hit minimum height
-      newHeight = minHeight
-      newY = props.position.y + (resizeStartSize.value.height - minHeight)
-    }
-  }
-  
   // Apply new size and position
   windowRef.value.style.width = newWidth + 'px'
   windowRef.value.style.height = newHeight + 'px'
-  
-  if (newX !== props.position.x || newY !== props.position.y) {
-    emit('move', { x: newX, y: newY })
-  }
 }
 
 const stopResize = () => {
@@ -381,30 +331,6 @@ watch(() => props.active, (newActive) => {
 }
 
 /* Corner handles */
-.resize-nw {
-  top: -5px;
-  left: -5px;
-  width: 10px;
-  height: 10px;
-  cursor: nw-resize;
-}
-
-.resize-ne {
-  top: -5px;
-  right: -5px;
-  width: 10px;
-  height: 10px;
-  cursor: ne-resize;
-}
-
-.resize-sw {
-  bottom: -5px;
-  left: -5px;
-  width: 10px;
-  height: 10px;
-  cursor: sw-resize;
-}
-
 .resize-se {
   bottom: -5px;
   right: -5px;
@@ -414,28 +340,12 @@ watch(() => props.active, (newActive) => {
 }
 
 /* Edge handles */
-.resize-n {
-  top: -5px;
-  left: 10px;
-  right: 10px;
-  height: 10px;
-  cursor: n-resize;
-}
-
 .resize-s {
   bottom: -5px;
   left: 10px;
   right: 10px;
   height: 10px;
   cursor: s-resize;
-}
-
-.resize-w {
-  left: -5px;
-  top: 10px;
-  bottom: 10px;
-  width: 10px;
-  cursor: w-resize;
 }
 
 .resize-e {
