@@ -630,16 +630,18 @@ body {
 @media (max-width: 768px) {
   .header {
     padding: 10px 15px;
-    flex-direction: column;
-    gap: 10px;
   }
 
-  .taskbar {
-    bottom: 80px !important;
+
+  .status-panel {
+    gap: 10px;
+  }
+  
+  .status-item {
+    font-size: 0.8em;
   }
 }
 
-/* Move the landing content to the right to avoid overlap with command center */
 .welcome-landing {
   position: fixed;
   top: 50%;
@@ -655,11 +657,10 @@ body {
   align-items: center;
   justify-content: center;
   gap: 60px;
-  flex-wrap: wrap;
 }
 
 .welcome-text {
-  text-align: center;
+  text-align: left;
   flex: 1;
   min-width: 300px;
 }
@@ -1087,16 +1088,7 @@ body {
 }
 
 /* Mobile Responsive */
-@media (max-width: 768px) {
-  .landing-content {
-    flex-direction: column;
-    gap: 30px;
-  }
-  
-  .welcome-text {
-    min-width: auto;
-  }
-  
+@media (max-width: 768px) {  
   .taskbar {
     position: fixed;
     top: 70px;
@@ -1114,22 +1106,12 @@ body {
     padding-bottom: 0;
   }
   
-  .welcome-landing {
-    top: 60%;
-    gap: 30px;
-  }
-  
   .start-text {
     display: none;
   }
   
   .weather-location {
     max-width: 80px;
-    font-size: 0.7em;
-  }
-  
-  .system-info {
-    gap: 10px;
     font-size: 0.7em;
   }
   
@@ -1210,6 +1192,23 @@ body {
   border-color: #00FFFF;
 }
 
+@media (max-width: 600px) {
+  .landing-content {
+    flex-direction: column;
+    gap: 30px;
+    text-align: center;
+  }
+  
+  .welcome-text {
+    text-align: center;
+    min-width: auto;
+  }
+  
+  .welcome-landing {
+    top: 60%;
+  }
+}
+
 @media (max-width: 480px) {
   .photo-card {
     width: 350px;
@@ -1224,10 +1223,6 @@ body {
   
   .card-title {
     font-size: 20px;
-  }
-  
-  .agent-id {
-    display: none;
   }
   
   .weather-temp {
