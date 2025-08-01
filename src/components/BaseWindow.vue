@@ -176,26 +176,32 @@ const handleResize = (e: MouseEvent | TouchEvent) => {
     newWidth = Math.max(300, resizeStartSize.value.width + deltaX)
   }
   if (resizeDirection.value.includes('left')) {
-    newWidth = Math.max(300, resizeStartSize.value.width - deltaX)
-    newX = props.position.x + deltaX
+    const proposedWidth = Math.max(300, resizeStartSize.value.width - deltaX)
+    const widthDiff = proposedWidth - resizeStartSize.value.width
+    newWidth = proposedWidth
+    newX = Math.max(0, props.position.x - widthDiff)
+    
+    // Adjust width if we hit the left boundary
+    if (newX === 0 && props.position.x > 0) {
+      newWidth = resizeStartSize.value.width + props.position.x
+    }
   }
   if (resizeDirection.value.includes('bottom')) {
     newHeight = Math.max(200, resizeStartSize.value.height + deltaY)
   }
   if (resizeDirection.value.includes('top')) {
-    newHeight = Math.max(200, resizeStartSize.value.height - deltaY)
-    newY = props.position.y + deltaY
+    const proposedHeight = Math.max(200, resizeStartSize.value.height - deltaY)
+    const heightDiff = proposedHeight - resizeStartSize.value.height
+    newHeight = proposedHeight
+    newY = Math.max(70, props.position.y - heightDiff) // 70px for header
+    
+    // Adjust height if we hit the top boundary
+    if (newY === 70 && props.position.y > 70) {
+      newHeight = resizeStartSize.value.height + (props.position.y - 70)
+    }
   }
   
-  // Keep window within viewport
-  if (newX < 0) {
-    newWidth += newX
-    newX = 0
-  }
-  if (newY < 0) {
-    newHeight += newY
-    newY = 0
-  }
+  // Ensure window doesn't exceed viewport bounds
   if (newX + newWidth > window.innerWidth) {
     newWidth = window.innerWidth - newX
   }
