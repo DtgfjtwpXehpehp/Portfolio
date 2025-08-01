@@ -189,11 +189,6 @@
               <span class="window-name">{{ getWindowName(windowType) }}</span>
             </button>
           </div>
-          
-          <div class="system-info">
-            <span class="agent-id">{{ agentId }}</span>
-            <span class="status-indicator">ONLINE</span>
-          </div>
         </div>
         
         <div class="taskbar-right">
@@ -361,28 +356,51 @@ const fetchWeather = async () => {
       navigator.geolocation.getCurrentPosition(async (position) => {
         const { latitude, longitude } = position.coords
         
-        // Use a free weather API (OpenWeatherMap requires API key, using a mock for demo)
-        // In production, you'd use: `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=YOUR_API_KEY&units=metric`
-        
-        // Mock weather data for demo
-        const mockWeather = {
-          temp: Math.floor(Math.random() * 30) + 5, // 5-35°C
-          location: 'Current Location',
-          condition: ['☀️', '⛅', '🌤️', '🌧️', '❄️'][Math.floor(Math.random() * 5)]
+        try {
+          // Use reverse geocoding to get city name
+          const geocodeResponse = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`)
+          const locationData = await geocodeResponse.json()
+          
+          // Mock weather data with real city name
+          const mockWeather = {
+            temp: Math.floor(Math.random() * 30) + 5, // 5-35°C
+            location: locationData.city || locationData.locality || 'Unknown City',
+            condition: ['☀️', '⛅', '🌤️', '🌧️', '❄️'][Math.floor(Math.random() * 5)]
+          }
+          
+          currentWeather.value = mockWeather
+        } catch (error) {
+          // Fallback if geocoding fails
+          const mockWeather = {
+            temp: Math.floor(Math.random() * 30) + 5,
+            location: 'Current Location',
+            condition: '🌤️'
+          }
+          currentWeather.value = mockWeather
         }
-        
-        currentWeather.value = mockWeather
       }, () => {
         // Fallback if location access denied
         currentWeather.value = {
           temp: 22,
-          location: 'Unknown Location',
+          location: 'Location Denied',
           condition: '🌤️'
         }
       })
+    } else {
+      // Geolocation not supported
+      currentWeather.value = {
+        temp: 20,
+        location: 'Location Unavailable',
+        condition: '🌤️'
+      }
     }
   } catch (error) {
     console.log('Weather not available')
+    currentWeather.value = {
+      temp: 18,
+      location: 'Weather Unavailable',
+      condition: '🌤️'
+    }
   }
 }
 
@@ -1053,7 +1071,7 @@ body {
 
 .weather-location {
   color: var(--text-secondary);
-  max-width: 100px;
+  max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1106,7 +1124,8 @@ body {
   }
   
   .weather-location {
-    display: none;
+    max-width: 80px;
+    font-size: 0.7em;
   }
   
   .system-info {
