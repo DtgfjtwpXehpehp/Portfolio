@@ -171,38 +171,59 @@ const handleResize = (e: MouseEvent | TouchEvent) => {
   let newX = props.position.x
   let newY = props.position.y
   
-  // Handle different resize directions
+  const minWidth = 300
+  const minHeight = 200
+  const minX = 0
+  const minY = 70 // Account for header
+  const maxY = window.innerHeight - 120 // Account for taskbar
+  
+  // Calculate new dimensions and position based on resize direction
   if (resizeDirection.value.includes('right')) {
-    newWidth = Math.max(300, resizeStartSize.value.width + deltaX)
+    newWidth = Math.max(minWidth, resizeStartSize.value.width + deltaX)
+    // Ensure doesn't go beyond right edge
+    newWidth = Math.min(newWidth, window.innerWidth - props.position.x)
   }
+  
   if (resizeDirection.value.includes('left')) {
-    newWidth = Math.max(300, resizeStartSize.value.width - deltaX)
-    newX = Math.max(0, props.position.x + deltaX)
+    const proposedWidth = resizeStartSize.value.width - deltaX
+    const proposedX = props.position.x + deltaX
     
-    // If we hit the left boundary, adjust width accordingly
-    if (newX === 0) {
-      newWidth = resizeStartSize.value.width + props.position.x
-    }
-  }
-  if (resizeDirection.value.includes('bottom')) {
-    newHeight = Math.max(200, resizeStartSize.value.height + deltaY)
-  }
-  if (resizeDirection.value.includes('top')) {
-    newHeight = Math.max(200, resizeStartSize.value.height - deltaY)
-    newY = Math.max(70, props.position.y + deltaY) // 70px for header
-    
-    // If we hit the top boundary, adjust height accordingly
-    if (newY === 70) {
-      newHeight = resizeStartSize.value.height + (props.position.y - 70)
+    if (proposedX >= minX && proposedWidth >= minWidth) {
+      newWidth = proposedWidth
+      newX = proposedX
+    } else if (proposedX < minX) {
+      // Hit left boundary
+      newX = minX
+      newWidth = resizeStartSize.value.width + (props.position.x - minX)
+    } else {
+      // Hit minimum width
+      newWidth = minWidth
+      newX = props.position.x + (resizeStartSize.value.width - minWidth)
     }
   }
   
-  // Ensure window doesn't exceed viewport bounds
-  if (newX + newWidth > window.innerWidth) {
-    newWidth = window.innerWidth - newX
+  if (resizeDirection.value.includes('bottom')) {
+    newHeight = Math.max(minHeight, resizeStartSize.value.height + deltaY)
+    // Ensure doesn't go beyond bottom edge
+    newHeight = Math.min(newHeight, maxY - props.position.y)
   }
-  if (newY + newHeight > window.innerHeight - 120) { // Account for header/taskbar
-    newHeight = window.innerHeight - 120 - newY
+  
+  if (resizeDirection.value.includes('top')) {
+    const proposedHeight = resizeStartSize.value.height - deltaY
+    const proposedY = props.position.y + deltaY
+    
+    if (proposedY >= minY && proposedHeight >= minHeight) {
+      newHeight = proposedHeight
+      newY = proposedY
+    } else if (proposedY < minY) {
+      // Hit top boundary
+      newY = minY
+      newHeight = resizeStartSize.value.height + (props.position.y - minY)
+    } else {
+      // Hit minimum height
+      newHeight = minHeight
+      newY = props.position.y + (resizeStartSize.value.height - minHeight)
+    }
   }
   
   // Apply new size and position
