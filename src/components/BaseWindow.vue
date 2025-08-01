@@ -176,13 +176,11 @@ const handleResize = (e: MouseEvent | TouchEvent) => {
     newWidth = Math.max(300, resizeStartSize.value.width + deltaX)
   }
   if (resizeDirection.value.includes('left')) {
-    const proposedWidth = Math.max(300, resizeStartSize.value.width - deltaX)
-    const widthDiff = proposedWidth - resizeStartSize.value.width
-    newWidth = proposedWidth
-    newX = Math.max(0, props.position.x - widthDiff)
+    newWidth = Math.max(300, resizeStartSize.value.width - deltaX)
+    newX = Math.max(0, props.position.x + deltaX)
     
-    // Adjust width if we hit the left boundary
-    if (newX === 0 && props.position.x > 0) {
+    // If we hit the left boundary, adjust width accordingly
+    if (newX === 0) {
       newWidth = resizeStartSize.value.width + props.position.x
     }
   }
@@ -190,13 +188,11 @@ const handleResize = (e: MouseEvent | TouchEvent) => {
     newHeight = Math.max(200, resizeStartSize.value.height + deltaY)
   }
   if (resizeDirection.value.includes('top')) {
-    const proposedHeight = Math.max(200, resizeStartSize.value.height - deltaY)
-    const heightDiff = proposedHeight - resizeStartSize.value.height
-    newHeight = proposedHeight
-    newY = Math.max(70, props.position.y - heightDiff) // 70px for header
+    newHeight = Math.max(200, resizeStartSize.value.height - deltaY)
+    newY = Math.max(70, props.position.y + deltaY) // 70px for header
     
-    // Adjust height if we hit the top boundary
-    if (newY === 70 && props.position.y > 70) {
+    // If we hit the top boundary, adjust height accordingly
+    if (newY === 70) {
       newHeight = resizeStartSize.value.height + (props.position.y - 70)
     }
   }
