@@ -1115,6 +1115,7 @@ body {
     min-width: 50px;
   }
 }
+}
 .mission-briefing h3 {
   color: var(--accent-green);
   font-family: 'Orbitron', monospace;
