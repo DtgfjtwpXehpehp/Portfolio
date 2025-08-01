@@ -385,21 +385,10 @@ const fetchWeather = async () => {
 
 const fetchWeatherByCoords = async (lat: number, lon: number) => {
   try {
-    // Using OpenWeatherMap API (free tier)
-    const API_KEY = 'demo' // In production, this should be from environment variables
-    
-    // Try with demo key first, fallback to free service
+    // Get weather data from Open-Meteo (free, no API key needed)
     let weatherData
     
     try {
-      const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
-      )
-      
-      if (!response.ok) throw new Error('API key needed')
-      weatherData = await response.json()
-    } catch {
-      // Fallback to free weather service
       const response = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto`
       )
@@ -407,36 +396,124 @@ const fetchWeatherByCoords = async (lat: number, lon: number) => {
       if (!response.ok) throw new Error('Weather service unavailable')
       const data = await response.json()
       
-      // Convert Open-Meteo format to our format
       weatherData = {
         main: { temp: Math.round(data.current_weather.temperature) },
         weather: [{ main: getWeatherCondition(data.current_weather.weathercode) }],
         name: 'Current Location'
       }
+    } catch (error) {
+      console.log('Weather fetch failed:', error)
+      throw error
     }
     
-    // Get city name from coordinates
-    let cityName = 'Current Location'
+    // Get precise location details (suburb + city)
+    let locationName = 'Current Location'
     try {
-      const geocodeResponse = await fetch(
-        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`
-      )
-      const locationData = await geocodeResponse.json()
-      cityName = locationData.city || locationData.locality || locationData.countryName || 'Current Location'
+      // Try multiple geocoding services for best accuracy
+      locationName = await getPreciseLocation(lat, lon)
     } catch {
-      // Use weather API city name if available
-      cityName = weatherData.name || 'Current Location'
+      locationName = 'Current Location'
     }
     
     currentWeather.value = {
       temp: Math.round(weatherData.main.temp),
-      location: cityName,
+      location: locationName,
       condition: getWeatherEmoji(weatherData.weather[0].main)
     }
   } catch (error) {
     console.log('Coords weather fetch failed:', error)
     setFallbackWeather()
   }
+}
+
+const getPreciseLocation = async (lat: number, lon: number): Promise<string> => {
+  // Try multiple geocoding services for best precision
+  const geocodingServices = [
+    // Nominatim (OpenStreetMap) - Very detailed, free
+    {
+      url: `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`,
+      parser: (data: any) => {
+        const addr = data.address || {}
+        const parts = []
+        
+        // Get suburb/neighborhood
+        const suburb = addr.suburb || addr.neighbourhood || addr.hamlet || addr.village
+        if (suburb) parts.push(suburb)
+        
+        // Get city/town
+        const city = addr.city || addr.town || addr.municipality || addr.county
+        if (city && city !== suburb) parts.push(city)
+        
+        return parts.length > 0 ? parts.join(', ') : null
+      }
+    },
+    // BigDataCloud - Good for detailed addresses
+    {
+      url: `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`,
+      parser: (data: any) => {
+        const parts = []
+        
+        // Get suburb/locality
+        if (data.locality && data.locality !== data.city) {
+          parts.push(data.locality)
+        }
+        
+        // Get city
+        if (data.city) {
+          parts.push(data.city)
+        } else if (data.principalSubdivision) {
+          parts.push(data.principalSubdivision)
+        }
+        
+        return parts.length > 0 ? parts.join(', ') : null
+      }
+    },
+    // Geocode.xyz - Alternative service
+    {
+      url: `https://geocode.xyz/${lat},${lon}?json=1`,
+      parser: (data: any) => {
+        const parts = []
+        
+        // Get neighborhood/suburb
+        if (data.neighbourhood && data.neighbourhood !== data.city) {
+          parts.push(data.neighbourhood)
+        }
+        
+        // Get city
+        if (data.city) {
+          parts.push(data.city)
+        }
+        
+        return parts.length > 0 ? parts.join(', ') : null
+      }
+    }
+  ]
+  
+  // Try each service until we get a good result
+  for (const service of geocodingServices) {
+    try {
+      const response = await fetch(service.url, {
+        headers: {
+          'User-Agent': 'Portfolio-Weather-Widget/1.0'
+        }
+      })
+      
+      if (!response.ok) continue
+      
+      const data = await response.json()
+      const location = service.parser(data)
+      
+      if (location && location.length > 3) { // Ensure we got meaningful data
+        return location
+      }
+    } catch (error) {
+      console.log(`Geocoding service failed:`, error)
+      continue
+    }
+  }
+  
+  // If all services fail, return fallback
+  return 'Current Location'
 }
 
 const fetchWeatherByIP = async () => {
