@@ -250,6 +250,13 @@ const generateRandomChar = (char: string) => {
 const startScrambleEffect = () => {
   if (scrambleInterval.value || isDecrypted.value) return
   
+  // Play text scrambling sound
+  const audio = new Audio('/src/assets/sounds/textsound.mp3')
+  audio.volume = 0.3
+  audio.play().catch(() => {
+    // Silently handle audio play errors (e.g., user hasn't interacted with page yet)
+  })
+  
   const target = targetName.value
   let iterations = 0
   const maxIterations = 15
