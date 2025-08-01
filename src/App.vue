@@ -73,29 +73,6 @@
           </div>
         </header>
 
-        <!-- Hero Section -->
-        <section id="hero" class="mobile-section hero-section">
-          <div class="hero-content">
-            <div class="hero-card">
-              <div class="agent-avatar">
-                <img v-if="about?.image_url" :src="about.image_url" :alt="about.name" class="agent-image">
-                <span v-else>👤</span>
-              </div>
-              <h2 class="agent-name">AGENT {{ about?.name || '[REDACTED]' }}</h2>
-              <p class="agent-title">{{ about?.title || 'Web Developer' }}</p>
-              <div class="clearance-level">CLEARANCE LEVEL: TOP SECRET</div>
-            </div>
-            
-            <div class="hero-terminal">
-              <div class="terminal-line"><span class="terminal-prompt">></span> cat agent_status.txt</div>
-              <div class="terminal-line">STATUS: ACTIVE</div>
-              <div class="terminal-line">MISSION: CREATE INNOVATIVE WEB SOLUTIONS</div>
-              <div class="terminal-line">SPECIALIZATION: FULL-STACK DEVELOPMENT</div>
-              <div class="terminal-line"><span class="blinking-cursor"></span></div>
-            </div>
-          </div>
-        </section>
-
         <!-- Control Panel -->
         <ControlPanel 
           v-show="showCommandCenter"
@@ -1649,7 +1626,6 @@ body {
   
   .mobile-layout {
     display: block;
-    padding-top: 80px; /* Account for fixed header */
   }
   
   /* Mobile Header */
@@ -1809,103 +1785,6 @@ body {
     padding-bottom: 20px;
   }
   
-  /* Hero Section */
-  .hero-section {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
-    position: relative;
-  }
-
-  .hero-content {
-    text-align: center;
-    max-width: 90%;
-  }
-
-  .hero-card {
-    background: var(--window-bg);
-    border: 2px solid var(--accent-cyan);
-    border-radius: 15px;
-    padding: 30px;
-    margin-bottom: 30px;
-    box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
-    backdrop-filter: blur(15px);
-  }
-
-  .hero-card .agent-avatar {
-    width: 150px;
-    height: 150px;
-    border: 3px solid var(--accent-cyan);
-    border-radius: 50%;
-    margin: 0 auto 20px;
-    background: rgba(0, 255, 255, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 4em;
-    overflow: hidden;
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
-  }
-
-  .hero-card .agent-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .agent-name {
-    font-family: 'Orbitron', monospace;
-    color: var(--accent-cyan);
-    font-size: 1.8em;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-  }
-
-  .agent-title {
-    color: var(--text-primary);
-    font-size: 1.2em;
-    margin-bottom: 15px;
-    font-family: 'Share Tech Mono', monospace;
-  }
-
-  .clearance-level {
-    color: var(--danger-red);
-    font-size: 0.9em;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-family: 'Orbitron', monospace;
-  }
-
-  .hero-terminal {
-    background: rgba(0, 0, 0, 0.8);
-    border: 1px solid var(--accent-green);
-    border-radius: 8px;
-    padding: 20px;
-    font-family: 'Share Tech Mono', monospace;
-    color: var(--accent-green);
-    text-align: left;
-    max-width: 400px;
-    margin: 0 auto;
-  }
-
-  .hero-terminal .terminal-line {
-    margin-bottom: 8px;
-    font-size: 0.9em;
-  }
-
-  .hero-terminal .terminal-prompt {
-    color: var(--accent-cyan);
-  }
-
-  .hero-terminal .blinking-cursor::after {
-    content: '█';
-    animation: blink 1s infinite;
-  }
-
   .mobile-section {
     min-height: 100vh;
     padding: 40px 20px;
