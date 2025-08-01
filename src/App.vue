@@ -239,6 +239,9 @@
             <span class="current-time">{{ currentTime }}</span>
           </div>
         </div>
+      </div>
+    </div>
+
     <!-- Mobile Layout (≤768px) -->
     <div class="mobile-layout">
       <!-- Fixed Mobile Header -->
@@ -459,7 +462,7 @@
                 {{ mobileContactButtonText }}
               </button>
             </form>
-      </div>
+
             <div class="mobile-contact-info">
               <h4>ALTERNATIVE CONTACT METHODS:</h4>
               <div class="contact-methods">
@@ -479,7 +482,7 @@
             </div>
           </div>
         </section>
-    </div>
+
         <!-- Terminal Section -->
         <section class="mobile-section terminal-section">
           <div class="section-content">
@@ -513,7 +516,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed, watch, reactive, nextTick } from 'vue'
 import LoadingScreen from './components/LoadingScreen.vue'
 import SoundToggle from './components/SoundToggle.vue'
 import ControlPanel from './components/ControlPanel.vue'
@@ -546,6 +549,8 @@ const {
   triggerDangle
 } = useWindowManagement()
 
+const { about, loading, error, fetchAbout } = useAbout()
+
 // Application state
 const systemInitialized = ref(false)
 const soundEnabled = ref(true) // Audio enabled by default
@@ -568,7 +573,6 @@ const encryptName = (name: string) => {
 }
 
 // Data management
-const { about, loading, error, fetchAbout } = useAbout()
 const { contact, fetchContact } = useContact()
 
 const realName = computed(() => about.value?.name || 'Agent [REDACTED]')
@@ -647,6 +651,33 @@ const showCommandCenter = ref(false)
 const currentTime = ref('')
 const currentWeather = ref({ temp: '--', location: 'Loading...', condition: '🌤️' })
 const isMobile = ref(false)
+
+// Mobile state
+const mobileMenuOpen = ref(false)
+const mobileContactForm = reactive({
+  name: '',
+  email: '',
+  message: ''
+})
+const mobileContactSubmitting = ref(false)
+const mobileContactButtonText = ref('TRANSMIT SECURE MESSAGE')
+
+// Mobile terminal state
+const mobileTerminalOutput = ref<HTMLElement>()
+const mobileTerminalInput = ref<HTMLInputElement>()
+const mobileCurrentInput = ref('')
+const mobileTerminalLines = reactive([
+  '<span class="terminal-prompt">root@classified:~$</span> whoami',
+  'Agent [REDACTED] - Security Clearance: TOP SECRET',
+  '<span class="terminal-prompt">root@classified:~$</span> ls -la /skills/',
+  '-rwxr-xr-x 1 agent agent 4096 Jan 21 2025 javascript.exe',
+  '-rwxr-xr-x 1 agent agent 2048 Jan 21 2025 python.exe',
+  '-rwxr-xr-x 1 agent agent 3072 Jan 21 2025 react.exe',
+  '<span class="terminal-prompt">root@classified:~$</span> <span class="blinking-cursor"></span>'
+])
+
+const weather = ref('⛅ 22°C')
+const location = ref('📍 Loading...')
 
 // Weather and time functions
 const updateTime = () => {
@@ -875,31 +906,43 @@ const closeCommandCenter = () => {
   showCommandCenter.value = false
 }
 
-const scrollToSection = (sectionId: string) => {
-  closeCommandCenter()
-  const element = document.getElementById(sectionId)
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth' })
-  }
-  playSound('click')
+// Mobile functions
+const toggleMobileMenu = () => {
+  mobileMenuOpen.value = !mobileMenuOpen.value
 }
 
-const sendMobileMessage = (event: Event) => {
+const closeMobileMenu = () => {
+  mobileMenuOpen.value = false
+}
+
+const scrollToSection = (sectionId: string) => {
+  closeMobileMenu()
+  const element = document.getElementById(sectionId)
+  if (element) {
+    const headerHeight = 70 // Account for fixed header
+    const elementPosition = element.offsetTop - headerHeight
+    window.scrollTo({
+      top: elementPosition,
+      behavior: 'smooth'
+    })
+  }
+}
+
+const handleMobileContactSubmit = (event: Event) => {
   event.preventDefault()
-  playSound('beep')
   
-  isMobileTransmitting.value = true
-  mobileButtonText.value = 'TRANSMITTING...'
+  mobileContactSubmitting.value = true
+  mobileContactButtonText.value = 'TRANSMITTING...'
   
   setTimeout(() => {
-    mobileButtonText.value = 'MESSAGE SENT ✓'
+    mobileContactButtonText.value = 'MESSAGE SENT ✓'
     setTimeout(() => {
-      mobileButtonText.value = 'TRANSMIT SECURE MESSAGE'
-      isMobileTransmitting.value = false
+      mobileContactButtonText.value = 'TRANSMIT SECURE MESSAGE'
+      mobileContactSubmitting.value = false
       // Reset form
-      mobileForm.agentId = ''
-      mobileForm.email = ''
-      mobileForm.message = ''
+      mobileContactForm.name = ''
+      mobileContactForm.email = ''
+      mobileContactForm.message = ''
     }, 2000)
   }, 2000)
 }
@@ -931,8 +974,6 @@ const handleMobileCommand = () => {
       mobileTerminalOutput.value.scrollTop = mobileTerminalOutput.value.scrollHeight
     }
   })
-  
-  playSound('beep')
 }
 
 const processMobileCommand = (command: string): string => {
@@ -940,7 +981,7 @@ const processMobileCommand = (command: string): string => {
   
   switch(cmd) {
     case 'help':
-      return 'Available commands: help, status, skills, clear, date, whoami, ls, cat, history'
+      return 'Available commands: help, status, skills, clear, date, whoami, ls, cat'
     case 'status':
       return 'All systems operational. Security status: GREEN'
     case 'skills':
@@ -959,12 +1000,31 @@ const processMobileCommand = (command: string): string => {
       return 'projects/ skills/ contacts/ classified/'
     case 'cat classified/mission.txt':
       return 'Mission: Create innovative web solutions. Status: IN PROGRESS'
-    case 'history':
-      return 'Command history: [ENCRYPTED]'
     default:
       return `Command not found: ${command}`
   }
 }
+
+const sendMobileMessage = (event: Event) => {
+  event.preventDefault()
+  playSound('beep')
+  
+  isMobileTransmitting.value = true
+  mobileButtonText.value = 'TRANSMITTING...'
+  
+  setTimeout(() => {
+    mobileButtonText.value = 'MESSAGE SENT ✓'
+    setTimeout(() => {
+      mobileButtonText.value = 'TRANSMIT SECURE MESSAGE'
+      isMobileTransmitting.value = false
+      // Reset form
+      mobileForm.agentId = ''
+      mobileForm.email = ''
+      mobileForm.message = ''
+    }, 2000)
+  }, 2000)
+}
+
 // Watch for changes in about data
 watch(() => about.value?.name, (newName) => {
   if (!scrambleInterval.value) {
@@ -976,6 +1036,7 @@ watch(() => about.value?.name, (newName) => {
 const handleSystemReady = () => {
   systemInitialized.value = true
   playSound('systemReady')
+  fetchAbout()
 }
 
 const handleImageError = (event: Event) => {
