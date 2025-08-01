@@ -239,7 +239,275 @@
             <span class="current-time">{{ currentTime }}</span>
           </div>
         </div>
+    <!-- Mobile Layout (≤768px) -->
+    <div class="mobile-layout">
+      <!-- Fixed Mobile Header -->
+      <header class="mobile-header">
+        <div class="mobile-header-left">
+          <h1 class="mobile-logo glitch-text" data-text="AGENT PORTFOLIO">AGENT PORTFOLIO</h1>
+        </div>
+        <div class="mobile-header-center">
+          <div class="mobile-system-info">
+            <div class="mobile-weather">{{ weather }}</div>
+            <div class="mobile-location">{{ location }}</div>
+            <div class="mobile-time">{{ currentTime }}</div>
+          </div>
+        </div>
+        <div class="mobile-header-right">
+          <button class="mobile-sound-toggle" @click="toggleSound">
+            {{ soundEnabled ? '🔊' : '🔇' }}
+          </button>
+          <button class="mobile-hamburger" @click="toggleMobileMenu">
+            ☰
+          </button>
+        </div>
+      </header>
+
+      <!-- Command Drawer -->
+      <div class="command-drawer" :class="{ open: mobileMenuOpen }">
+        <div class="drawer-overlay" @click="closeMobileMenu"></div>
+        <div class="drawer-content">
+          <h3>COMMAND CENTER</h3>
+          <nav class="drawer-nav">
+            <a href="#about" @click="scrollToSection('about')" class="drawer-link">
+              <i class="fas fa-user-secret"></i>
+              ABOUT
+            </a>
+            <a href="#skills" @click="scrollToSection('skills')" class="drawer-link">
+              <i class="fas fa-code"></i>
+              SKILLS
+            </a>
+            <a href="#projects" @click="scrollToSection('projects')" class="drawer-link">
+              <i class="fas fa-folder-open"></i>
+              PROJECTS
+            </a>
+            <a href="#contact" @click="scrollToSection('contact')" class="drawer-link">
+              <i class="fas fa-satellite-dish"></i>
+              CONTACT
+            </a>
+          </nav>
+        </div>
       </div>
+
+      <!-- Mobile Content Sections -->
+      <main class="mobile-content">
+        <!-- About Section -->
+        <section id="about" class="mobile-section about-section">
+          <div class="section-content">
+            <h2 class="section-title">PERSONNEL FILE - CLASSIFIED</h2>
+            
+            <div class="mobile-photo-card">
+              <div class="agent-avatar">
+                <img v-if="about?.image_url" :src="about.image_url" :alt="about?.name" class="agent-image">
+                <span v-else class="avatar-placeholder">👤</span>
+              </div>
+              <div class="agent-info">
+                <h3 class="agent-name">AGENT {{ about?.name || '[REDACTED]' }}</h3>
+                <p class="agent-title">{{ about?.title || 'Full-Stack Developer' }}</p>
+              </div>
+            </div>
+
+            <div class="mobile-terminal">
+              <div class="terminal-header">PERSONNEL DATA</div>
+              <div class="terminal-content">
+                <div class="terminal-line">
+                  <span class="terminal-prompt">></span> cat agent_profile.txt
+                </div>
+                <div class="terminal-line">NAME: {{ about?.name || '[CLASSIFIED]' }}</div>
+                <div class="terminal-line">TITLE: {{ about?.title || 'Web Developer' }}</div>
+                <div class="terminal-line">STATUS: ACTIVE</div>
+                <div class="terminal-line">
+                  <span class="terminal-prompt">></span> cat mission_brief.txt
+                </div>
+                <div class="mission-brief">
+                  {{ about?.content || 'Mission briefing classified. Agent specializes in full-stack development and cybersecurity protocols.' }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="mobile-section skills-section">
+          <div class="section-content">
+            <h2 class="section-title">TECHNICAL ARSENAL</h2>
+            
+            <div class="skills-grid">
+              <div class="skill-category">
+                <h3>Frontend</h3>
+                <div class="skill-items">
+                  <span class="skill-tag">React</span>
+                  <span class="skill-tag">Vue.js</span>
+                  <span class="skill-tag">TypeScript</span>
+                  <span class="skill-tag">HTML5</span>
+                  <span class="skill-tag">CSS3</span>
+                </div>
+              </div>
+              
+              <div class="skill-category">
+                <h3>Backend</h3>
+                <div class="skill-items">
+                  <span class="skill-tag">Node.js</span>
+                  <span class="skill-tag">Python</span>
+                  <span class="skill-tag">Express</span>
+                  <span class="skill-tag">Django</span>
+                  <span class="skill-tag">PostgreSQL</span>
+                </div>
+              </div>
+              
+              <div class="skill-category">
+                <h3>DevOps</h3>
+                <div class="skill-items">
+                  <span class="skill-tag">Docker</span>
+                  <span class="skill-tag">AWS</span>
+                  <span class="skill-tag">Git</span>
+                  <span class="skill-tag">CI/CD</span>
+                  <span class="skill-tag">Linux</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="mobile-section projects-section">
+          <div class="section-content">
+            <h2 class="section-title">CASE FILES - ACTIVE OPERATIONS</h2>
+            
+            <div class="mobile-projects">
+              <div class="project-card">
+                <div class="project-header">
+                  <h3>Operation: E-Commerce Fortress</h3>
+                  <span class="classification">CONFIDENTIAL</span>
+                </div>
+                <p class="project-brief">Developed secure online marketplace with advanced encryption protocols.</p>
+                <div class="project-tech">React • Node.js • MongoDB • Stripe API</div>
+                <div class="project-status success">MISSION SUCCESSFUL</div>
+              </div>
+              
+              <div class="project-card">
+                <div class="project-header">
+                  <h3>Operation: Neural Network</h3>
+                  <span class="classification">TOP SECRET</span>
+                </div>
+                <p class="project-brief">AI-powered data analysis system for pattern recognition in large datasets.</p>
+                <div class="project-tech">Python • TensorFlow • Flask • PostgreSQL</div>
+                <div class="project-status active">IN PROGRESS</div>
+              </div>
+              
+              <div class="project-card">
+                <div class="project-header">
+                  <h3>Operation: Mobile Command</h3>
+                  <span class="classification">RESTRICTED</span>
+                </div>
+                <p class="project-brief">Cross-platform mobile application for field operations coordination.</p>
+                <div class="project-tech">React Native • Firebase • GPS Integration</div>
+                <div class="project-status success">DEPLOYED</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="mobile-section contact-section">
+          <div class="section-content">
+            <h2 class="section-title">SECURE COMMUNICATION CHANNEL</h2>
+            
+            <div class="contact-warning">
+              ⚠️ ENCRYPTED TRANSMISSION REQUIRED ⚠️
+            </div>
+
+            <form class="mobile-contact-form" @submit="handleMobileContactSubmit">
+              <div class="form-group">
+                <label>Agent ID:</label>
+                <input 
+                  v-model="mobileContactForm.name"
+                  type="text" 
+                  placeholder="Enter your agent identification"
+                  class="form-input"
+                  required
+                >
+              </div>
+              
+              <div class="form-group">
+                <label>Secure Email:</label>
+                <input 
+                  v-model="mobileContactForm.email"
+                  type="email" 
+                  placeholder="agent@classified.gov"
+                  class="form-input"
+                  required
+                >
+              </div>
+              
+              <div class="form-group">
+                <label>Encrypted Message:</label>
+                <textarea 
+                  v-model="mobileContactForm.message"
+                  placeholder="Begin encrypted transmission..." 
+                  rows="6"
+                  class="form-textarea"
+                  required
+                ></textarea>
+              </div>
+              
+              <button 
+                type="submit" 
+                class="mobile-submit-btn"
+                :disabled="mobileContactSubmitting"
+              >
+                {{ mobileContactButtonText }}
+              </button>
+            </form>
+      </div>
+            <div class="mobile-contact-info">
+              <h4>ALTERNATIVE CONTACT METHODS:</h4>
+              <div class="contact-methods">
+                <div class="contact-method">
+                  <i class="fas fa-envelope"></i>
+                  <span>agent@portfolio.classified</span>
+                </div>
+                <div class="contact-method">
+                  <i class="fas fa-phone"></i>
+                  <span>+1 (555) 000-0000</span>
+                </div>
+                <div class="contact-method">
+                  <i class="fab fa-linkedin"></i>
+                  <span>/in/classified-agent</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+    </div>
+        <!-- Terminal Section -->
+        <section class="mobile-section terminal-section">
+          <div class="section-content">
+            <h2 class="section-title">SECURE TERMINAL v3.2</h2>
+            
+            <div class="mobile-terminal-container">
+              <div class="mobile-terminal-output" ref="mobileTerminalOutput">
+                <div 
+                  v-for="(line, index) in mobileTerminalLines" 
+                  :key="index"
+                  class="terminal-line"
+                  v-html="line"
+                ></div>
+              </div>
+              <div class="mobile-terminal-input-container">
+                <input 
+                  ref="mobileTerminalInput"
+                  v-model="mobileCurrentInput"
+                  type="text" 
+                  placeholder="Enter command..." 
+                  class="mobile-terminal-input"
+                  @keydown.enter="handleMobileCommand"
+                >
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
   </div>
 </template>
