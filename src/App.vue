@@ -361,56 +361,132 @@ const updateTime = () => {
 
 const fetchWeather = async () => {
   try {
-    // Get user's location
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(async (position) => {
+    // Try to get user's location first
+    if (!navigator.geolocation) {
+      throw new Error('Geolocation not supported')
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
         const { latitude, longitude } = position.coords
-        
-        try {
-          // Use reverse geocoding to get city name
-          const geocodeResponse = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`)
-          const locationData = await geocodeResponse.json()
-          
-          // Mock weather data with real city name
-          const mockWeather = {
-            temp: Math.floor(Math.random() * 30) + 5, // 5-35°C
-            location: locationData.city || locationData.locality || 'Unknown City',
-            condition: ['☀️', '⛅', '🌤️', '🌧️', '❄️'][Math.floor(Math.random() * 5)]
-          }
-          
-          currentWeather.value = mockWeather
-        } catch (error) {
-          // Fallback if geocoding fails
-          const mockWeather = {
-            temp: Math.floor(Math.random() * 30) + 5,
-            location: 'Current Location',
-            condition: '🌤️'
-          }
-          currentWeather.value = mockWeather
-        }
-      }, () => {
-        // Fallback if location access denied
-        currentWeather.value = {
-          temp: 22,
-          location: 'Location Denied',
-          condition: '🌤️'
-        }
-      })
-    } else {
-      // Geolocation not supported
-      currentWeather.value = {
-        temp: 20,
-        location: 'Location Unavailable',
-        condition: '🌤️'
+        await fetchWeatherByCoords(latitude, longitude)
+      },
+      async (error) => {
+        console.log('Location access denied, using IP-based location')
+        await fetchWeatherByIP()
+      },
+      { timeout: 10000, enableHighAccuracy: false }
+    )
+  } catch (error) {
+    console.log('Weather fetch failed:', error)
+    await fetchWeatherByIP()
+  }
+}
+
+const fetchWeatherByCoords = async (lat: number, lon: number) => {
+  try {
+    // Using OpenWeatherMap API (free tier)
+    const API_KEY = 'demo' // In production, this should be from environment variables
+    
+    // Try with demo key first, fallback to free service
+    let weatherData
+    
+    try {
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
+      )
+      
+      if (!response.ok) throw new Error('API key needed')
+      weatherData = await response.json()
+    } catch {
+      // Fallback to free weather service
+      const response = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto`
+      )
+      
+      if (!response.ok) throw new Error('Weather service unavailable')
+      const data = await response.json()
+      
+      // Convert Open-Meteo format to our format
+      weatherData = {
+        main: { temp: Math.round(data.current_weather.temperature) },
+        weather: [{ main: getWeatherCondition(data.current_weather.weathercode) }],
+        name: 'Current Location'
       }
     }
-  } catch (error) {
-    console.log('Weather not available')
-    currentWeather.value = {
-      temp: 18,
-      location: 'Weather Unavailable',
-      condition: '🌤️'
+    
+    // Get city name from coordinates
+    let cityName = 'Current Location'
+    try {
+      const geocodeResponse = await fetch(
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`
+      )
+      const locationData = await geocodeResponse.json()
+      cityName = locationData.city || locationData.locality || locationData.countryName || 'Current Location'
+    } catch {
+      // Use weather API city name if available
+      cityName = weatherData.name || 'Current Location'
     }
+    
+    currentWeather.value = {
+      temp: Math.round(weatherData.main.temp),
+      location: cityName,
+      condition: getWeatherEmoji(weatherData.weather[0].main)
+    }
+  } catch (error) {
+    console.log('Coords weather fetch failed:', error)
+    setFallbackWeather()
+  }
+}
+
+const fetchWeatherByIP = async () => {
+  try {
+    // Get location by IP
+    const ipResponse = await fetch('https://ipapi.co/json/')
+    const ipData = await ipResponse.json()
+    
+    if (ipData.latitude && ipData.longitude) {
+      await fetchWeatherByCoords(ipData.latitude, ipData.longitude)
+    } else {
+      throw new Error('IP location failed')
+    }
+  } catch (error) {
+    console.log('IP weather fetch failed:', error)
+    setFallbackWeather()
+  }
+}
+
+const getWeatherCondition = (weatherCode: number): string => {
+  // Open-Meteo weather codes to conditions
+  if (weatherCode === 0) return 'Clear'
+  if (weatherCode <= 3) return 'Clouds'
+  if (weatherCode <= 67) return 'Rain'
+  if (weatherCode <= 77) return 'Snow'
+  if (weatherCode <= 82) return 'Rain'
+  if (weatherCode <= 86) return 'Snow'
+  return 'Clouds'
+}
+
+const getWeatherEmoji = (condition: string): string => {
+  const conditionMap: Record<string, string> = {
+    'Clear': '☀️',
+    'Clouds': '⛅',
+    'Rain': '🌧️',
+    'Drizzle': '🌦️',
+    'Thunderstorm': '⛈️',
+    'Snow': '❄️',
+    'Mist': '🌫️',
+    'Fog': '🌫️',
+    'Haze': '🌫️'
+  }
+  return conditionMap[condition] || '🌤️'
+}
+
+const setFallbackWeather = () => {
+  currentWeather.value = {
+    temp: 22,
+    location: 'Weather Unavailable',
+    condition: '🌤️'
   }
 }
 
