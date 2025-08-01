@@ -17,453 +17,198 @@
     >
       <!-- Header -->
       <header class="header">
-        <!-- Desktop Header -->
-        <div class="desktop-header">
-          <div class="logo glitch">AGENT PORTFOLI v2.7</div>
-          <div class="status-panel">
-            <div class="status-item">
-              <div class="status-dot"></div>
-              <span>SECURE</span>
-            </div>
-            <div class="status-item">
-              <div class="status-dot"></div>
-              <span>ENCRYPTED</span>
-            </div>
-            
-            <div class="status-item">
-              <div class="status-dot"></div>
-              <span>CLASSIFIED</span>
-            </div>
-            <div class="audio-toggle-container">
-              <SoundToggle 
-                :enabled="soundEnabled"
-                @toggle="handleToggleSound"
-              />
-            </div>
+        <div class="logo glitch">AGENT PORTFOLI v2.7</div>
+        <div class="status-panel">
+          <div class="status-item">
+            <div class="status-dot"></div>
+            <span>SECURE</span>
           </div>
-        </div>
-
-        <!-- Mobile Header -->
-        <div class="mobile-header">
-          <div class="mobile-name">{{ about?.name || 'Agent [REDACTED]' }}</div>
-          <div class="mobile-center">
-            <div class="mobile-weather">
-              <span class="weather-icon">{{ currentWeather.condition }}</span>
-              <span class="weather-temp">{{ currentWeather.temp }}°</span>
-              <span class="weather-location">{{ currentWeather.location }}</span>
-            </div>
-            <div class="mobile-time">{{ currentTime }}</div>
+          <div class="status-item">
+            <div class="status-dot"></div>
+            <span>ENCRYPTED</span>
           </div>
-          <div class="mobile-controls">
+          
+          <div class="status-item">
+            <div class="status-dot"></div>
+            <span>CLASSIFIED</span>
+          </div>
+          <div class="audio-toggle-container">
             <SoundToggle 
               :enabled="soundEnabled"
               @toggle="handleToggleSound"
             />
-            <button class="hamburger-menu" @click="toggleMobileMenu">
-              <span class="hamburger-line"></span>
-              <span class="hamburger-line"></span>
-              <span class="hamburger-line"></span>
-            </button>
           </div>
         </div>
       </header>
 
-      <!-- Desktop Control Panel -->
+      <!-- Control Panel -->
       <ControlPanel 
-        v-show="showCommandCenter && !isMobile"
+        v-show="showCommandCenter"
         @open-window="handleWindowOpen" 
       />
 
-      <!-- Mobile Menu Overlay -->
-      <div v-if="showMobileMenu" class="mobile-menu-overlay" @click="closeMobileMenu">
-        <div class="mobile-menu" @click.stop>
-          <h3>COMMAND CENTER</h3>
-          <button 
-            v-for="section in mobileSections" 
-            :key="section.id"
-            class="mobile-menu-btn" 
-            @click="scrollToSection(section.id)"
-          >
-            {{ section.label }}
+      <!-- Central Interactive Display -->
+      <!-- Welcome Landing -->
+      <div class="welcome-landing">
+        <div class="landing-content">
+          <div class="welcome-text">
+            <h1 v-if="loading">
+              ACCESSING PERSONNEL FILES...
+            </h1>
+            <h1 v-else-if="error">
+              ERROR: PERSONNEL FILE NOT FOUND
+            </h1>
+            <h1 v-else>
+              Hi, I'm 
+              <span 
+                class="name-cipher"
+                ref="nameElement"
+                @mouseenter="startScrambleEffect"
+              >
+                <span class="scramble-text">{{ currentDisplayName }}</span>
+                <span class="scramble-cursor" :class="{ 'cursor-hidden': isDecrypted }">_</span>
+              </span>
+            </h1>
+            <h2>a <span class="role">{{ about?.title || 'Full-Stack Developer' }}</span></h2>
+          </div>
+          
+          <div class="card-container">
+            <div class="photo-card floating" @click="triggerDangle">
+              <div class="photo-frame">
+                <img
+                  v-if="about?.image_url"
+                  :src="about.image_url"
+                  :alt="realName"
+                  id="photoImage"
+                  @error="handleImageError"
+                >
+                <div v-else class="photo-placeholder photo-placeholder-rect">👤</div>
+              </div>
+              <div class="card-info">
+                <h2 class="card-title">{{ about?.title || 'Professional Profile' }}</h2>
+                <p class="card-subtitle">Creative • Innovative • Dedicated</p>
+                <div class="social-icons">
+                  <a
+                    v-if="contact && contact.email"
+                    :href="`mailto:${contact.email}`"
+                    class="social-icon"
+                    :title="contact.email"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                  </a>
+                  <a
+                    v-if="contact && contact.linkedin_url"
+                    :href="contact.linkedin_url"
+                    class="social-icon"
+                    :title="contact.linkedin_url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <svg viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+                  </a>
+                  <a
+                    v-if="contact && contact.github_url"
+                    :href="contact.github_url"
+                    class="social-icon"
+                    :title="contact.github_url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <svg viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5c.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34c-.46-1.16-1.11-1.47-1.11-1.47c-.91-.62.07-.6.07-.6c1 .07 1.53 1.03 1.53 1.03c.87 1.52 2.34 1.07 2.91.83c.09-.65.35-1.09.63-1.34c-2.22-.25-4.55-1.11-4.55-4.92c0-1.11.38-2 1.03-2.71c-.1-.25-.45-1.29.1-2.64c0 0 .84-.27 2.75 1.02c.79-.22 1.65-.33 2.5-.33c.85 0 1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02c.55 1.35.2 2.39.1 2.64c.65.71 1.03 1.6 1.03 2.71c0 3.82-2.34 4.66-4.57 4.91c.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Windows -->
+      <AboutWindow
+        :active="activeWindows.about"
+        :maximized="maximizedWindows.about"
+        :minimized="minimizedWindows.about"
+        :position="windowPositions.about"
+        @close="() => closeWindow('about')"
+        @minimize="() => minimizeWindow('about')"
+        @maximize="() => maximizeWindow('about')"
+        @restore="() => restoreWindow('about')"
+        @move="(pos) => updateWindowPosition('about', pos)"
+      />
+
+      <ProjectsWindow
+        :active="activeWindows.projects"
+        :maximized="maximizedWindows.projects"
+        :minimized="minimizedWindows.projects"
+        :position="windowPositions.projects"
+        @close="() => closeWindow('projects')"
+        @minimize="() => minimizeWindow('projects')"
+        @maximize="() => maximizeWindow('projects')"
+        @restore="() => restoreWindow('projects')"
+        @move="(pos) => updateWindowPosition('projects', pos)"
+      />
+
+      <ResumeWindow
+        :active="activeWindows.resume"
+        :maximized="maximizedWindows.resume"
+        :minimized="minimizedWindows.resume"
+        :position="windowPositions.resume"
+        @close="() => closeWindow('resume')"
+        @minimize="() => minimizeWindow('resume')"
+        @maximize="() => maximizeWindow('resume')"
+        @restore="() => restoreWindow('resume')"
+        @move="(pos) => updateWindowPosition('resume', pos)"
+      />
+
+      <ContactWindow
+        :active="activeWindows.contact"
+        :maximized="maximizedWindows.contact"
+        :minimized="minimizedWindows.contact"
+        :position="windowPositions.contact"
+        @close="() => closeWindow('contact')"
+        @minimize="() => minimizeWindow('contact')"
+        @maximize="() => maximizeWindow('contact')"
+        @restore="() => restoreWindow('contact')"
+        @move="(pos) => updateWindowPosition('contact', pos)"
+      />
+
+      <!-- Taskbar -->
+      <div class="taskbar">
+        <div class="taskbar-left">
+          <button class="start-button" @click="toggleCommandCenter">
+            <span class="start-icon">⚡</span>
+            <span class="start-text">COMMAND</span>
           </button>
         </div>
-      </div>
-
-      <!-- Desktop Layout -->
-      <div v-if="!isMobile" class="desktop-layout">
-        <!-- Welcome Landing -->
-        <div class="welcome-landing">
-          <div class="landing-content">
-            <div class="welcome-text">
-              <h1 v-if="loading">
-                ACCESSING PERSONNEL FILES...
-              </h1>
-              <h1 v-else-if="error">
-                ERROR: PERSONNEL FILE NOT FOUND
-              </h1>
-              <h1 v-else>
-                Hi, I'm 
-                <span 
-                  class="name-cipher"
-                  ref="nameElement"
-                  @mouseenter="startScrambleEffect"
-                >
-                  <span class="scramble-text">{{ currentDisplayName }}</span>
-                  <span class="scramble-cursor" :class="{ 'cursor-hidden': isDecrypted }">_</span>
-                </span>
-              </h1>
-              <h2>a <span class="role">{{ about?.title || 'Full-Stack Developer' }}</span></h2>
-            </div>
-            
-            <div class="card-container">
-              <div class="photo-card floating" @click="triggerDangle">
-                <div class="photo-frame">
-                  <img
-                    v-if="about?.image_url"
-                    :src="about.image_url"
-                    :alt="realName"
-                    id="photoImage"
-                    @error="handleImageError"
-                  >
-                  <div v-else class="photo-placeholder photo-placeholder-rect">👤</div>
-                </div>
-                <div class="card-info">
-                  <h2 class="card-title">{{ about?.title || 'Professional Profile' }}</h2>
-                  <p class="card-subtitle">Creative • Innovative • Dedicated</p>
-                  <div class="social-icons">
-                    <a
-                      v-if="contact && contact.email"
-                      :href="`mailto:${contact.email}`"
-                      class="social-icon"
-                      :title="contact.email"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-                    </a>
-                    <a
-                      v-if="contact && contact.linkedin_url"
-                      :href="contact.linkedin_url"
-                      class="social-icon"
-                      :title="contact.linkedin_url"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <svg viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
-                    </a>
-                    <a
-                      v-if="contact && contact.github_url"
-                      :href="contact.github_url"
-                      class="social-icon"
-                      :title="contact.github_url"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <svg viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5c.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34c-.46-1.16-1.11-1.47-1.11-1.47c-.91-.62.07-.6.07-.6c1 .07 1.53 1.03 1.53 1.03c.87 1.52 2.34 1.07 2.91.83c.09-.65.35-1.09.63-1.34c-2.22-.25-4.55-1.11-4.55-4.92c0-1.11.38-2 1.03-2.71c-.1-.25-.45-1.29.1-2.64c0 0 .84-.27 2.75 1.02c.79-.22 1.65-.33 2.5-.33c.85 0 1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02c.55 1.35.2 2.39.1 2.64c.65.71 1.03 1.6 1.03 2.71c0 3.82-2.34 4.66-4.57 4.91c.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Windows -->
-        <AboutWindow
-          :active="activeWindows.about"
-          :maximized="maximizedWindows.about"
-          :minimized="minimizedWindows.about"
-          :position="windowPositions.about"
-          @close="() => closeWindow('about')"
-          @minimize="() => minimizeWindow('about')"
-          @maximize="() => maximizeWindow('about')"
-          @restore="() => restoreWindow('about')"
-          @move="(pos) => updateWindowPosition('about', pos)"
-        />
-
-        <ProjectsWindow
-          :active="activeWindows.projects"
-          :maximized="maximizedWindows.projects"
-          :minimized="minimizedWindows.projects"
-          :position="windowPositions.projects"
-          @close="() => closeWindow('projects')"
-          @minimize="() => minimizeWindow('projects')"
-          @maximize="() => maximizeWindow('projects')"
-          @restore="() => restoreWindow('projects')"
-          @move="(pos) => updateWindowPosition('projects', pos)"
-        />
-
-        <ResumeWindow
-          :active="activeWindows.resume"
-          :maximized="maximizedWindows.resume"
-          :minimized="minimizedWindows.resume"
-          :position="windowPositions.resume"
-          @close="() => closeWindow('resume')"
-          @minimize="() => minimizeWindow('resume')"
-          @maximize="() => maximizeWindow('resume')"
-          @restore="() => restoreWindow('resume')"
-          @move="(pos) => updateWindowPosition('resume', pos)"
-        />
-
-        <ContactWindow
-          :active="activeWindows.contact"
-          :maximized="maximizedWindows.contact"
-          :minimized="minimizedWindows.contact"
-          :position="windowPositions.contact"
-          @close="() => closeWindow('contact')"
-          @minimize="() => minimizeWindow('contact')"
-          @maximize="() => maximizeWindow('contact')"
-          @restore="() => restoreWindow('contact')"
-          @move="(pos) => updateWindowPosition('contact', pos)"
-        />
-
-        <!-- Taskbar -->
-        <div class="taskbar">
-          <div class="taskbar-left">
-            <button class="start-button" @click="toggleCommandCenter">
-              <span class="start-icon">⚡</span>
-              <span class="start-text">COMMAND</span>
+        
+        <div class="taskbar-center">
+          <!-- Minimized Windows -->
+          <div class="minimized-windows">
+            <button 
+              v-for="(isMinimized, windowType) in minimizedWindows" 
+              :key="windowType"
+              v-show="isMinimized"
+              class="minimized-window-btn"
+              @click="restoreWindow(windowType as WindowType)"
+            >
+              <span class="window-icon">{{ getWindowIcon(windowType) }}</span>
+              <span class="window-name">{{ getWindowName(windowType) }}</span>
             </button>
           </div>
-          
-          <div class="taskbar-center">
-            <!-- Minimized Windows -->
-            <div class="minimized-windows">
-              <button 
-                v-for="(isMinimized, windowType) in minimizedWindows" 
-                :key="windowType"
-                v-show="isMinimized"
-                class="minimized-window-btn"
-                @click="restoreWindow(windowType as WindowType)"
-              >
-                <span class="window-icon">{{ getWindowIcon(windowType) }}</span>
-                <span class="window-name">{{ getWindowName(windowType) }}</span>
-              </button>
-            </div>
+        </div>
+        
+        <div class="taskbar-right">
+          <div class="weather-widget">
+            <span class="weather-icon">{{ currentWeather.condition }}</span>
+            <span class="weather-temp">{{ currentWeather.temp }}°C</span>
+            <span class="weather-location">{{ currentWeather.location }}</span>
           </div>
-          
-          <div class="taskbar-right">
-            <div class="weather-widget">
-              <span class="weather-icon">{{ currentWeather.condition }}</span>
-              <span class="weather-temp">{{ currentWeather.temp }}°C</span>
-              <span class="weather-location">{{ currentWeather.location }}</span>
-            </div>
-            <div class="time-widget">
-              <span class="current-time">{{ currentTime }}</span>
-            </div>
+          <div class="time-widget">
+            <span class="current-time">{{ currentTime }}</span>
           </div>
         </div>
-      </div>
-
-      <!-- Mobile Layout -->
-      <div v-else class="mobile-layout">
-        <!-- Hero Section -->
-        <section id="hero" class="mobile-section hero-section">
-          <div class="mobile-hero-content">
-            <div class="mobile-welcome-text">
-              <h1 v-if="loading">
-                ACCESSING PERSONNEL FILES...
-              </h1>
-              <h1 v-else-if="error">
-                ERROR: PERSONNEL FILE NOT FOUND
-              </h1>
-              <h1 v-else>
-                Hi, I'm 
-                <span 
-                  class="name-cipher"
-                  ref="nameElement"
-                  @touchstart="startScrambleEffect"
-                >
-                  <span class="scramble-text">{{ currentDisplayName }}</span>
-                  <span class="scramble-cursor" :class="{ 'cursor-hidden': isDecrypted }">_</span>
-                </span>
-              </h1>
-              <h2>a <span class="role">{{ about?.title || 'Full-Stack Developer' }}</span></h2>
-            </div>
-            
-            <div class="mobile-card-container">
-              <div class="mobile-photo-card">
-                <div class="mobile-photo-frame">
-                  <img
-                    v-if="about?.image_url"
-                    :src="about.image_url"
-                    :alt="realName"
-                    class="mobile-agent-image"
-                    @error="handleImageError"
-                  >
-                  <div v-else class="mobile-photo-placeholder">👤</div>
-                </div>
-                <div class="mobile-card-info">
-                  <h2 class="mobile-card-title">{{ about?.title || 'Professional Profile' }}</h2>
-                  <p class="mobile-card-subtitle">Creative • Innovative • Dedicated</p>
-                  <div class="mobile-social-icons">
-                    <a
-                      v-if="contact && contact.email"
-                      :href="`mailto:${contact.email}`"
-                      class="mobile-social-icon"
-                      :title="contact.email"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-                    </a>
-                    <a
-                      v-if="contact && contact.linkedin_url"
-                      :href="contact.linkedin_url"
-                      class="mobile-social-icon"
-                      :title="contact.linkedin_url"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <svg viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
-                    </a>
-                    <a
-                      v-if="contact && contact.github_url"
-                      :href="contact.github_url"
-                      class="mobile-social-icon"
-                      :title="contact.github_url"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <svg viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5c.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34c-.46-1.16-1.11-1.47-1.11-1.47c-.91-.62.07-.6.07-.6c1 .07 1.53 1.03 1.53 1.03c.87 1.52 2.34 1.07 2.91.83c.09-.65.35-1.09.63-1.34c-2.22-.25-4.55-1.11-4.55-4.92c0-1.11.38-2 1.03-2.71c-.1-.25-.45-1.29.1-2.64c0 0 .84-.27 2.75 1.02c.79-.22 1.65-.33 2.5-.33c.85 0 1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02c.55 1.35.2 2.39.1 2.64c.65.71 1.03 1.6 1.03 2.71c0 3.82-2.34 4.66-4.57 4.91c.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- About Section -->
-        <section id="about" class="mobile-section about-section">
-          <div class="mobile-section-header">
-            <h2>PERSONNEL FILE</h2>
-            <div class="section-line"></div>
-          </div>
-          <div class="mobile-about-content">
-            <div v-if="loading" class="mobile-loading">
-              LOADING PERSONNEL FILE...
-            </div>
-            <div v-else-if="error" class="mobile-error">
-              ERROR: {{ error }}
-            </div>
-            <div v-else-if="about" class="mobile-agent-profile">
-              <div class="mobile-terminal">
-                <div class="terminal-line"><span class="terminal-prompt">></span> cat agent_profile.txt</div>
-                <div class="terminal-line">NAME: {{ about.name || '[CLASSIFIED]' }}</div>
-                <div class="terminal-line">TITLE: {{ about.title || 'Web Developer' }}</div>
-                <div class="terminal-line">STATUS: ACTIVE</div>
-                <div class="terminal-line content-text">{{ about.content }}</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Skills Section -->
-        <section id="skills" class="mobile-section skills-section">
-          <div class="mobile-section-header">
-            <h2>TECHNICAL ARSENAL</h2>
-            <div class="section-line"></div>
-          </div>
-          <div class="mobile-skills-content">
-            <div v-if="about && about.skills" class="mobile-skills-grid">
-              <div 
-                v-for="(skill, index) in about.skills" 
-                :key="index" 
-                class="mobile-skill-item"
-              >
-                [{{ String(index).padStart(2, '0') }}] {{ skill }}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Projects Section -->
-        <section id="projects" class="mobile-section projects-section">
-          <div class="mobile-section-header">
-            <h2>CASE FILES</h2>
-            <div class="section-line"></div>
-          </div>
-          <div class="mobile-projects-content">
-            <div 
-              v-for="project in mobileProjects" 
-              :key="project.id"
-              class="mobile-case-file"
-            >
-              <div class="mobile-case-header">
-                <div class="mobile-case-title">{{ project.title }}</div>
-                <div class="mobile-case-classification">{{ project.classification }}</div>
-              </div>
-              <div class="mobile-case-content">
-                <p><strong>Mission Brief:</strong> {{ project.brief }}</p>
-                <p><strong>Technologies:</strong> {{ project.technologies }}</p>
-                <p><strong>Status:</strong> 
-                  <span :style="{ color: project.statusColor }">{{ project.status }}</span>
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Contact Section -->
-        <section id="contact" class="mobile-section contact-section">
-          <div class="mobile-section-header">
-            <h2>SECURE COMMUNICATION</h2>
-            <div class="section-line"></div>
-          </div>
-          <div class="mobile-contact-content">
-            <div class="mobile-warning">
-              ⚠️ ENCRYPTED TRANSMISSION REQUIRED ⚠️
-            </div>
-            <form @submit="sendMobileMessage" class="mobile-contact-form">
-              <div class="mobile-form-group">
-                <label>Agent ID:</label>
-                <input 
-                  v-model="mobileForm.agentId"
-                  type="text" 
-                  placeholder="Enter your agent identification"
-                  class="mobile-form-input"
-                >
-              </div>
-              
-              <div class="mobile-form-group">
-                <label>Secure Email:</label>
-                <input 
-                  v-model="mobileForm.email"
-                  type="email" 
-                  placeholder="agent@classified.gov"
-                  class="mobile-form-input"
-                >
-              </div>
-              
-              <div class="mobile-form-group">
-                <label>Encrypted Message:</label>
-                <textarea 
-                  v-model="mobileForm.message"
-                  placeholder="Begin encrypted transmission..." 
-                  rows="4"
-                  class="mobile-form-textarea"
-                ></textarea>
-              </div>
-              
-              <button 
-                type="submit" 
-                class="mobile-submit-btn"
-                :disabled="isMobileTransmitting"
-              >
-                {{ mobileButtonText }}
-              </button>
-            </form>
-
-            <div class="mobile-contact-info">
-              <h4>ALTERNATIVE CONTACT METHODS:</h4>
-              <p v-if="contact && contact.email">📧 Email: {{ contact.email }}</p>
-              <p v-if="contact && contact.phone">📱 Secure Line: {{ contact.phone }}</p>
-              <p v-if="contact && contact.linkedin_url">🔗 LinkedIn: Professional Network</p>
-              <p>📍 Location: [REDACTED]</p>
-            </div>
-          </div>
-        </section>
       </div>
     </div>
   </div>
@@ -484,10 +229,6 @@ import { useAbout } from './composables/useAbout'
 import { useWindowManagement } from './composables/useWindowManagement'
 import { useContact } from './composables/useContact'
 import type { WindowType } from './types/windows'
-
-// Mobile detection
-const isMobile = ref(false)
-const showMobileMenu = ref(false)
 
 // Load composables
 const { playSound } = useSoundEffects()
@@ -607,54 +348,6 @@ const agentId = ref('A-' + Math.random().toString(36).substr(2, 6).toUpperCase()
 const showCommandCenter = ref(false)
 const currentTime = ref('')
 const currentWeather = ref({ temp: '--', location: 'Loading...', condition: '🌤️' })
-
-// Mobile state
-const mobileSections = [
-  { id: 'hero', label: 'PERSONNEL FILE' },
-  { id: 'about', label: 'MISSION BRIEF' },
-  { id: 'skills', label: 'TECHNICAL ARSENAL' },
-  { id: 'projects', label: 'CASE FILES' },
-  { id: 'contact', label: 'SECURE COMM' }
-]
-
-const mobileForm = reactive({
-  agentId: '',
-  email: '',
-  message: ''
-})
-
-const isMobileTransmitting = ref(false)
-const mobileButtonText = ref('TRANSMIT SECURE MESSAGE')
-
-const mobileProjects = [
-  {
-    id: 'ecommerce',
-    title: 'Operation: E-Commerce Fortress',
-    classification: 'CONFIDENTIAL',
-    brief: 'Developed secure online marketplace with advanced encryption protocols.',
-    technologies: 'React, Node.js, MongoDB, Stripe API',
-    status: 'MISSION SUCCESSFUL',
-    statusColor: 'var(--accent-green)'
-  },
-  {
-    id: 'neural',
-    title: 'Operation: Neural Network',
-    classification: 'TOP SECRET',
-    brief: 'AI-powered data analysis system for pattern recognition in large datasets.',
-    technologies: 'Python, TensorFlow, Flask, PostgreSQL',
-    status: 'IN PROGRESS',
-    statusColor: 'var(--accent-cyan)'
-  },
-  {
-    id: 'mobile',
-    title: 'Operation: Mobile Command',
-    classification: 'RESTRICTED',
-    brief: 'Cross-platform mobile application for field operations coordination.',
-    technologies: 'React Native, Firebase, GPS Integration',
-    status: 'DEPLOYED',
-    statusColor: 'var(--accent-green)'
-  }
-]
 
 // Weather and time functions
 const updateTime = () => {
@@ -879,49 +572,6 @@ const toggleCommandCenter = () => {
   playSound('click')
 }
 
-// Mobile functions
-const checkMobile = () => {
-  isMobile.value = window.innerWidth <= 768
-}
-
-const toggleMobileMenu = () => {
-  showMobileMenu.value = !showMobileMenu.value
-  playSound('click')
-}
-
-const closeMobileMenu = () => {
-  showMobileMenu.value = false
-}
-
-const scrollToSection = (sectionId: string) => {
-  const element = document.getElementById(sectionId)
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth' })
-  }
-  closeMobileMenu()
-  playSound('click')
-}
-
-const sendMobileMessage = (event: Event) => {
-  event.preventDefault()
-  playSound('beep')
-  
-  isMobileTransmitting.value = true
-  mobileButtonText.value = 'TRANSMITTING...'
-  
-  setTimeout(() => {
-    mobileButtonText.value = 'MESSAGE SENT ✓'
-    setTimeout(() => {
-      mobileButtonText.value = 'TRANSMIT SECURE MESSAGE'
-      isMobileTransmitting.value = false
-      // Reset form
-      mobileForm.agentId = ''
-      mobileForm.email = ''
-      mobileForm.message = ''
-    }, 2000)
-  }, 2000)
-}
-
 // Watch for changes in about data
 watch(() => about.value?.name, (newName) => {
   if (!scrambleInterval.value) {
@@ -989,10 +639,6 @@ const getWindowName = (windowType: string) => {
     // Initialize time and weather
     updateTime()
     fetchWeather()
-    
-    // Check mobile on mount and resize
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
     
     // Update time every second
     setInterval(updateTime, 1000)
@@ -1082,6 +728,9 @@ body {
   background: linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
   border-bottom: 2px solid var(--accent-cyan);
   padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   box-shadow: 0 2px 20px rgba(0, 255, 255, 0.3);
   position: fixed;
   top: 0;
@@ -1089,137 +738,6 @@ body {
   right: 0;
   width: 100vw;
   z-index: 200;
-}
-
-.desktop-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.mobile-header {
-  display: none;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
-}
-
-.mobile-name {
-  font-family: 'Orbitron', monospace;
-  font-size: 1.1em;
-  font-weight: 700;
-  color: var(--accent-cyan);
-  text-shadow: 0 0 5px var(--accent-cyan);
-}
-
-.mobile-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-
-.mobile-weather {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.7em;
-  color: var(--text-primary);
-}
-
-.mobile-time {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.8em;
-  color: var(--accent-green);
-  font-weight: bold;
-}
-
-.mobile-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.hamburger-menu {
-  background: transparent;
-  border: 1px solid var(--accent-cyan);
-  padding: 8px;
-  cursor: pointer;
-  border-radius: 3px;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  transition: all 0.3s ease;
-}
-
-.hamburger-menu:hover {
-  background: rgba(0, 255, 255, 0.2);
-}
-
-.hamburger-line {
-  width: 18px;
-  height: 2px;
-  background: var(--accent-cyan);
-  transition: all 0.3s ease;
-}
-
-.mobile-menu-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
-  z-index: 300;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.mobile-menu {
-  background: var(--window-bg);
-  border: 2px solid var(--accent-cyan);
-  border-radius: 10px;
-  padding: 30px;
-  max-width: 90vw;
-  backdrop-filter: blur(15px);
-}
-
-.mobile-menu h3 {
-  font-family: 'Orbitron', monospace;
-  color: var(--accent-cyan);
-  margin-bottom: 20px;
-  text-align: center;
-  font-size: 1.1em;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.mobile-menu-btn {
-  display: block;
-  width: 100%;
-  background: rgba(0, 255, 255, 0.1);
-  border: 1px solid var(--accent-cyan);
-  color: var(--text-primary);
-  padding: 15px 20px;
-  margin-bottom: 15px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.9em;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  border-radius: 5px;
-}
-
-.mobile-menu-btn:hover {
-  background: rgba(0, 255, 255, 0.2);
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-}
-
-.mobile-menu-btn:last-child {
-  margin-bottom: 0;
 }
 
 .logo {
@@ -1263,363 +781,6 @@ body {
   50% { opacity: 0.5; }
 }
 
-/* Mobile Layout Styles */
-.mobile-layout {
-  padding-top: 70px;
-  overflow-y: auto;
-  height: 100vh;
-}
-
-.mobile-section {
-  padding: 40px 20px;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.hero-section {
-  background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
-}
-
-.about-section {
-  background: var(--bg-primary);
-  border-top: 1px solid var(--accent-cyan);
-}
-
-.skills-section {
-  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
-  border-top: 1px solid var(--accent-green);
-}
-
-.projects-section {
-  background: var(--bg-primary);
-  border-top: 1px solid var(--accent-cyan);
-}
-
-.contact-section {
-  background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
-  border-top: 1px solid var(--danger-red);
-}
-
-.mobile-section-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.mobile-section-header h2 {
-  font-family: 'Orbitron', monospace;
-  color: var(--accent-cyan);
-  font-size: 1.8em;
-  margin-bottom: 10px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-}
-
-.section-line {
-  width: 100px;
-  height: 2px;
-  background: var(--accent-cyan);
-  margin: 0 auto;
-  box-shadow: 0 0 10px var(--accent-cyan);
-}
-
-/* Mobile Hero Section */
-.mobile-hero-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 30px;
-}
-
-.mobile-welcome-text {
-  text-align: center;
-}
-
-.mobile-welcome-text h1 {
-  font-size: clamp(1.5rem, 6vw, 2.5rem);
-  font-family: 'Orbitron', monospace;
-  color: var(--text-primary);
-  margin-bottom: 15px;
-  line-height: 1.2;
-}
-
-.mobile-welcome-text h2 {
-  font-size: clamp(1.2rem, 4vw, 1.8rem);
-  font-family: 'Orbitron', monospace;
-  color: var(--text-secondary);
-  font-weight: 400;
-}
-
-.mobile-card-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.mobile-photo-card {
-  width: min(350px, 90vw);
-  background: var(--bg-secondary);
-  border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(0, 255, 255, 0.1);
-  padding: 25px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border: 1px solid var(--accent-cyan);
-  backdrop-filter: blur(10px);
-}
-
-.mobile-photo-frame {
-  width: 250px;
-  height: 300px;
-  border-radius: 15px;
-  overflow: hidden;
-  margin-bottom: 20px;
-  box-shadow: 0 10px 25px rgba(0, 255, 255, 0.1);
-  background: var(--bg-primary);
-  border: 2px solid var(--accent-cyan);
-}
-
-.mobile-agent-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.mobile-photo-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 4em;
-  color: var(--accent-cyan);
-}
-
-.mobile-card-info {
-  text-align: center;
-  width: 100%;
-}
-
-.mobile-card-title {
-  font-size: 1.3em;
-  font-weight: 700;
-  margin-bottom: 8px;
-  color: var(--accent-cyan);
-}
-
-.mobile-card-subtitle {
-  font-size: 0.9em;
-  color: var(--text-secondary);
-  margin-bottom: 15px;
-  letter-spacing: 1px;
-}
-
-.mobile-social-icons {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-}
-
-.mobile-social-icon {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  background: rgba(0, 255, 255, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  border: 1px solid var(--accent-cyan);
-}
-
-.mobile-social-icon:hover {
-  background: var(--accent-cyan);
-  transform: translateY(-2px);
-}
-
-.mobile-social-icon svg {
-  width: 18px;
-  height: 18px;
-  fill: var(--accent-cyan);
-}
-
-.mobile-social-icon:hover svg {
-  fill: var(--bg-primary);
-}
-
-/* Mobile About Section */
-.mobile-about-content {
-  max-width: 100%;
-}
-
-.mobile-terminal {
-  background: rgba(0, 0, 0, 0.8);
-  border: 1px solid var(--accent-green);
-  border-radius: 8px;
-  padding: 20px;
-  font-family: 'Share Tech Mono', monospace;
-  color: var(--accent-green);
-  line-height: 1.6;
-}
-
-.mobile-loading {
-  color: var(--accent-cyan);
-  font-family: 'Share Tech Mono', monospace;
-  animation: blink 1s infinite;
-  padding: 20px;
-  text-align: center;
-}
-
-.mobile-error {
-  color: var(--danger-red);
-  font-family: 'Share Tech Mono', monospace;
-  padding: 20px;
-  text-align: center;
-}
-
-/* Mobile Skills Section */
-.mobile-skills-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-  max-width: 100%;
-}
-
-.mobile-skill-item {
-  background: rgba(0, 0, 0, 0.6);
-  border: 1px solid var(--accent-green);
-  border-radius: 5px;
-  padding: 12px 15px;
-  font-family: 'Share Tech Mono', monospace;
-  color: var(--accent-green);
-  transition: all 0.3s ease;
-}
-
-.mobile-skill-item:hover {
-  background: rgba(0, 255, 65, 0.1);
-  box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
-}
-
-/* Mobile Projects Section */
-.mobile-case-file {
-  border: 1px solid rgba(0, 255, 255, 0.3);
-  margin-bottom: 20px;
-  border-radius: 8px;
-  overflow: hidden;
-  background: rgba(0, 0, 0, 0.3);
-}
-
-.mobile-case-header {
-  background: rgba(0, 255, 255, 0.1);
-  padding: 15px;
-  border-bottom: 1px solid rgba(0, 255, 255, 0.3);
-}
-
-.mobile-case-title {
-  font-family: 'Orbitron', monospace;
-  color: var(--accent-cyan);
-  font-size: 1em;
-  margin-bottom: 5px;
-  text-transform: uppercase;
-}
-
-.mobile-case-classification {
-  color: var(--danger-red);
-  font-size: 0.7em;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.mobile-case-content {
-  padding: 15px;
-  font-size: 0.9em;
-  line-height: 1.5;
-}
-
-/* Mobile Contact Section */
-.mobile-warning {
-  color: var(--danger-red);
-  font-size: 0.8em;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.mobile-contact-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  margin-bottom: 30px;
-}
-
-.mobile-form-group label {
-  display: block;
-  margin-bottom: 5px;
-  color: var(--accent-cyan);
-  font-size: 0.9em;
-}
-
-.mobile-form-input,
-.mobile-form-textarea {
-  width: 100%;
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.6);
-  border: 1px solid var(--accent-cyan);
-  color: var(--text-primary);
-  font-family: 'Share Tech Mono', monospace;
-  border-radius: 5px;
-  font-size: 0.9em;
-}
-
-.mobile-form-textarea {
-  resize: vertical;
-  min-height: 100px;
-}
-
-.mobile-submit-btn {
-  padding: 15px;
-  background: var(--accent-cyan);
-  color: var(--bg-primary);
-  border: none;
-  font-family: 'Orbitron', monospace;
-  font-weight: bold;
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  border-radius: 5px;
-  transition: all 0.3s ease;
-  font-size: 0.9em;
-}
-
-.mobile-submit-btn:hover:not(:disabled) {
-  background: var(--accent-green);
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
-}
-
-.mobile-submit-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-.mobile-contact-info {
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(0, 255, 255, 0.3);
-  border-radius: 8px;
-  padding: 20px;
-}
-
-.mobile-contact-info h4 {
-  color: var(--accent-green);
-  margin-bottom: 15px;
-  font-size: 0.9em;
-}
-
-.mobile-contact-info p {
-  margin-bottom: 8px;
-  font-size: 0.85em;
-}
-
 .glitch {
   animation: glitch 2s infinite;
 }
@@ -1634,26 +795,6 @@ body {
 @media (max-width: 768px) {
   .header {
     padding: 10px 15px;
-  }
-
-  .desktop-header {
-    display: none;
-  }
-
-  .mobile-header {
-    display: flex;
-  }
-
-  .main-interface {
-    padding-bottom: 0;
-  }
-
-  .desktop-layout {
-    display: none;
-  }
-
-  .mobile-layout {
-    display: block;
   }
 
 
@@ -2260,17 +1401,6 @@ body {
   .time-widget {
     font-size: 0.9em;
     min-width: 50px;
-  }
-}
-
-/* Hide mobile layout on desktop */
-@media (min-width: 769px) {
-  .mobile-layout {
-    display: none;
-  }
-
-  .desktop-layout {
-    display: block;
   }
 }
 }
