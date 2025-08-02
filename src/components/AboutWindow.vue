@@ -26,7 +26,7 @@
               <img
                 v-if="about.image_url"
                 :src="about.image_url"
-                :alt="about.name"
+                :alt="realName"
                 id="photoImage"
                 @error="handleImageError"
               >
@@ -100,6 +100,7 @@
 import { onMounted } from 'vue';
 import BaseWindow from './BaseWindow.vue';
 import { useAbout } from '../composables/useAbout';
+import { useContact } from '../composables/useContact';
 
 defineProps<{
   active: boolean
@@ -115,9 +116,21 @@ defineEmits<{
 }>();
 
 const { about, loading, error, fetchAbout } = useAbout();
+const { contact, fetchContact } = useContact();
+
+const realName = 'Agent Profile';
+
+const handleImageError = () => {
+  console.log('Image failed to load');
+};
+
+const triggerDangle = () => {
+  console.log('Photo card clicked - dangle effect triggered');
+};
 
 onMounted(() => {
   fetchAbout();
+  fetchContact();
 });
 </script>
 
@@ -270,6 +283,120 @@ onMounted(() => {
 .retry-button:hover {
   background: var(--danger-red);
   color: black;
+}
+
+/* Card Container Styles */
+.card-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.photo-card {
+  background: linear-gradient(145deg, rgba(0, 31, 63, 0.8), rgba(0, 15, 31, 0.9));
+  border: 1px solid var(--accent-cyan);
+  border-radius: 15px;
+  padding: 20px;
+  max-width: 350px;
+  width: 100%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 255, 255, 0.2);
+  backdrop-filter: blur(15px);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.photo-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 255, 255, 0.4);
+}
+
+.photo-card.floating {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.photo-frame {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto 20px;
+  border: 3px solid var(--accent-cyan);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+  position: relative;
+}
+
+.photo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 255, 255, 0.1);
+  font-size: 3em;
+  color: var(--accent-cyan);
+}
+
+.card-info {
+  text-align: center;
+}
+
+.card-title {
+  font-family: 'Orbitron', monospace;
+  color: var(--accent-cyan);
+  font-size: 1.3em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.card-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.9em;
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--accent-cyan);
+  border-radius: 50%;
+  background: rgba(0, 255, 255, 0.1);
+  color: var(--accent-cyan);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+  background: var(--accent-cyan);
+  color: var(--bg-primary);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+  transform: scale(1.1);
+}
+
+.social-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
 }
 </style>
 
