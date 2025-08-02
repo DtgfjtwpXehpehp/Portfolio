@@ -5,191 +5,185 @@
     @system-ready="handleSystemReady"
   />
   
-  <div id="app">
-    <!-- Dynamic Layout Based on Screen Size -->
-    <component 
-      v-if="!showLoading"
-      :is="currentLayout" 
-      :sound-enabled="soundEnabled"
-      @toggle-sound="toggleSound"
-    />
-
-    <!-- About Section -->
-    <section class="about-section mobile-section">
-      <div class="section-content">
-        <div class="photo-card-container">
-          <div class="card-container">
-            <div class="photo-card floating" ref="photoCard" @mousemove="handlePhotoCardMouseMove" @mouseleave="resetPhotoCard">
-              <div class="decorative-element"></div>
-              
-              <div class="photo-frame">
-                <img 
-                  src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=" 
-                  alt="Agent Profile Photo"
-                >
-              </div>
-              
-              <div class="card-info">
-                <h2 class="card-title">CLASSIFIED AGENT</h2>
-                <p class="card-subtitle">Secure • Innovative • Elite</p>
-                
-                <div class="social-icons">
-                  <div class="social-icon">
-                    <svg viewBox="0 0 24 24">
-                      <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                    </svg>
-                  </div>
-                  <div class="social-icon">
-                    <svg viewBox="0 0 24 24">
-                      <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
-                    </svg>
-                  </div>
-                  <div class="social-icon">
-                    <svg viewBox="0 0 24 24">
-                      <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5c.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34c-.46-1.16-1.11-1.47-1.11-1.47c-.91-.62.07-.6.07-.6c1 .07 1.53 1.03 1.53 1.03c.87 1.52 2.34 1.07 2.91.83c.09-.65.35-1.09.63-1.34c-2.22-.25-4.55-1.11-4.55-4.92c0-1.11.38-2 1.03-2.71c-.1-.25-.45-1.29.1-2.64c0 0 .84-.27 2.75 1.02c.79-.22 1.65-.33 2.5-.33c.85 0 1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02c.55 1.35.2 2.39.1 2.64c.65.71 1.03 1.6 1.03 2.71c0 3.82-2.34 4.66-4.57 4.91c.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="agent-info">
-            <h2 class="agent-name">AGENT [REDACTED]</h2>
-            <p class="agent-title">Full-Stack Developer</p>
-            <div class="clearance">CLEARANCE LEVEL: TOP SECRET</div>
-          </div>
-        </div>
-
-        <div class="terminal">
-          <div class="terminal-line"><span class="terminal-prompt">></span> cat agent_profile.txt</div>
-          <div class="terminal-line">NAME: [CLASSIFIED]</div>
-          <div class="terminal-line">TITLE: Web Developer</div>
-          <div class="terminal-line">SPECIALIZATION: Full-Stack Operations</div>
-          <div class="terminal-line">EXPERIENCE: 5+ Years Active Service</div>
-          <div class="terminal-line">STATUS: Active <span class="blinking-cursor"></span></div>
-        </div>
-
-        <div class="agent-bio">
-          <p>Highly skilled operative specializing in digital infrastructure and web-based intelligence systems. 
-          Expertise in creating secure, scalable applications for mission-critical operations.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section class="projects-section mobile-section">
-      <div class="section-content">
-        <h2 class="section-title">CLASSIFIED CASE FILES</h2>
-        
-        <div class="projects-list">
-          <div 
-            v-for="project in projects" 
-            :key="project.id"
-            class="project-card"
-          >
-            <div class="project-header">
-              <div class="project-title">{{ project.title }}</div>
-              <div class="project-classification">{{ project.classification }}</div>
-            </div>
-            <div class="project-content">
-              <p><strong>Mission Brief:</strong> {{ project.brief }}</p>
-              <p><strong>Technologies:</strong> {{ project.technologies }}</p>
-              <p><strong>Status:</strong> <span :style="{ color: project.statusColor }">{{ project.status }}</span></p>
-              <p>{{ project.description }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Skills Section -->
-    <section class="skills-section mobile-section">
-      <div class="section-content">
-        <h2 class="section-title">TECHNICAL EXPERTISE</h2>
-        
-        <div class="skills-grid">
-          <div 
-            v-for="category in skillCategories" 
-            :key="category.title"
-            class="skill-category"
-          >
-            <h4>{{ category.title }}</h4>
-            <ul class="skill-list">
-              <li v-for="skill in category.skills" :key="skill">{{ skill }}</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="terminal">
-          <div class="terminal-line"><span class="terminal-prompt">root@classified:~$</span> cat certifications.txt</div>
-          <div v-for="cert in certifications" :key="cert" class="terminal-line">• {{ cert }}</div>
-          <div class="terminal-line"><span class="terminal-prompt">root@classified:~$</span> <span class="blinking-cursor"></span></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section class="contact-section mobile-section">
-      <div class="section-content">
-        <h2 class="section-title">SECURE COMMUNICATION</h2>
-        
-        <div class="warning">
-          ⚠️ ENCRYPTED TRANSMISSION REQUIRED ⚠️
-        </div>
-
-        <form @submit="sendMessage" class="contact-form">
-          <div class="form-group">
-            <label>Agent ID:</label>
-            <input 
-              v-model="form.agentId"
-              type="text" 
-              placeholder="Enter your agent identification"
-              class="form-input"
-            >
-          </div>
-          
-          <div class="form-group">
-            <label>Secure Email:</label>
-            <input 
-              v-model="form.email"
-              type="email" 
-              placeholder="agent@classified.gov"
-              class="form-input"
-            >
-          </div>
-          
-          <div class="form-group">
-            <label>Encrypted Message:</label>
-            <textarea 
-              v-model="form.message"
-              placeholder="Begin encrypted transmission..." 
-              rows="6"
-              class="form-textarea"
-            ></textarea>
-          </div>
-          
-          <button 
-            type="submit" 
-            class="submit-btn"
-            :disabled="isTransmitting"
-          >
-            {{ buttonText }}
-          </button>
-        </form>
-
-        <div class="contact-info">
-          <h4>ALTERNATIVE CONTACT METHODS:</h4>
-          <p>📧 Email: agent@portfolio.classified</p>
-          <p>📱 Secure Line: +1 (555) 000-0000</p>
-          <p>🔗 LinkedIn: /in/classified-agent</p>
-          <p>📍 Location: [REDACTED]</p>
-        </div>
-      </div>
-    </section>
-  </div>
+  <!-- Dynamic Layout Based on Screen Size -->
+  <component 
+    v-else
+    :is="currentLayout" 
+    :sound-enabled="soundEnabled"
+    @toggle-sound="toggleSound"
+  />
 </template>
 
+<script setup lang="ts">
+import { ref, computed, onMounted, onUnmounted, defineAsyncComponent } from 'vue'
+import LoadingScreen from './components/shared/LoadingScreen.vue'
+import { useResponsive } from './composables/useResponsive'
+import { useSoundEffects } from './composables/useSoundEffects'
+
+// Lazy load layouts
+const DesktopInterface = defineAsyncComponent(() => import('./components/desktop/DesktopInterface.vue'))
+const MobileInterface = defineAsyncComponent(() => import('./components/mobile/MobileInterface.vue'))
+
+const { isMobile } = useResponsive()
+const { playSound } = useSoundEffects()
+
+const showLoading = ref(true)
+const soundEnabled = ref(true)
+
+// Dynamically choose layout based on screen size
+const currentLayout = computed(() => {
+  return isMobile.value ? MobileInterface : DesktopInterface
+})
+
+const handleSystemReady = () => {
+  showLoading.value = false
+  playSound('systemReady')
+}
+
+const toggleSound = () => {
+  soundEnabled.value = !soundEnabled.value
+  playSound('click')
+}
+</script>
+
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+
+:root {
+  --bg-primary: #0A0F1F;
+  --bg-secondary: #001F3F;
+  --window-bg: rgba(10, 15, 31, 0.95);
+  --accent-cyan: #00FFFF;
+  --accent-green: #00FF41;
+  --text-primary: #E0E0E0;
+  --text-secondary: #A0A0A0;
+  --border-glow: #00FFFF;
+  --danger-red: #FF0040;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Share Tech Mono', monospace;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  cursor: crosshair;
+  scroll-behavior: smooth;
+}
+
+#app {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+/* Global glitch effect */
+.glitch {
+  animation: glitch 2s infinite;
+}
+
+@keyframes glitch {
+  0%, 90%, 100% { transform: translate(0); }
+  91% { transform: translate(-2px, 1px); }
+  92% { transform: translate(2px, -1px); }
+  93% { transform: translate(-1px, 2px); }
+}
+
+/* Global scanlines effect */
+.scanlines {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 255, 0.03) 2px,
+    rgba(0, 255, 255, 0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+  animation: scanlineMove 3s linear infinite;
+}
+
+@keyframes scanlineMove {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(4px); }
+}
+
+/* Global terminal styles */
+.terminal {
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid var(--accent-green);
+  border-radius: 5px;
+  padding: 15px;
+  font-family: 'Share Tech Mono', monospace;
+  color: var(--accent-green);
+  text-align: left;
+}
+
+.terminal-line {
+  margin-bottom: 5px;
+}
+
+.terminal-prompt {
+  color: var(--accent-cyan);
+}
+
+.blinking-cursor::after {
+  content: '█';
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Section Styles */
+.section {
+  min-height: 100vh;
+  padding: 60px 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.section h2 {
+  font-family: 'Orbitron', monospace;
+  color: var(--accent-cyan);
+  font-size: 2.5em;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-align: center;
+  text-shadow: 0 0 20px var(--accent-cyan);
+}
+
+/* Hero section */
+.hero {
+  background: radial-gradient(circle at center, rgba(0, 255, 255, 0.1) 0%, transparent 50%);
+}
+
+.agent-profile {
+  text-align: center;
+  max-width: 800px;
+}
+
+.agent-card {
+  perspective: 1000px;
+  margin-bottom: 30px;
+}
+
 .photo-card {
   width: 300px;
   height: 400px;
