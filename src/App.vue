@@ -71,7 +71,7 @@ body {
   font-family: 'Share Tech Mono', monospace;
   background: var(--bg-primary);
   color: var(--text-primary);
-  overflow-x: hidden;
+  overflow-x: hidden !important;
   cursor: crosshair;
   scroll-behavior: smooth;
 }
@@ -80,6 +80,8 @@ body {
   width: 100vw;
   height: 100vh;
   position: relative;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 /* Global glitch effect */
