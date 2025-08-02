@@ -56,7 +56,7 @@ defineProps<{
   commandCenterOpen?: boolean
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   'restore-window': [windowType: string]
   'toggle-command-center': []
 }>()
@@ -77,7 +77,7 @@ const locationData = reactive({
 
 const handleStartClick = () => {
   console.log('START button clicked') // Debug log
-  $emit('toggle-command-center')
+  emit('toggle-command-center')
 }
 
 const getWindowIcon = (windowType: string): string => {
