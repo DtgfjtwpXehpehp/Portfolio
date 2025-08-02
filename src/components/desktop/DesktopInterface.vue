@@ -466,24 +466,71 @@ const resetPhotoCard = () => {
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .hero-content {
-    flex-direction: column;
-    gap: 40px;
+    flex-direction: row;
+    gap: 20px;
     margin-left: 0;
-    text-align: center;
+    padding: 0 15px;
   }
   
   .hero-title {
-    font-size: 2.8em;
+    font-size: 2.2em;
+    line-height: 1.1;
+  }
+  
+  .hero-text {
+    flex: 1;
+    min-width: 0; /* Allow text to shrink */
+  }
+  
+  .hero-subtitle {
+    font-size: 1em;
   }
   
   .photo-card {
-    width: 320px;
-    height: 440px;
+    width: 200px;
+    height: 280px;
+    padding: 15px;
   }
   
   .photo-frame {
-    width: 220px;
-    height: 280px;
+    width: 140px;
+    height: 180px;
+    margin-bottom: 15px;
+  }
+  
+  .card-title {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+  
+  .card-subtitle {
+    font-size: 11px;
+    margin-bottom: 10px;
+  }
+  
+  .social-icons {
+    gap: 8px;
+  }
+  
+  .social-icon {
+    width: 25px;
+    height: 25px;
+  }
+  
+  .social-icon svg {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .decorative-element {
+    width: 30px;
+    height: 30px;
+    top: 10px;
+    right: 10px;
+  }
+  
+  .decorative-element::before {
+    font-size: 14px;
   }
 }
 </style>
