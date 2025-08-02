@@ -37,6 +37,10 @@
         <span class="location-text">{{ locationData.suburb }}, {{ locationData.city }}</span>
       </div>
       
+      <div class="location-info" v-if="locationData.suburb && locationData.city">
+        <span class="location-text">{{ locationData.suburb }}, {{ locationData.city }}</span>
+      </div>
+      
       <div class="time-info">
         <span class="current-time">{{ currentTime }}</span>
       </div>
@@ -391,6 +395,25 @@ onUnmounted(() => {
   max-width: 120px;
 }
 
+.location-info {
+  font-family: 'Share Tech Mono', monospace;
+  color: var(--text-secondary);
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 4px 8px;
+  background: rgba(0, 255, 255, 0.05);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.location-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
 .time-info {
   font-family: 'Orbitron', monospace;
   color: var(--accent-cyan);
@@ -417,6 +440,10 @@ onUnmounted(() => {
   .location-text {
     max-width: 100px;
   }
+  
+  .location-text {
+    max-width: 100px;
+  }
 }
 
 @media (max-width: 1000px) {
@@ -427,9 +454,14 @@ onUnmounted(() => {
   
   .weather-info,
   .location-info,
+  .location-info,
   .time-info {
     font-size: 0.75em;
     padding: 3px 6px;
+  }
+  
+  .location-text {
+    max-width: 80px;
   }
   
   .location-text {
