@@ -1,5 +1,5 @@
 <template>
-  <div class="desktop-interface">
+  <div class="desktop-interface" :class="{ 'command-center-open': commandCenterOpen }">
     <!-- Scanlines effect -->
     <div class="scanlines"></div>
 
@@ -219,8 +219,17 @@ const resetPhotoCard = () => {
   gap: 60px;
   max-width: 1400px;
   width: 100%;
-  margin-left: 240px; /* Offset for command center */
   transition: margin-left 0.3s ease;
+}
+
+/* Adjust margin based on command center state */
+.hero-content {
+  margin-left: 240px; /* Default offset for command center */
+}
+
+/* When command center is hidden, remove the margin */
+.desktop-interface:not(.command-center-open) .hero-content {
+  margin-left: 0;
 }
 
 .hero-text {
@@ -428,8 +437,34 @@ const resetPhotoCard = () => {
   50% { transform: translateY(-8px); }
 }
 
+/* Tablet view - keep side by side layout */
+@media (max-width: 1200px) and (min-width: 769px) {
+  .hero-content {
+    gap: 40px;
+    margin-left: 200px; /* Smaller offset for tablet */
+  }
+  
+  .desktop-interface:not(.command-center-open) .hero-content {
+    margin-left: 0;
+  }
+  
+  .hero-title {
+    font-size: 2.8em;
+  }
+  
+  .photo-card {
+    width: 300px;
+    height: 400px;
+  }
+  
+  .photo-frame {
+    width: 200px;
+    height: 250px;
+  }
+}
+
 /* Responsive adjustments */
-@media (max-width: 1200px) {
+@media (max-width: 768px) {
   .hero-content {
     flex-direction: column;
     gap: 40px;
