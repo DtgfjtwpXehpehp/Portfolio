@@ -1,19 +1,17 @@
 <template>
-  <div id="app">
-    <!-- Loading Screen -->
-    <LoadingScreen 
-      v-if="showLoading" 
-      @system-ready="handleSystemReady"
-    />
-    
-    <!-- Dynamic Layout Based on Screen Size -->
-    <component 
-      v-else
-      :is="currentLayout" 
-      :sound-enabled="soundEnabled"
-      @toggle-sound="toggleSound"
-    />
-  </div>
+  <!-- Loading Screen -->
+  <LoadingScreen 
+    v-if="showLoading" 
+    @system-ready="handleSystemReady"
+  />
+  
+  <!-- Dynamic Layout Based on Screen Size -->
+  <component 
+    v-else
+    :is="currentLayout" 
+    :sound-enabled="soundEnabled"
+    @toggle-sound="toggleSound"
+  />
 </template>
 
 <script setup lang="ts">
