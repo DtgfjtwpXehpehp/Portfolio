@@ -10,7 +10,10 @@
     />
 
     <!-- Control Panel -->
-    <ControlPanel @open-window="openWindow" />
+    <ControlPanel 
+      v-show="commandCenterOpen"
+      @open-window="openWindow" 
+    />
 
     <!-- Windows -->
     <AboutWindow
@@ -69,7 +72,7 @@
     <!-- Taskbar -->
     <DesktopTaskbar
       :minimized-windows="minimizedWindows"
-      :command-center-open="false"
+      :command-center-open="commandCenterOpen"
       @restore-window="restoreWindow"
       @toggle-command-center="toggleCommandCenter"
     />
@@ -78,6 +81,7 @@
 
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue'
+import { ref } from 'vue'
 import DesktopHeader from './DesktopHeader.vue'
 import ControlPanel from './ControlPanel.vue'
 import AboutWindow from '../AboutWindow.vue'
@@ -96,6 +100,8 @@ defineEmits<{
   'toggle-sound': []
 }>()
 
+const commandCenterOpen = ref(true)
+
 const {
   activeWindows,
   minimizedWindows,
@@ -110,9 +116,8 @@ const {
 } = useWindowManagement()
 
 const toggleCommandCenter = () => {
-  // Toggle command center visibility logic here
-  // You can add state management for command center visibility
-  console.log('Toggle command center')
+  commandCenterOpen.value = !commandCenterOpen.value
+  console.log('Command center toggled:', commandCenterOpen.value)
 }
 </script>
 
