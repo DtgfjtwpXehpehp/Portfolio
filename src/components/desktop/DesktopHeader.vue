@@ -5,15 +5,27 @@
     </div>
     
     <div class="header-center">
-      <div class="system-info">
-        <span class="status-indicator"></span>
-        <span class="system-status">SECURE CONNECTION ESTABLISHED</span>
+      <div class="status-indicators">
+        <div class="status-item">
+          <span class="status-dot secure"></span>
+          <span>SECURE</span>
+        </div>
+        <div class="status-item">
+          <span class="status-dot encrypted"></span>
+          <span>ENCRYPTED</span>
+        </div>
+        <div class="status-item">
+          <span class="status-dot classified"></span>
+          <span>CLASSIFIED</span>
+        </div>
       </div>
     </div>
     
     <div class="header-right">
-      <button class="sound-toggle" @click="$emit('toggle-sound')">
-        {{ soundEnabled ? '🔊' : '🔇' }} AUDIO {{ soundEnabled ? 'ON' : 'OFF' }}
+      <button class="audio-toggle" @click="$emit('toggle-sound')">
+        <i class="fas fa-volume-up" v-if="soundEnabled"></i>
+        <i class="fas fa-volume-mute" v-else></i>
+        <span>AUDIO {{ soundEnabled ? 'ON' : 'OFF' }}</span>
       </button>
     </div>
   </header>
@@ -57,21 +69,43 @@ defineEmits<{
   letter-spacing: 2px;
 }
 
-.system-info {
+.status-indicators {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 20px;
   font-family: 'Share Tech Mono', monospace;
   font-size: 0.9em;
 }
 
-.status-indicator {
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.8rem;
+}
+
+.status-dot {
   width: 8px;
   height: 8px;
-  background: var(--accent-green);
   border-radius: 50%;
-  box-shadow: 0 0 10px var(--accent-green);
   animation: pulse 2s infinite;
+}
+
+.status-dot.secure {
+  background: var(--accent-green);
+  box-shadow: 0 0 8px var(--accent-green);
+}
+
+.status-dot.encrypted {
+  background: var(--accent-green);
+  box-shadow: 0 0 8px var(--accent-green);
+}
+
+.status-dot.classified {
+  background: var(--accent-green);
+  box-shadow: 0 0 8px var(--accent-green);
 }
 
 @keyframes pulse {
@@ -79,13 +113,11 @@ defineEmits<{
   50% { opacity: 0.5; }
 }
 
-.system-status {
+.status-item span:not(.status-dot) {
   color: var(--accent-green);
-  text-transform: uppercase;
-  letter-spacing: 1px;
 }
 
-.sound-toggle {
+.audio-toggle {
   background: rgba(0, 255, 255, 0.1);
   border: 1px solid var(--accent-cyan);
   color: var(--text-primary);
@@ -97,9 +129,12 @@ defineEmits<{
   transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.sound-toggle:hover {
+.audio-toggle:hover {
   background: rgba(0, 255, 255, 0.2);
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
 }
