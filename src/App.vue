@@ -160,6 +160,23 @@ body {
   border-bottom: 1px solid rgba(0, 255, 255, 0.2);
 }
 
+.mobile-section {
+  min-height: 100vh;
+  padding: 40px 20px;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.section-content {
+  max-width: calc(100vw - 40px);
+  margin: 0 auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
 .section h2 {
   font-family: 'Orbitron', monospace;
   color: var(--accent-cyan);
