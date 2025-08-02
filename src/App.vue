@@ -501,4 +501,5 @@ body {
     padding: 0 15px;
     max-width: 100vw;
   }
+}
 </style>
