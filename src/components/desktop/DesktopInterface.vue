@@ -69,7 +69,9 @@
     <!-- Taskbar -->
     <DesktopTaskbar
       :minimized-windows="minimizedWindows"
+      :command-center-open="false"
       @restore-window="restoreWindow"
+      @toggle-command-center="toggleCommandCenter"
     />
   </div>
 </template>
@@ -106,6 +108,12 @@ const {
   maximizeWindow,
   updateWindowPosition
 } = useWindowManagement()
+
+const toggleCommandCenter = () => {
+  // Toggle command center visibility logic here
+  // You can add state management for command center visibility
+  console.log('Toggle command center')
+}
 </script>
 
 <style scoped>
