@@ -131,46 +131,6 @@ body {
   text-align: left;
 }
 
-.interactive-terminal {
-  background: rgba(0, 0, 0, 0.8);
-  border: 1px solid var(--accent-green);
-  border-radius: 5px;
-  padding: 15px;
-  font-family: 'Share Tech Mono', monospace;
-  color: var(--accent-green);
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-  overflow-x: hidden;
-}
-
-.terminal-output {
-  max-height: 300px;
-  overflow-y: auto;
-  margin-bottom: 15px;
-  overflow-x: hidden;
-  word-wrap: break-word;
-}
-
-.terminal-input-container {
-  border-top: 1px solid rgba(0, 255, 255, 0.3);
-  padding-top: 10px;
-  width: 100%;
-  max-width: 100%;
-}
-
-.terminal-input {
-  width: 100%;
-  padding: 8px;
-  background: transparent;
-  border: none;
-  color: var(--accent-green);
-  font-family: 'Share Tech Mono', monospace;
-  outline: none;
-  box-sizing: border-box;
-  max-width: 100%;
-}
-
 .terminal-line {
   margin-bottom: 5px;
 }
@@ -500,4 +460,45 @@ body {
   border-radius: 5px;
   text-align: center;
 }
+
+/* Responsive adjustments for very small screens */
+@media (max-width: 480px) {
+  .hero-content {
+    flex-direction: column;
+    gap: 15px;
+    padding: 0 10px;
+  }
+  
+  .hero-title {
+    font-size: 1.8em;
+  }
+  
+  .photo-card {
+    width: 180px;
+    height: 240px;
+    max-width: 90vw;
+  }
+  
+  .photo-frame {
+    width: 120px;
+    height: 150px;
+  }
+  
+  .mobile-section {
+    padding: 30px 10px;
+  }
+  
+  .section-content {
+    max-width: calc(100vw - 20px);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-content {
+    flex-direction: row;
+    gap: 20px;
+    margin-left: 0;
+    padding: 0 15px;
+    max-width: 100vw;
+  }
 </style>
