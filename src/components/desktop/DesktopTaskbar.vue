@@ -4,7 +4,7 @@
     <div class="taskbar-left">
       <button 
         class="start-button" 
-        @click="$emit('toggle-command-center')"
+        @click="handleStartClick"
         :class="{ active: commandCenterOpen }"
       >
         <span class="start-icon">⚡</span>
@@ -74,6 +74,11 @@ const locationData = reactive({
   city: '',
   country: ''
 })
+
+const handleStartClick = () => {
+  console.log('START button clicked') // Debug log
+  $emit('toggle-command-center')
+}
 
 const getWindowIcon = (windowType: string): string => {
   const icons: Record<string, string> = {
