@@ -187,6 +187,10 @@
       </div>
     </section>
   </div>
+</template>
+
+<style>
+.photo-card {
   width: 300px;
   height: 400px;
   background: linear-gradient(145deg, rgba(0, 31, 63, 0.8), rgba(0, 15, 31, 0.9));
