@@ -7,9 +7,9 @@
     <div class="header-center">
       <div class="weather-info">
         <span class="weather-icon">{{ weatherData.icon }}</span>
-        <span class="temperature">{{ weatherData.temp }}°C</span>
+        <span class="temperature">{{ weatherData.temperature }}°{{ weatherData.unit }}</span>
       </div>
-      <div class="location">{{ weatherData.location }}</div>
+      <div class="location">{{ locationData.city }}, {{ locationData.country }}</div>
       <div class="time">{{ currentTime }}</div>
     </div>
     
@@ -41,18 +41,146 @@ defineEmits<{
 const currentTime = ref('')
 
 const weatherData = reactive({
-  icon: '☀️',
-  temp: 22,
-  location: 'Sydney, Australia'
+  icon: '🌤️',
+  temperature: null as number | null,
+  unit: 'C',
+  condition: ''
+})
+
+const locationData = reactive({
+  city: '',
+  country: '',
+  latitude: 0,
+  longitude: 0
 })
 
 const updateTime = () => {
   const now = new Date()
-  currentTime.value = now.toLocaleTimeString('en-US', { 
+  currentTime.value = now.toLocaleTimeString([], { 
     hour12: false,
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
+    timeZoneName: 'short'
   })
+}
+
+const getLocationAndWeather = async () => {
+  try {
+    // Get user's location
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords
+          locationData.latitude = latitude
+          locationData.longitude = longitude
+          
+          // Get location details and weather
+          await Promise.all([
+            getLocationDetails(latitude, longitude),
+            getWeatherData(latitude, longitude)
+          ])
+        },
+        (error) => {
+          console.log('Location access denied:', error)
+          // Fallback to IP-based location
+          getLocationByIP()
+        }
+      )
+    } else {
+      // Fallback to IP-based location
+      getLocationByIP()
+    }
+  } catch (error) {
+    console.error('Error getting location and weather:', error)
+    setFallbackData()
+  }
+}
+
+const getLocationDetails = async (lat: number, lon: number) => {
+  try {
+    // Using OpenStreetMap Nominatim for reverse geocoding (free, no API key needed)
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&addressdetails=1`
+    )
+    const data = await response.json()
+    
+    if (data && data.address) {
+      locationData.city = data.address.city || data.address.town || data.address.village || data.address.county || 'Unknown'
+      locationData.country = data.address.country || 'Unknown'
+    }
+  } catch (error) {
+    console.error('Error getting location details:', error)
+    locationData.city = 'Unknown'
+    locationData.country = 'Location'
+  }
+}
+
+const getWeatherData = async (lat: number, lon: number) => {
+  try {
+    // Using Open-Meteo API (free, no API key needed)
+    const response = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=celsius`
+    )
+    const data = await response.json()
+    
+    if (data && data.current_weather) {
+      weatherData.temperature = Math.round(data.current_weather.temperature)
+      weatherData.unit = 'C'
+      
+      // Map weather codes to icons
+      const weatherCode = data.current_weather.weathercode
+      weatherData.icon = getWeatherIcon(weatherCode)
+    }
+  } catch (error) {
+    console.error('Error getting weather data:', error)
+    // Use fallback weather data
+    weatherData.temperature = 22
+    weatherData.icon = '🌤️'
+    weatherData.unit = 'C'
+  }
+}
+
+const getLocationByIP = async () => {
+  try {
+    // Using ipapi.co for IP-based location (free, no API key needed)
+    const response = await fetch('https://ipapi.co/json/')
+    const data = await response.json()
+    
+    if (data) {
+      locationData.city = data.city || 'Unknown'
+      locationData.country = data.country_name || 'Unknown'
+      
+      // Get weather for this location
+      if (data.latitude && data.longitude) {
+        locationData.latitude = data.latitude
+        locationData.longitude = data.longitude
+        await getWeatherData(data.latitude, data.longitude)
+      }
+    }
+  } catch (error) {
+    console.error('Error getting IP location:', error)
+    setFallbackData()
+  }
+}
+
+const getWeatherIcon = (weatherCode: number): string => {
+  // Weather code mapping for open-meteo API
+  if (weatherCode === 0) return '☀️'
+  if (weatherCode <= 3) return '🌤️'
+  if (weatherCode <= 48) return '☁️'
+  if (weatherCode <= 67) return '🌧️'
+  if (weatherCode <= 77) return '🌨️'
+  if (weatherCode <= 82) return '🌦️'
+  if (weatherCode <= 99) return '⛈️'
+  return '🌤️'
+}
+
+const setFallbackData = () => {
+  locationData.city = 'Unknown'
+  locationData.country = 'Location'
+  weatherData.temperature = 22
+  weatherData.icon = '🌤️'
+  weatherData.unit = 'C'
 }
 
 let timeInterval: NodeJS.Timeout
@@ -60,6 +188,9 @@ let timeInterval: NodeJS.Timeout
 onMounted(() => {
   updateTime()
   timeInterval = setInterval(updateTime, 1000)
+  
+  // Get location and weather data
+  getLocationAndWeather()
 })
 
 onUnmounted(() => {
