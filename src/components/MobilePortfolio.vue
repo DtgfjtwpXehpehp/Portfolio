@@ -67,13 +67,13 @@
             <div class="photo-card">
               <div class="photo-frame">
                 <img 
-                  src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=" 
+                  :src="about?.image_url || 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k='" 
                   alt="Agent Profile"
                 >
               </div>
             </div>
             <div class="agent-info">
-              <h2 class="agent-name">AGENT [REDACTED]</h2>
+              <h2 class="agent-name">{{ about?.name || 'AGENT [REDACTED]' }}</h2>
               <p class="agent-title">Full-Stack Developer</p>
               <div class="clearance">CLEARANCE LEVEL: TOP SECRET</div>
             </div>
@@ -295,6 +295,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
+import { useAbout } from '../composables/useAbout'
 
 // Reactive data
 const soundEnabled = ref(true)
@@ -328,7 +329,14 @@ const terminalLines = reactive([
 
 let timeInterval: NodeJS.Timeout | null = null
 
-// Methods
+// Fetch about info (name, image)
+const { about, fetchAbout } = useAbout()
+onMounted(() => {
+  fetchAbout()
+  updateTime()
+  timeInterval = setInterval(updateTime, 1000)
+})
+
 const playSound = (type: 'beep' | 'click') => {
   if (!soundEnabled.value) return
   
@@ -474,6 +482,7 @@ const updateTime = () => {
 
 // Lifecycle
 onMounted(() => {
+  fetchAbout()
   updateTime()
   timeInterval = setInterval(updateTime, 1000)
 })

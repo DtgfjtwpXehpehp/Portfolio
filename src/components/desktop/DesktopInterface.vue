@@ -19,7 +19,14 @@
     <div class="hero-section">
       <div class="hero-content">
         <div class="hero-text">
-          <h1 class="hero-title">Hi, I'm <span class="name-highlight">Agent [REDACTED]</span>, a <span class="role-highlight">Full-Stack Developer</span></h1>
+          <h1 class="hero-title">
+            Hi, I'm <span 
+              class="name-highlight"
+              ref="nameSpan"
+              @mouseenter="unscrambleName"
+              @mouseleave="scrambleName"
+            >{{ scrambledName }}</span>, a <span class="role-highlight">Full-Stack Developer</span>
+          </h1>
           <p class="hero-subtitle">Specialized in creating secure, scalable web applications for mission-critical operations</p>
         </div>
         <div class="hero-photo">
@@ -29,7 +36,7 @@
               
               <div class="photo-frame">
                 <img 
-                  src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=" 
+                  :src="about?.image_url || 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k='" 
                   alt="Agent Profile Photo"
                 >
               </div>
@@ -127,7 +134,10 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits, ref } from 'vue'
+import { defineProps, defineEmits, ref, onMounted, nextTick } from 'vue'
+import gsap from 'gsap'
+import ScrambleTextPlugin from 'gsap/ScrambleTextPlugin'
+gsap.registerPlugin(ScrambleTextPlugin)
 import DesktopHeader from './DesktopHeader.vue'
 import ControlPanel from './ControlPanel.vue'
 import AboutWindow from '../AboutWindow.vue'
@@ -137,6 +147,7 @@ import ContactWindow from '../ContactWindow.vue'
 import TerminalWindow from '../TerminalWindow.vue'
 import DesktopTaskbar from './DesktopTaskbar.vue'
 import { useWindowManagement } from '../../composables/useWindowManagement'
+import { useAbout } from '../../composables/useAbout'
 
 defineProps<{
   soundEnabled: boolean
@@ -148,6 +159,74 @@ defineEmits<{
 
 const commandCenterOpen = ref(true)
 const photoCard = ref<HTMLElement>()
+
+// Fetch about info (name, image)
+const { about, fetchAbout } = useAbout()
+
+const nameSpan = ref()
+const realName = ref('')
+const scrambledName = ref('')
+const shift = 11
+
+function caesarCipher(str, shift) {
+  return str.split('').map(char => {
+    if (char.match(/[a-z]/i)) {
+      const code = char.charCodeAt(0)
+      const base = code >= 97 ? 97 : 65
+      return String.fromCharCode(((code - base + shift) % 26) + base)
+    }
+    return char
+  }).join('')
+}
+
+
+let animationInProgress = false
+
+function runScramble(toReal: boolean) {
+  if (!nameSpan.value) return
+  if (animationInProgress) return
+  animationInProgress = true
+  const from = toReal ? caesarCipher(realName.value, shift) : realName.value
+  const to = toReal ? realName.value : caesarCipher(realName.value, shift)
+  gsap.to(nameSpan.value, {
+    scrambleText: {
+      text: to,
+      chars: 'upperCase',
+      revealDelay: 0.2,
+      speed: 0.4
+    },
+    duration: 1.2,
+    ease: 'power1.inOut',
+    onStart: () => { nameSpan.value.textContent = from },
+    onComplete: () => {
+      nameSpan.value.textContent = toReal ? realName.value : to
+      scrambledName.value = toReal ? realName.value : to
+      animationInProgress = false
+    }
+  })
+}
+
+
+function unscrambleName() {
+  if (scrambledName.value !== realName.value) {
+    runScramble(true)
+  }
+}
+
+
+function scrambleName() {
+  // Do nothing if the real name is already shown
+  // This prevents scrambling back to cipher after the real name is revealed
+  // Only allow scrambling if the scrambled version is currently displayed (i.e., never after real name is shown)
+  // So, do nothing here
+}
+
+onMounted(async () => {
+  await fetchAbout()
+  realName.value = about.value?.name || 'Your Real Name'
+  scrambledName.value = caesarCipher(realName.value, shift)
+  if (nameSpan.value) nameSpan.value.textContent = scrambledName.value
+})
 
 const {
   activeWindows,

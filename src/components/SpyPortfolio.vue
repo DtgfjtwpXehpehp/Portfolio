@@ -101,7 +101,7 @@
             <div class="agent-avatar">🕵️</div>
           </div>
         </div>
-        <h1 class="agent-title">Agent [REDACTED]</h1>
+        <h1 class="agent-title">{{ about?.name || 'Agent [REDACTED]' }}</h1>
         <div class="classification">CLEARANCE LEVEL: TOP SECRET</div>
         
         <div class="terminal">
@@ -232,6 +232,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, onUnmounted } from 'vue'
+import { useAbout } from '../composables/useAbout'
 
 // Types
 interface Project {
@@ -348,6 +349,15 @@ const konami = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]
 
 let loadingInterval: NodeJS.Timeout | null = null
 let glitchInterval: NodeJS.Timeout | null = null
+
+// Fetch about info (name, image)
+const { about, fetchAbout } = useAbout()
+onMounted(() => {
+  setTimeout(initializeSystem, 500)
+  document.addEventListener('keydown', handleKeyDown)
+  startGlitchEffect()
+  fetchAbout()
+})
 
 // Methods
 const playSound = (type: 'beep' | 'click' | 'systemReady') => {
@@ -558,6 +568,7 @@ onMounted(() => {
   setTimeout(initializeSystem, 500)
   document.addEventListener('keydown', handleKeyDown)
   startGlitchEffect()
+  fetchAbout()
 })
 
 onUnmounted(() => {
