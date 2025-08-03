@@ -34,11 +34,7 @@
       </div>
       
       <div class="location-info" v-if="locationData.suburb && locationData.city">
-        <span class="location-text">{{ locationData.suburb }}, {{ locationData.city }}</span>
-      </div>
-      
-      <div class="location-info" v-if="locationData.suburb && locationData.city">
-        <span class="location-text">{{ locationData.suburb }}, {{ locationData.city }}</span>
+        <span class="location-text">{{ locationData.city }}, {{ locationData.country }}</span>
       </div>
       
       <div class="time-info">
