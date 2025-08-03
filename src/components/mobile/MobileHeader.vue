@@ -9,8 +9,6 @@
         <span class="weather-icon">{{ weatherData.icon }}</span>
         <span class="temperature">{{ weatherData.temperature }}°{{ weatherData.unit }}</span>
       </div>
-      <div class="location">{{ locationData.city }}, {{ locationData.country }}</div>
-      <div class="location">{{ locationData.city }}, {{ locationData.country }}</div>
       <div class="time">{{ currentTime }}</div>
     </div>
     
