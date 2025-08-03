@@ -1,7 +1,7 @@
 <template>
   <header class="mobile-header">
     <div class="header-left">
-      <div class="logo glitch">AGENT PORTFOLIO</div>
+      <div class="logo glitch">AGENT [REDACTED]</div>
     </div>
     
     <div class="header-center">
@@ -10,7 +10,6 @@
         <span class="temperature">{{ weatherData.temp }}°C</span>
       </div>
       <div class="location">{{ weatherData.location }}</div>
-      <div class="time">{{ currentTime }}</div>
     </div>
     
     <div class="header-right">
@@ -89,29 +88,37 @@ onUnmounted(() => {
 
 .header-left .logo {
   font-family: 'Orbitron', monospace;
-  font-size: 1.1em;
+  font-size: 1em;
   font-weight: 900;
   color: var(--accent-cyan);
   text-shadow: 0 0 10px var(--accent-cyan);
   text-transform: uppercase;
   letter-spacing: 1px;
+  white-space: nowrap;
 }
 
 .header-center {
   text-align: center;
   font-size: 0.8em;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .weather-info {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 5px;
   margin-bottom: 2px;
 }
 
-.location, .time {
+.location {
   font-size: 0.75em;
   color: var(--text-secondary);
+  text-align: center;
 }
 
 .header-right {
