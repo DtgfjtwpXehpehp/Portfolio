@@ -59,8 +59,7 @@ const updateTime = () => {
   currentTime.value = now.toLocaleTimeString([], { 
     hour12: false,
     hour: '2-digit',
-    minute: '2-digit',
-    timeZoneName: 'short'
+    minute: '2-digit'
   })
 }
 
