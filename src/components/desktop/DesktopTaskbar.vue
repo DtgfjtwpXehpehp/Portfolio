@@ -33,7 +33,7 @@
         <span class="temperature">{{ weatherData.temperature }}°{{ weatherData.unit }}</span>
       </div>
       
-      <div class="location-info" v-if="locationData.suburb && locationData.city">
+      <div class="location-info" v-if="locationData.city && locationData.country">
         <span class="location-text">{{ locationData.city }}, {{ locationData.country }}</span>
       </div>
       
