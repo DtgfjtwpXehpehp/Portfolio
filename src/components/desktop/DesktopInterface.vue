@@ -145,9 +145,11 @@ import ProjectsWindow from '../ProjectsWindow.vue'
 import ResumeWindow from '../ResumeWindow.vue'
 import ContactWindow from '../ContactWindow.vue'
 import TerminalWindow from '../TerminalWindow.vue'
+
 import DesktopTaskbar from './DesktopTaskbar.vue'
-import { useWindowManagement } from '../../composables/useWindowManagement'
+import textSound from '../../assets/sounds/textsound.mp3'
 import { useAbout } from '../../composables/useAbout'
+import { useWindowManagement } from '../../composables/useWindowManagement'
 
 defineProps<{
   soundEnabled: boolean
@@ -167,6 +169,9 @@ const nameSpan = ref()
 const realName = ref('')
 const scrambledName = ref('')
 const shift = 11
+
+// Sound effect for unscramble
+let textAudio: HTMLAudioElement | null = null
 
 function caesarCipher(str, shift) {
   return str.split('').map(char => {
@@ -202,6 +207,11 @@ function runScramble(toReal: boolean) {
       nameSpan.value.textContent = toReal ? realName.value : to
       scrambledName.value = toReal ? realName.value : to
       animationInProgress = false
+      // Stop sound when animation is done
+      if (toReal && textAudio) {
+        textAudio.pause()
+        textAudio.currentTime = 0
+      }
     }
   })
 }
@@ -209,6 +219,10 @@ function runScramble(toReal: boolean) {
 
 function unscrambleName() {
   if (scrambledName.value !== realName.value) {
+    if (textAudio) {
+      textAudio.currentTime = 0
+      textAudio.play()
+    }
     runScramble(true)
   }
 }
@@ -222,6 +236,8 @@ function scrambleName() {
 }
 
 onMounted(async () => {
+  textAudio = new Audio(textSound)
+  textAudio.preload = 'auto'
   await fetchAbout()
   realName.value = about.value?.name || 'Your Real Name'
   scrambledName.value = caesarCipher(realName.value, shift)
