@@ -1,7 +1,7 @@
 <template>
   <header class="mobile-header">
     <div class="header-left">
-      <div class="logo glitch">AGENT PORTFOLIO</div>
+      <div class="logo glitch">{{ about?.name }}</div>
     </div>
     
     <div class="header-center">
@@ -28,6 +28,9 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, onUnmounted } from 'vue'
+import { useAbout } from '../../composables/useAbout';
+
+const { about, fetchAbout } = useAbout()
 
 defineProps<{
   soundEnabled: boolean
@@ -184,12 +187,13 @@ const setFallbackData = () => {
 
 let timeInterval: NodeJS.Timeout
 
-onMounted(() => {
+onMounted( async() => {
   updateTime()
   timeInterval = setInterval(updateTime, 1000)
   
   // Get location and weather data
-  getLocationAndWeather()
+  await getLocationAndWeather()
+  await fetchAbout()
 })
 
 onUnmounted(() => {
