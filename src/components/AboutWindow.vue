@@ -3,7 +3,7 @@
     :active="active"
     :maximized="maximized"
     :position="position"
-    title="PERSONNEL FILE - CLASSIFIED"
+    title="ABOUT ME"
     @close="$emit('close')"
     @minimize="$emit('minimize')"
     @maximize="$emit('maximize')"
@@ -20,15 +20,15 @@
       </div>
 
       <div v-else-if="about" class="agent-profile">
-        <div class="agent-avatar">
+        <!-- <div class="agent-avatar">
           <img v-if="about.image_url" :src="about.image_url" :alt="about.name" class="agent-image">
           <span v-else>👤</span>
-        </div>
-        <h2>AGENT {{ about.name || '[REDACTED]' }}</h2>
+        </div> -->
+        <!-- <h2>AGENT {{ about.name || '[REDACTED]' }}</h2> -->
         <!-- <p class="clearance">CLEARANCE LEVEL: TOP SECRET</p> -->
       
         <div class="terminal">
-          <div class="terminal-line"><span class="terminal-prompt">></span> cat agent_profile.txt</div>
+          <div class="terminal-line"><span class="terminal-prompt">></span> cat about_me.txt</div>
           <div class="terminal-line">NAME: {{ about.name || '[CLASSIFIED]' }}</div>
           <div class="terminal-line">TITLE: {{ about.title || 'Web Developer' }}</div>
           <div class="terminal-line">STATUS: ACTIVE</div>
