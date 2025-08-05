@@ -28,7 +28,7 @@ const loadingMessages = [
   'Loading classified databases...',
   'Initializing security protocols...',
   'Decrypting personnel files...',
-  'System ready. Welcome, Agent.'
+  'System ready. Welcome, Welkom, Wamkelekile'
 ]
 
 onMounted(() => {
@@ -93,7 +93,7 @@ onMounted(() => {
 }
 
 .progress-bar {
-  width: 300px;
+  width: 800px;
   height: 4px;
   background: rgba(0, 255, 255, 0.2);
   border: 1px solid var(--accent-cyan);
