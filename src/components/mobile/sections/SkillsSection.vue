@@ -4,16 +4,18 @@
       <h2 class="section-title">TECHNICAL EXPERTISE</h2>
       
       <div class="skills-grid">
-        <div 
-          v-for="category in skillCategories" 
-          :key="category.title"
-          class="skill-category"
-        >
-          <h4>{{ category.title }}</h4>
-          <ul class="skill-list">
-            <li v-for="skill in category.skills" :key="skill">{{ skill }}</li>
-          </ul>
-        </div>
+        <template v-if="Object.keys(groupedSkills).length">
+          <div v-for="(skills, category) in groupedSkills" :key="category" class="skill-category">
+            <h4>{{ categoryLabels[category] }}</h4>
+            <ul class="skill-list">
+              <li v-for="skill in skills" :key="skill.id">
+                <i v-if="skill.icon" :class="['skill-icon', skill.icon]"></i>
+                <span>{{ skill.name }}</span>
+              </li>
+            </ul>
+          </div>
+        </template>
+        <div v-else style="color:var(--danger-red);padding:10px;">No skills found.</div>
       </div>
 
       <div class="terminal">
@@ -26,26 +28,42 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { skillsApi, Skill } from '../../../services/api'
 
-const skillCategories = ref([
-  {
-    title: 'Frontend Operations',
-    skills: ['React / Vue.js', 'JavaScript (ES6+)', 'HTML5 / CSS3', 'TypeScript', 'Responsive Design']
-  },
-  {
-    title: 'Backend Systems',
-    skills: ['Node.js / Express', 'Python / Django', 'REST APIs', 'GraphQL', 'Microservices']
-  },
-  {
-    title: 'Database Intelligence',
-    skills: ['MongoDB', 'PostgreSQL', 'MySQL', 'Redis', 'Data Analytics']
-  },
-  {
-    title: 'Security Protocols',
-    skills: ['OAuth / JWT', 'Encryption', 'Cybersecurity', 'Secure APIs', 'Penetration Testing']
+const skills = ref<Skill[]>([])
+const skillsLoading = ref(true)
+const skillsError = ref('')
+
+const groupedSkills = computed(() => {
+  if (!skills.value.length) return {}
+  return skills.value.reduce((acc, skill) => {
+    (acc[skill.category] = acc[skill.category] || []).push(skill)
+    return acc
+  }, {})
+})
+
+const categoryLabels = {
+  frontend: 'Frontend',
+  backend: 'Backend',
+  database: 'Databases',
+  devops: 'DevOps',
+  uiux: 'UI/UX'
+}
+
+onMounted(async () => {
+  try {
+    skillsLoading.value = true
+    const res = await skillsApi.getAll()
+    skills.value = res.data
+    skillsError.value = ''
+  } catch (e) {
+    skillsError.value = 'Failed to load skills.'
+    skills.value = []
+  } finally {
+    skillsLoading.value = false
   }
-])
+})
 
 const certifications = ref([
   'Certified Ethical Hacker (CEH)',

@@ -1,10 +1,23 @@
 <template>
   <section class="about-section mobile-section">
     <div class="section-content">
+          <div class="agent-info">
+            <div class="hero-text">
+<h1 class="hero-title">
+            Hi, I'm <span 
+              class="name-highlight"
+              ref="nameSpan"
+              @mouseenter="unscrambleName"
+              @mouseleave="scrambleName"
+            >{{ scrambledName }}</span>, a <span class="role-highlight">{{ about?.title }}</span>
+          </h1>
+          <!-- <div class="clearance">CLEARANCE LEVEL: TOP SECRET</div> -->
+        </div>
+        </div>
       <div class="photo-card-container">
         <div class="card-container">
           <div class="photo-card floating" ref="photoCard" @mousemove="handlePhotoCardMouseMove" @mouseleave="resetPhotoCard">
-            <div class="decorative-element"></div>
+            <!-- <div class="decorative-element"></div> -->
             
             <div class="photo-frame">
               <img 
@@ -37,40 +50,124 @@
             </div>
           </div>
         </div>
-        <div class="agent-info">
-          <h2 class="agent-name">AGENT [REDACTED]</h2>
-          <p class="agent-title">Full-Stack Developer</p>
-          <div class="clearance">CLEARANCE LEVEL: TOP SECRET</div>
-        </div>
+    
       </div>
 
       <div class="terminal">
         <div class="terminal-line"><span class="terminal-prompt">></span> cat agent_profile.txt</div>
-        <div class="terminal-line">NAME: [CLASSIFIED]</div>
-        <div class="terminal-line">CODENAME: Web Developer</div>
-        <div class="terminal-line">SPECIALIZATION: Full-Stack Operations</div>
-        <div class="terminal-line">EXPERIENCE: 5+ Years Active Service</div>
+        <div class="terminal-line">NAME: {{ about?.name }}</div>
+        <!-- <div class="terminal-line">CODENAME: {{ about?.codename }}</div> -->
+        <div class="terminal-line">SPECIALIZATION: {{ about?.title }}</div>
+        <div class="terminal-line">EXPERIENCE: 5+ Years Active</div>
         <div class="terminal-line">STATUS: Active <span class="blinking-cursor"></span></div>
       </div>
 
-      <div class="agent-bio">
-        <p>Highly skilled operative specializing in digital infrastructure and web-based intelligence systems. 
-        Expertise in creating secure, scalable applications for mission-critical operations.</p>
-      </div>
+     <div class="terminal mission-brief">
+          <div class="terminal-line"><span class="terminal-prompt">></span> cat mission_brief.txt</div>
+          <div class="terminal-line content-text" v-html="about?.content"></div>
+        </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+// import { ref, onMounted } from 'vue'
+import { defineProps, defineEmits, ref, onMounted, nextTick } from 'vue'
+import gsap from 'gsap'
+import ScrambleTextPlugin from 'gsap/ScrambleTextPlugin'
+gsap.registerPlugin(ScrambleTextPlugin)
+import textSound from '../../../assets/sounds/textsound.mp3'
 import { useAbout } from '../../../composables/useAbout'
 
+
 const photoCard = ref<HTMLElement>()
+
+defineProps<{
+  soundEnabled: boolean
+}>()
+
+defineEmits<{
+  'toggle-sound': []
+}>()
 
 // Fetch about info (name, image)
 const { about, fetchAbout } = useAbout()
 onMounted(() => {
   fetchAbout()
+})
+
+const nameSpan = ref()
+const realName = ref('')
+const scrambledName = ref('')
+const shift = 11
+
+// Sound effect for unscramble
+let textAudio: HTMLAudioElement | null = null
+
+function caesarCipher(str, shift) {
+  return str.split('').map(char => {
+    if (char.match(/[a-z]/i)) {
+      const code = char.charCodeAt(0)
+      const base = code >= 97 ? 97 : 65
+      return String.fromCharCode(((code - base + shift) % 26) + base)
+    }
+    return char
+  }).join('')
+}
+
+
+let animationInProgress = false
+
+function runScramble(toReal: boolean) {
+  if (!nameSpan.value) return
+  if (animationInProgress) return
+  animationInProgress = true
+  const from = toReal ? caesarCipher(realName.value, shift) : realName.value
+  const to = toReal ? realName.value : caesarCipher(realName.value, shift)
+  gsap.to(nameSpan.value, {
+    scrambleText: {
+      text: to,
+      chars: 'upperCase',
+      revealDelay: 0.2,
+      speed: 0.4
+    },
+    duration: 1.2,
+    ease: 'power1.inOut',
+    onStart: () => { nameSpan.value.textContent = from },
+    onComplete: () => {
+      nameSpan.value.textContent = toReal ? realName.value : to
+      scrambledName.value = toReal ? realName.value : to
+      animationInProgress = false
+      // Stop sound when animation is done
+      if (toReal && textAudio) {
+        textAudio.pause()
+        textAudio.currentTime = 0
+      }
+    }
+  })
+}
+
+
+function unscrambleName() {
+  if (scrambledName.value !== realName.value) {
+    if (textAudio) {
+      textAudio.currentTime = 0
+      textAudio.play()
+    }
+    runScramble(true)
+  }
+}
+
+
+
+
+onMounted(async () => {
+  textAudio = new Audio(textSound)
+  textAudio.preload = 'auto'
+  await fetchAbout()
+  realName.value = about.value?.name || 'Your Real Name'
+  scrambledName.value = caesarCipher(realName.value, shift)
+  if (nameSpan.value) nameSpan.value.textContent = scrambledName.value
 })
 
 const handlePhotoCardMouseMove = (event: MouseEvent) => {
@@ -264,6 +361,10 @@ const resetPhotoCard = () => {
   font-size: 16px;
 }
 
+.mission-brief {
+  margin-top: 20px;
+}
+
 .floating {
   animation: float 3s ease-in-out infinite;
 }
@@ -313,4 +414,42 @@ const resetPhotoCard = () => {
   max-width: 100%;
   margin: 0 auto;
 }
+
+
+.hero-text {
+  flex: 1;
+  max-width: 600px;
+}
+
+.hero-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 3.5em;
+  line-height: 1.2;
+  margin-bottom: 20px;
+  color: var(--text-primary);
+}
+
+.name-highlight {
+  color: var(--accent-cyan);
+  text-shadow: 0 0 20px var(--accent-cyan);
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+.role-highlight {
+  color: var(--accent-green);
+  text-shadow: 0 0 20px var(--accent-green);
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 20px var(--accent-cyan); }
+  to { text-shadow: 0 0 30px var(--accent-cyan), 0 0 40px var(--accent-cyan); }
+}
+
+.hero-subtitle {
+  font-size: 1.3em;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-family: 'Share Tech Mono', monospace;
+}
+
 </style>

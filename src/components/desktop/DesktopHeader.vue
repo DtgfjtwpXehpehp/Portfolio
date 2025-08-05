@@ -1,13 +1,13 @@
 <template>
   <header class="desktop-header">
     <div class="header-left">
-      <div class="logo glitch">AGENT PORTFOLIO v2.7</div>
+      <div class="logo glitch">{{about?.name }}</div>
     </div>
     
     <div class="header-center">
       <div class="system-info">
-        <span class="status-indicator"></span>
-        <span class="system-status">SECURE CONNECTION ESTABLISHED</span>
+        <!-- <span class="status-indicator"></span> -->
+        <!-- <span class="system-status">SECURE CONNECTION ESTABLISHED</span> -->
       </div>
     </div>
     
@@ -20,9 +20,18 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue';
+import { useAbout } from '../../composables/useAbout';
+// import { ref } from 'vue'
 defineProps<{
   soundEnabled: boolean
 }>()
+
+const { about, fetchAbout } = useAbout()
+
+onMounted(async ()=> {
+ await fetchAbout()
+})
 
 defineEmits<{
   'toggle-sound': []
