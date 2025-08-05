@@ -84,6 +84,8 @@
         </div>
       </div>
     </div>
+
+    </div>
     <!-- Windows -->
     <AboutWindow
       v-if="activeWindows.about"
