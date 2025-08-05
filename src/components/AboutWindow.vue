@@ -45,12 +45,12 @@
             </div>
           </template>
           <div v-else class="terminal-line" style="color:var(--danger-red)">No skills found.</div>
-          <div class="terminal-line"><span class="blinking-cursor"></span></div>
         </div>
-
+        
         <div class="terminal mission-brief">
           <div class="terminal-line"><span class="terminal-prompt">></span> cat mission_brief.txt</div>
           <div class="terminal-line content-text" v-html="about.content"></div>
+          <div class="terminal-line"><span class="blinking-cursor"></span></div>
         </div>
       </div>
     </div>

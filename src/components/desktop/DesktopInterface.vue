@@ -510,7 +510,7 @@ const resetPhotoCard = () => {
 
 .wrapper .icon {
   position: relative;
-  background: #fff;
+  background: rgba(0, 255, 255, 0.1);
   border-radius: 50%;
   margin: 5px;
   width: 40px;
@@ -526,7 +526,7 @@ const resetPhotoCard = () => {
 }
 
 .wrapper .icon a {
-  color: #333;
+  color: #fff;
   text-decoration: none;
   display: flex;
   align-items: center;
