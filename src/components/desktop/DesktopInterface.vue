@@ -147,6 +147,7 @@
       @toggle-command-center="toggleCommandCenter"
     />
   </div>
+</div>
 </template>
 
 <script setup lang="ts">
