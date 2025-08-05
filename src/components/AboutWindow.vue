@@ -33,11 +33,18 @@
           <div class="terminal-line">TITLE: {{ about.title || 'Web Developer' }}</div>
           <div class="terminal-line">STATUS: ACTIVE</div>
           <div class="terminal-line"><span class="terminal-prompt">></span> cat skills.txt</div>
-          <div class="skills-grid">
-            <div v-for="(skill, index) in about.skills" :key="index" class="terminal-line skill-item">
-              [{{ String(index).padStart(2, '0') }}] {{ skill }}
+          <template v-if="Object.keys(groupedSkills).length">
+            <div v-for="(skills, category) in groupedSkills" :key="category" class="skills-category">
+              <h3>{{ categoryLabels[category] }}</h3>
+              <div class="skills-grid">
+                <div v-for="skill in skills" :key="skill.id" class="skill-item">
+                  <i v-if="skill.icon" :class="['skill-icon', skill.icon]"></i>
+                  <span>{{ skill.name }}</span>
+                </div>
+              </div>
             </div>
-          </div>
+          </template>
+          <div v-else class="terminal-line" style="color:var(--danger-red)">No skills found.</div>
           <div class="terminal-line"><span class="blinking-cursor"></span></div>
         </div>
 
@@ -51,9 +58,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+
+import { onMounted, computed, ref } from 'vue';
 import BaseWindow from './BaseWindow.vue';
 import { useAbout } from '../composables/useAbout';
+import { skillsApi, Skill } from '../services/api';
 
 defineProps<{
   active: boolean
@@ -68,10 +77,42 @@ defineEmits<{
   move: [position: { x: number, y: number }]
 }>();
 
+
 const { about, loading, error, fetchAbout } = useAbout();
 
-onMounted(() => {
+const skills = ref<Skill[]>([]);
+const skillsLoading = ref(true);
+const skillsError = ref('');
+
+const groupedSkills = computed(() => {
+  if (!skills.value.length) return {};
+  return skills.value.reduce((acc, skill) => {
+    (acc[skill.category] = acc[skill.category] || []).push(skill);
+    return acc;
+  }, {});
+});
+
+const categoryLabels = {
+  frontend: 'Frontend',
+  backend: 'Backend',
+  database: 'Databases',
+  devops: 'DevOps',
+  uiux: 'UI/UX'
+};
+
+onMounted(async () => {
   fetchAbout();
+  try {
+    skillsLoading.value = true;
+    const res = await skillsApi.getAll();
+    skills.value = res.data;
+    skillsError.value = '';
+  } catch (e) {
+    skillsError.value = 'Failed to load skills.';
+    skills.value = [];
+  } finally {
+    skillsLoading.value = false;
+  }
 });
 </script>
 
@@ -164,6 +205,8 @@ onMounted(() => {
   padding: 2px 5px;
   border-radius: 3px;
   transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
 }
 
 .skill-item:hover {
@@ -224,6 +267,25 @@ onMounted(() => {
 .retry-button:hover {
   background: var(--danger-red);
   color: black;
+}
+
+.skills-category {
+  margin: 15px 0;
+  text-align: left;
+}
+
+.skills-category h3 {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+  color: var(--accent-cyan);
+}
+
+.skill-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+  display: inline-block;
+  vertical-align: middle;
 }
 </style>
 

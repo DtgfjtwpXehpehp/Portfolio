@@ -19,12 +19,20 @@ export interface Project {
   liveUrl?: string;
 }
 
+
+export interface Skill {
+  id: number;
+  name: string;
+  category: 'frontend' | 'backend' | 'database' | 'devops' | 'uiux';
+  icon: string; // SVG filename or path
+}
+
 export interface About {
   id?: number;
   name: string;
   title: string;
   content: string;
-  skills: string[];
+  skills: Skill[];
   image_url?: string;
 }
 
@@ -92,6 +100,13 @@ export const contactApi = {
 
 export const resumeApi = {
   get: () => api.get<Resume>('/resume'),
+};
+
+export const skillsApi = {
+  getAll: () => api.get<Skill[]>('/about/skills'),
+  add: (skill: Omit<Skill, 'id'>) => api.post<Skill>('/skills', skill),
+  update: (id: number, skill: Partial<Omit<Skill, 'id'>>) => api.put<Skill>(`/skills/${id}`, skill),
+  delete: (id: number) => api.delete(`/skills/${id}`),
 };
 
 export default api;
