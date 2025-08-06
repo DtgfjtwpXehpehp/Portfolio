@@ -58,7 +58,7 @@
         <h4>ALTERNATIVE CONTACT METHODS:</h4>
         <p>📧 Email: {{ contact?.email }}</p>
         <p>📱 Secure Line: {{ contact?.phone }}</p>
-        <p>🔗 LinkedIn: <a :href="contact?.linkedin_url" target="_blank">Sivuyile Mtwetwe</a></p> 
+        <p>🔗 LinkedIn: <a :href="contact?.linkedin_url" target="_blank">{{ about?.name }}</a></p> 
         <p>📍 Location: Cape Town, South Africa</p>
       </div>
     </div>
@@ -71,13 +71,16 @@ import emailjs from '@emailjs/browser'
 import BaseWindow from './BaseWindow.vue'
 import { useSoundEffects } from '../composables/useSoundEffects'
 import { useContact } from '../composables/useContact'
+import { useAbout } from '../composables/useAbout'
+
 
 
 const {contact,fetchContact }= useContact()
-
+const {about, fetchAbout} = useAbout()
 
 onMounted(async()=>{
   await fetchContact()
+  await fetchAbout()
 })
 
 
