@@ -9,58 +9,41 @@
     @maximize="$emit('maximize')"
     @move="$emit('move', $event)"
   >
-    <div class="resume-content">
-      <h3>CLASSIFIED RESUME</h3>
-      
-      <h4>TECHNICAL EXPERTISE</h4>
-      <ul class="skills-list">
-        <li>• Frontend: React, Vue.js, HTML5, CSS3, JavaScript (ES6+)</li>
-        <li>• Backend: Node.js, Python, Express.js, Django</li>
-        <li>• Database: MongoDB, PostgreSQL, MySQL, Redis</li>
-        <li>• Cloud: AWS, Google Cloud, Azure, Docker</li>
-        <li>• Security: OAuth, JWT, Encryption Protocols</li>
-      </ul>
-
-      <h4>MISSION HISTORY</h4>
-      <div class="mission-entry">
-        <strong>Senior Full-Stack Developer</strong><br>
-        <em>TechCorp Industries | 2020 - Present</em><br>
-        Led development of mission-critical web applications serving 100k+ users.
-      </div>
-
-      <div class="mission-entry">
-        <strong>Software Engineer</strong><br>
-        <em>Digital Solutions Inc | 2018 - 2020</em><br>
-        Specialized in cybersecurity implementations and secure data transmission.
-      </div>
-
-      <h4>CERTIFICATIONS</h4>
-      <ul class="skills-list">
-        <li>• Certified Ethical Hacker (CEH)</li>
-        <li>• AWS Solutions Architect</li>
-        <li>• Google Cloud Professional Developer</li>
-        <li>• Cybersecurity Fundamentals</li>
-      </ul>
-    </div>
+    <iframe
+      v-if="document?.file_url"
+      :src="document?.file_url"
+      width="100%"
+      height="600px"
+    ></iframe>
+    <div v-else>Loading resume...</div>
   </BaseWindow>
 </template>
 
 <script setup lang="ts">
-import BaseWindow from './BaseWindow.vue'
+import { onMounted } from 'vue';
+import BaseWindow from './BaseWindow.vue';
+import { useResume } from '../composables/useResume';
+
+const { document, fetchDocument } = useResume();
 
 defineProps<{
-  active: boolean
-  maximized?: boolean
-  position: { x: number, y: number }
-}>()
+  active: boolean;
+  maximized?: boolean;
+  position: { x: number; y: number };
+}>();
 
 defineEmits<{
-  close: []
-  minimize: []
-  maximize: []
-  move: [position: { x: number, y: number }]
-}>()
+  close: [];
+  minimize: [];
+  maximize: [];
+  move: [position: { x: number; y: number }];
+}>();
+
+onMounted(async () => {
+  await fetchDocument();
+});
 </script>
+
 
 <style scoped>
 .resume-content h3 {

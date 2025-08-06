@@ -1,17 +1,22 @@
+// useResume.ts
 import { ref } from 'vue';
-import { Resume, resumeApi } from '../services/api';
+import { Document, documentApi } from '../services/api';
 
 export function useResume() {
-  const resume = ref<Resume | null>(null);
+  const document = ref<Document | null>(null);
   const loading = ref(false);
   const error = ref<string | null>(null);
 
-  const fetchResume = async () => {
+  const fetchDocument = async () => {
     loading.value = true;
     error.value = null;
     try {
-      const response = await resumeApi.get();
-      resume.value = response.data;
+      const response = await documentApi.get();
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        document.value = response.data[0]; // Grab the first document
+      } else {
+        error.value = 'No resume found';
+      }
     } catch (e) {
       error.value = 'Failed to fetch resume';
       console.error(e);
@@ -21,9 +26,9 @@ export function useResume() {
   };
 
   return {
-    resume,
+    document,
     loading,
     error,
-    fetchResume
+    fetchDocument,
   };
 }

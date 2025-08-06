@@ -52,9 +52,11 @@ export interface ContactForm {
   message: string;
 }
 
-export interface Resume {
-  url: string;
-  content?: string;
+export interface Document {
+  id?: number;
+  name?: string;
+  file_url?: string
+
 }
 
 export const projectsApi = {
@@ -98,8 +100,8 @@ export const contactApi = {
 };
 
 
-export const resumeApi = {
-  get: () => api.get<Resume>('/resume'),
+export const documentApi = {
+  get: () => api.get<Document>('/documents'),
 };
 
 export const skillsApi = {
