@@ -23,7 +23,7 @@ const buttons = [
   { id: 'projects', label: 'CASE FILES', icon: '📁' },
   { id: 'resume', label: 'SERVICE RECORD', icon: '📋' },
   { id: 'contact', label: 'SECURE COMM', icon: '📡' },
-  { id: 'terminal', label: 'TERMINAL ACCESS', icon: '💻' }
+  // { id: 'terminal', label: 'TERMINAL ACCESS', icon: '💻' }
 ]
 </script>
 
