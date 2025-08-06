@@ -10,7 +10,7 @@
             <ul class="skill-list">
               <li v-for="skill in skills" :key="skill.id">
                 <i v-if="skill.icon" :class="['skill-icon', skill.icon]"></i>
-                <span>{{ skill.name }}</span>
+                <span> {{ skill.name }}</span>
               </li>
             </ul>
           </div>
@@ -18,11 +18,11 @@
         <div v-else style="color:var(--danger-red);padding:10px;">No skills found.</div>
       </div>
 
-      <div class="terminal">
+      <!-- <div class="terminal">
         <div class="terminal-line"><span class="terminal-prompt">root@classified:~$</span> cat certifications.txt</div>
         <div v-for="cert in certifications" :key="cert" class="terminal-line">• {{ cert }}</div>
         <div class="terminal-line"><span class="terminal-prompt">root@classified:~$</span> <span class="blinking-cursor"></span></div>
-      </div>
+      </div> -->
     </div>
   </section>
 </template>

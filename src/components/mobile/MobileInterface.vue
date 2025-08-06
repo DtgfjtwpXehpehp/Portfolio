@@ -32,7 +32,7 @@
       <ContactSection id="contact" />
       
       <!-- Terminal Section -->
-      <TerminalSection />
+      <!-- <TerminalSection /> -->
     </main>
   </div>
 </template>

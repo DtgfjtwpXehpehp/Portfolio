@@ -1,96 +1,143 @@
 <template>
   <section class="contact-section mobile-section">
     <div class="section-content">
-      <h2 class="section-title">SECURE COMMUNICATION</h2>
+      <h2 class="section-title">CONTACT ME</h2>
       
-      <div class="warning">
+      <!-- <div class="warning">
         ⚠️ ENCRYPTED TRANSMISSION REQUIRED ⚠️
-      </div>
+      </div> -->
 
-      <form @submit="handleContactForm" class="contact-form">
+      <form @submit="sendMessage" class="contact-form">
         <div class="form-group">
-          <label for="agentId">Agent ID:</label>
+          <label>Name:</label>
           <input 
+            v-model="form.agentId"
             type="text" 
-            id="agentId" 
-            v-model="contactForm.agentId"
-            placeholder="Enter your agent identification" 
-            required
+            placeholder="Enter your name"
+            class="form-input"
           >
         </div>
         
         <div class="form-group">
-          <label for="email">Secure Email:</label>
+          <label>Email:</label>
           <input 
+            v-model="form.email"
             type="email" 
-            id="email" 
-            v-model="contactForm.email"
-            placeholder="agent@classified.gov" 
-            required
+            placeholder="email@domain.com"
+            class="form-input"
           >
         </div>
         
         <div class="form-group">
-          <label for="message">Encrypted Message:</label>
+          <label>Enter your Message:</label>
           <textarea 
-            id="message" 
-            v-model="contactForm.message"
-            rows="6" 
-            placeholder="Begin encrypted transmission..." 
-            required
+            v-model="form.message"
+            placeholder="Hi Sivuyile, I am reaching out to you because..." 
+            rows="6"
+            class="form-textarea"
           ></textarea>
         </div>
         
-        <button type="submit" class="submit-btn" :disabled="isSubmitting">
-          {{ submitButtonText }}
+        <button 
+          type="submit" 
+          class="submit-btn"
+          :disabled="isTransmitting"
+        >
+          {{ buttonText }}
         </button>
       </form>
 
       <div class="contact-info">
         <h4>ALTERNATIVE CONTACT METHODS:</h4>
-        <p>📧 Email: agent@portfolio.classified</p>
-        <p>📱 Secure Line: +1 (555) 000-0000</p>
-        <p>🔗 LinkedIn: /in/classified-agent</p>
-        <p>📍 Location: [REDACTED]</p>
+        <p>📧 Email: {{ contact?.email }}</p>
+        <p>📱 Secure Line: {{ contact?.phone }}</p>
+        <p>🔗 LinkedIn: <a :href="contact?.linkedin_url" target="_blank">Sivuyile Mtwetwe</a></p> 
+        <p>📍 Location: Cape Town, South Africa</p>
       </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
+import emailjs from '@emailjs/browser'
 import { useSoundEffects } from '../../../composables/useSoundEffects'
+import { useContact } from '../../../composables/useContact'
+
+
+const {contact,fetchContact }= useContact()
+
+
+onMounted(async()=>{
+  await fetchContact()
+})
+
+
+
+defineProps<{
+  active: boolean
+  maximized?: boolean
+  position: { x: number, y: number }
+}>()
+
+defineEmits<{
+  close: []
+  minimize: []
+  maximize: []
+  move: [position: { x: number, y: number }]
+}>()
 
 const { playSound } = useSoundEffects()
 
-const isSubmitting = ref(false)
-const submitButtonText = ref('TRANSMIT SECURE MESSAGE')
-
-const contactForm = reactive({
+const form = reactive({
   agentId: '',
   email: '',
   message: ''
 })
 
-const handleContactForm = (event: Event) => {
+const isTransmitting = ref(false)
+const buttonText = ref('SEND MESSAGE')
+
+// 🧠 REPLACE THESE with your actual EmailJS values
+const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
+const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+
+
+const sendMessage = async (event: Event) => {
   event.preventDefault()
   playSound('beep')
-  
-  isSubmitting.value = true
-  submitButtonText.value = 'TRANSMITTING...'
-  
-  setTimeout(() => {
-    submitButtonText.value = 'MESSAGE SENT ✓'
+
+  isTransmitting.value = true
+  buttonText.value = 'SENDING...'
+
+  const templateParams = {
+    agentId: form.agentId,
+    email: form.email,
+    message: form.message
+  }
+
+  try {
+    await emailjs.send(serviceId, templateId, templateParams, publicKey)
+    buttonText.value = 'MESSAGE SENT ✓'
+
     setTimeout(() => {
-      submitButtonText.value = 'TRANSMIT SECURE MESSAGE'
-      isSubmitting.value = false
-      // Reset form
-      contactForm.agentId = ''
-      contactForm.email = ''
-      contactForm.message = ''
+      buttonText.value = 'SEND MESSAGE'
+      isTransmitting.value = false
+      form.agentId = ''
+      form.email = ''
+      form.message = ''
     }, 2000)
-  }, 2000)
+  } catch (error) {
+    console.error('Failed to send message:', error)
+    buttonText.value = 'FAILED TO SEND ❌'
+    isTransmitting.value = false
+    setTimeout(() => {
+      buttonText.value = 'SEND MESSAGE'
+    }, 3000)
+  }
 }
+
 </script>
 
 <style scoped>
