@@ -44,6 +44,7 @@ export interface Contact {
   github_url?: string;
   created_at?: string;
   updated_at?: string;
+  discord?: string
 }
 
 export interface ContactForm {

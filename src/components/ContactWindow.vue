@@ -10,36 +10,36 @@
     @move="$emit('move', $event)"
   >
     <div class="contact-content">
-      <div class="warning">
+      <!-- <div class="warning">
         ⚠️ ENCRYPTED TRANSMISSION REQUIRED ⚠️
-      </div>
+      </div> -->
 
       <form @submit="sendMessage" class="contact-form">
         <div class="form-group">
-          <label>Agent ID:</label>
+          <label>Name:</label>
           <input 
             v-model="form.agentId"
             type="text" 
-            placeholder="Enter your agent identification"
+            placeholder="Enter your name"
             class="form-input"
           >
         </div>
         
         <div class="form-group">
-          <label>Secure Email:</label>
+          <label>Email:</label>
           <input 
             v-model="form.email"
             type="email" 
-            placeholder="agent@classified.gov"
+            placeholder="email@domain.com"
             class="form-input"
           >
         </div>
         
         <div class="form-group">
-          <label>Encrypted Message:</label>
+          <label>Enter your Message:</label>
           <textarea 
             v-model="form.message"
-            placeholder="Begin encrypted transmission..." 
+            placeholder="Hi Sivuyile, I am reaching out to you because..." 
             rows="6"
             class="form-textarea"
           ></textarea>
@@ -56,19 +56,31 @@
 
       <div class="contact-info">
         <h4>ALTERNATIVE CONTACT METHODS:</h4>
-        <p>📧 Email: agent@portfolio.classified</p>
-        <p>📱 Secure Line: +1 (555) 000-0000</p>
-        <p>🔗 LinkedIn: /in/classified-agent</p>
-        <p>📍 Location: [REDACTED]</p>
+        <p>📧 Email: {{ contact?.email }}</p>
+        <p>📱 Secure Line: {{ contact?.phone }}</p>
+        <p>🔗 LinkedIn: <a :href="contact?.linkedin_url" target="_blank">Sivuyile Mtwetwe</a></p> 
+        <p>📍 Location: Cape Town, South Africa</p>
       </div>
     </div>
   </BaseWindow>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
+import emailjs from '@emailjs/browser'
 import BaseWindow from './BaseWindow.vue'
 import { useSoundEffects } from '../composables/useSoundEffects'
+import { useContact } from '../composables/useContact'
+
+
+const {contact,fetchContact }= useContact()
+
+
+onMounted(async()=>{
+  await fetchContact()
+})
+
+
 
 defineProps<{
   active: boolean
@@ -92,27 +104,48 @@ const form = reactive({
 })
 
 const isTransmitting = ref(false)
-const buttonText = ref('TRANSMIT SECURE MESSAGE')
+const buttonText = ref('SEND MESSAGE')
 
-const sendMessage = (event: Event) => {
+// 🧠 REPLACE THESE with your actual EmailJS values
+const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
+const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+
+
+const sendMessage = async (event: Event) => {
   event.preventDefault()
   playSound('beep')
-  
+
   isTransmitting.value = true
-  buttonText.value = 'TRANSMITTING...'
-  
-  setTimeout(() => {
+  buttonText.value = 'SENDING...'
+
+  const templateParams = {
+    agentId: form.agentId,
+    email: form.email,
+    message: form.message
+  }
+
+  try {
+    await emailjs.send(serviceId, templateId, templateParams, publicKey)
     buttonText.value = 'MESSAGE SENT ✓'
+
     setTimeout(() => {
-      buttonText.value = 'TRANSMIT SECURE MESSAGE'
+      buttonText.value = 'SEND MESSAGE'
       isTransmitting.value = false
-      // Reset form
       form.agentId = ''
       form.email = ''
       form.message = ''
     }, 2000)
-  }, 2000)
+  } catch (error) {
+    console.error('Failed to send message:', error)
+    buttonText.value = 'FAILED TO SEND ❌'
+    isTransmitting.value = false
+    setTimeout(() => {
+      buttonText.value = 'SEND MESSAGE'
+    }, 3000)
+  }
 }
+
 </script>
 
 <style scoped>
