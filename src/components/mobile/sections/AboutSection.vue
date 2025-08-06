@@ -495,6 +495,17 @@ onMounted(async () => {
   50% { transform: translateY(-8px); }
 }
 
+.wrapper .cv:hover,
+.wrapper .cv:hover .tooltip,
+.wrapper .cv:hover .tooltip::before {
+  background: #28a745;
+  color: #fff;
+}
+
+.wrapper .cv:hover a {
+  color: #fff;
+}
+
 /* Responsive adjustments */
 @media (max-width: 480px) {
   .photo-card {
