@@ -5,8 +5,6 @@
 
     <!-- Mobile Header -->
     <MobileHeader 
-      :sound-enabled="soundEnabled"
-      @toggle-sound="$emit('toggle-sound')"
       @toggle-menu="toggleCommandDrawer"
     />
 
@@ -47,14 +45,6 @@ import ProjectsSection from './sections/ProjectsSection.vue'
 import ContactSection from './sections/ContactSection.vue'
 import TerminalSection from './sections/TerminalSection.vue'
 import { useSoundEffects } from '../../composables/useSoundEffects'
-
-defineProps<{
-  soundEnabled: boolean
-}>()
-
-defineEmits<{
-  'toggle-sound': []
-}>()
 
 const { playSound } = useSoundEffects()
 const commandDrawerOpen = ref(false)

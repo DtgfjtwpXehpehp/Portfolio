@@ -5,8 +5,6 @@
 
     <!-- Desktop Header -->
     <DesktopHeader 
-      :sound-enabled="soundEnabled"
-      @toggle-sound="$emit('toggle-sound')"
     />
 
     <!-- Control Panel -->
@@ -178,17 +176,13 @@ import { useContact } from '../../composables/useContact'
 
 import { useWindowManagement } from '../../composables/useWindowManagement'
 import { useResume } from '../../composables/useResume'
+import { useSoundEffects } from '../../composables/useSoundEffects'
 
 
 const {document , fetchDocument} = useResume()
+const { playSound } = useSoundEffects()
 
-defineProps<{
-  soundEnabled: boolean 
-}>()
-
-defineEmits<{
-  'toggle-sound': []
-}>()
+// Remove props and emits since we're using global sound state now
 
 const commandCenterOpen = ref(true)
 const photoCard = ref<HTMLElement>()
@@ -293,6 +287,7 @@ const {
 
 const toggleCommandCenter = () => {
   commandCenterOpen.value = !commandCenterOpen.value
+  playSound('click')
   console.log('Command center toggled:', commandCenterOpen.value)
 }
 

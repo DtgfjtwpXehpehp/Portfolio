@@ -5,7 +5,7 @@
       v-for="button in buttons" 
       :key="button.id"
       class="control-btn" 
-      @click="$emit('open-window', button.id)"
+      @click="handleOpenWindow(button.id)"
     >
       <span class="btn-icon">{{ button.icon }}</span>
       <span class="btn-text">{{ button.label }}</span>
@@ -14,7 +14,20 @@
 </template>
 
 <script setup lang="ts">
+import { useSoundEffects } from '../../composables/useSoundEffects'
+
+const { playSound } = useSoundEffects()
+
 defineEmits<{
+  'open-window': [windowType: string]
+}>()
+
+const handleOpenWindow = (windowType: string) => {
+  playSound('click')
+  emit('open-window', windowType)
+}
+
+const emit = defineEmits<{
   'open-window': [windowType: string]
 }>()
 

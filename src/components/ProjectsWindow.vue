@@ -49,6 +49,7 @@
           v-for="project in filteredProjects" 
           :key="project.id"
           class="card group relative"
+         @mouseenter="handleCardHover"
         >
           <div class="card__img">
             <img 

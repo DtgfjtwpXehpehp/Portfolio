@@ -1,5 +1,21 @@
+import { ref } from 'vue'
+
+// Global sound state - shared across all components
+const globalSoundEnabled = ref(true)
+
 export function useSoundEffects() {
+  const setSoundEnabled = (enabled: boolean) => {
+    globalSoundEnabled.value = enabled
+  }
+
+  const getSoundEnabled = () => {
+    return globalSoundEnabled.value
+  }
+
   const playSound = (type: 'beep' | 'click' | 'systemReady') => {
+    // Check global sound state before playing
+    if (!globalSoundEnabled.value) return
+    
     try {
       const context = new (window.AudioContext || (window as any).webkitAudioContext)()
       let frequency: number
@@ -42,6 +58,9 @@ export function useSoundEffects() {
   }
 
   return {
-    playSound
+    playSound,
+    setSoundEnabled,
+    getSoundEnabled,
+    soundEnabled: globalSoundEnabled
   }
 }

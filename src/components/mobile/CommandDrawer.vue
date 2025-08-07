@@ -3,14 +3,14 @@
     <div class="drawer-content" @click.stop>
       <div class="drawer-header">
         <h3>COMMAND CENTER</h3>
-        <button class="close-btn" @click="$emit('close')">✕</button>
+        <button class="close-btn" @click="handleClose">✕</button>
       </div>
       <nav class="drawer-nav">
         <a 
           v-for="link in navLinks" 
           :key="link.id"
           href="#"
-          @click.prevent="$emit('navigate', link.id)"
+          @click.prevent="handleNavigate(link.id)"
           class="nav-link"
         >
           <span class="nav-icon">{{ link.icon }}</span>
@@ -22,14 +22,28 @@
 </template>
 
 <script setup lang="ts">
+import { useSoundEffects } from '../../composables/useSoundEffects'
+
+const { playSound } = useSoundEffects()
+
 defineProps<{
   isOpen: boolean
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   close: []
   navigate: [sectionId: string]
 }>()
+
+const handleNavigate = (sectionId: string) => {
+  playSound('click')
+  emit('navigate', sectionId)
+}
+
+const handleClose = () => {
+  playSound('click')
+  emit('close')
+}
 
 const navLinks = [
   { id: 'about', icon: '👤', text: 'About' },

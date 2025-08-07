@@ -15,7 +15,7 @@
       <div class="checkbox-wrapper-35">
         <input 
           :checked="soundEnabled" 
-          @change="$emit('toggle-sound')" 
+          @change="toggleSound" 
           name="sound-switch" 
           id="sound-switch" 
           type="checkbox" 
@@ -36,10 +36,9 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useAbout } from '../../composables/useAbout';
+import { useSoundEffects } from '../../composables/useSoundEffects';
 
-defineProps<{
-  soundEnabled: boolean
-}>()
+const { soundEnabled, setSoundEnabled, playSound } = useSoundEffects()
 
 const { about, fetchAbout } = useAbout()
 
@@ -47,9 +46,10 @@ onMounted(async ()=> {
  await fetchAbout()
 })
 
-defineEmits<{
-  'toggle-sound': []
-}>()
+const toggleSound = () => {
+  setSoundEnabled(!soundEnabled.value)
+  playSound('click')
+}
 </script>
 
 <style scoped>

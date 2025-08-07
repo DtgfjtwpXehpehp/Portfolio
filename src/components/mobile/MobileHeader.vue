@@ -17,7 +17,7 @@
       <div class="checkbox-wrapper-35">
         <input 
           :checked="soundEnabled" 
-          @change="$emit('toggle-sound')" 
+          @change="toggleSound" 
           name="mobile-sound-switch" 
           id="mobile-sound-switch" 
           type="checkbox" 
@@ -43,17 +43,19 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { useAbout } from '../../composables/useAbout';
+import { useSoundEffects } from '../../composables/useSoundEffects';
 
 const { about, fetchAbout } = useAbout()
-
-defineProps<{
-  soundEnabled: boolean
-}>()
+const { soundEnabled, setSoundEnabled, playSound } = useSoundEffects()
 
 defineEmits<{
-  'toggle-sound': []
   'toggle-menu': []
 }>()
+
+const toggleSound = () => {
+  setSoundEnabled(!soundEnabled.value)
+  playSound('click')
+}
 
 const currentTime = ref('')
 

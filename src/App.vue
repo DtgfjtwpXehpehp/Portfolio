@@ -28,7 +28,6 @@ const { isMobile } = useResponsive()
 const { playSound } = useSoundEffects()
 
 const showLoading = ref(true)
-const soundEnabled = ref(true)
 
 // Dynamically choose layout based on screen size
 const currentLayout = computed(() => {
@@ -38,11 +37,6 @@ const currentLayout = computed(() => {
 const handleSystemReady = () => {
   showLoading.value = false
   playSound('systemReady')
-}
-
-const toggleSound = () => {
-  soundEnabled.value = !soundEnabled.value
-  playSound('click')
 }
 </script>
 
