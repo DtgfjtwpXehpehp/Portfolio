@@ -10,25 +10,70 @@
     @move="$emit('move', $event)"
   >
     <div class="projects-content">
-      <div 
-        v-for="project in projects" 
-        :key="project.id"
-        class="case-file"
-      >
-        <div class="case-header" @click="toggleCase(project.id)">
-          <div class="case-title">{{ project.title }}</div>
-          <div class="case-classification">{{ project.classification }}</div>
+      <!-- Filter Buttons -->
+      <div class="filter-section">
+        <h3 class="filter-title">FILTER BY TECHNOLOGY</h3>
+        <div class="filter-buttons">
+          <button 
+            class="filter-btn" 
+            :class="{ active: activeFilter === 'all' }"
+            @click="setFilter('all')"
+          >
+            ALL
+          </button>
+          <button 
+            v-for="tech in availableTechnologies" 
+            :key="tech"
+            class="filter-btn" 
+            :class="{ active: activeFilter === tech }"
+            @click="setFilter(tech)"
+          >
+            {{ tech.toUpperCase() }}
+          </button>
         </div>
+      </div>
+
+      <!-- Projects Grid -->
+      <div class="projects-grid">
         <div 
-          class="case-content"
-          :class="{ expanded: expandedCases.includes(project.id) }"
+          v-for="project in filteredProjects" 
+          :key="project.id"
+          class="card"
         >
-          <p><strong>Mission Brief:</strong> {{ project.brief }}</p>
-          <p><strong>Technologies:</strong> {{ project.technologies }}</p>
-          <p><strong>Status:</strong> 
-            <span :style="{ color: project.statusColor }">{{ project.status }}</span>
-          </p>
-          <p><strong>Classification:</strong> {{ project.description }}</p>
+          <div class="card__img" :style="{ backgroundColor: project.imageColor }">
+            <div class="project-icon">{{ project.icon }}</div>
+          </div>
+          <div class="card__descr-wrapper">
+            <p class="card__title">{{ project.title }}</p>
+            
+            <!-- Technology Tags -->
+            <div class="tech-tags">
+              <span 
+                v-for="tech in project.technologies" 
+                :key="tech"
+                class="tech-tag"
+              >
+                {{ tech }}
+              </span>
+            </div>
+            
+            <p class="card__descr">{{ project.description }}</p>
+            
+            <div class="card__links">
+              <div v-if="project.liveUrl">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="svg">
+                  <path d="M562.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L405.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C189.5 251.2 196 330 246 380c56.5 56.5 148 56.5 204.5 0L562.8 267.7zM43.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C57 372 57 321 88.5 289.5L200.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C416.5 260.8 410 182 360 132c-56.5-56.5-148-56.5-204.5 0L43.2 244.3z"/>
+                </svg>
+                <a class="link" :href="project.liveUrl" target="_blank" rel="noopener">Preview</a>
+              </div>
+              <div v-if="project.githubUrl">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="svg">
+                  <path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/>
+                </svg>
+                <a class="link" :href="project.githubUrl" target="_blank" rel="noopener">Code</a>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -36,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import BaseWindow from './BaseWindow.vue'
 import { useSoundEffects } from '../composables/useSoundEffects'
 
@@ -54,107 +99,306 @@ defineEmits<{
 }>()
 
 const { playSound } = useSoundEffects()
-const expandedCases = ref<string[]>([])
 
-const projects = [
+const activeFilter = ref('all')
+
+const projects = ref([
   {
-    id: 'ecommerce',
-    title: 'Operation: E-Commerce Fortress',
-    classification: 'CONFIDENTIAL',
-    brief: 'Developed secure online marketplace with advanced encryption protocols.',
-    technologies: 'React, Node.js, MongoDB, Stripe API',
-    status: 'MISSION SUCCESSFUL',
-    statusColor: 'var(--accent-green)',
-    description: 'Full-stack e-commerce platform with user authentication, payment processing, and inventory management.'
+    id: 1,
+    title: 'E-Commerce Platform',
+    description: 'A full-stack e-commerce solution with secure payment processing, inventory management, and user authentication.',
+    technologies: ['React', 'Node.js', 'MongoDB', 'Stripe'],
+    imageColor: '#4F46E5',
+    icon: '🛒',
+    liveUrl: 'https://example.com',
+    githubUrl: 'https://github.com/example/ecommerce'
   },
   {
-    id: 'neural',
-    title: 'Operation: Neural Network',
-    classification: 'TOP SECRET',
-    brief: 'AI-powered data analysis system for pattern recognition in large datasets.',
-    technologies: 'Python, TensorFlow, Flask, PostgreSQL',
-    status: 'IN PROGRESS',
-    statusColor: 'var(--accent-cyan)',
-    description: 'Machine learning application for predictive analytics and anomaly detection.'
+    id: 2,
+    title: 'AI Data Analytics',
+    description: 'Machine learning application for predictive analytics and anomaly detection in large datasets.',
+    technologies: ['Python', 'TensorFlow', 'Flask', 'PostgreSQL'],
+    imageColor: '#059669',
+    icon: '🤖',
+    liveUrl: 'https://example.com',
+    githubUrl: 'https://github.com/example/ai-analytics'
   },
   {
-    id: 'mobile',
-    title: 'Operation: Mobile Command',
-    classification: 'RESTRICTED',
-    brief: 'Cross-platform mobile application for field operations coordination.',
-    technologies: 'React Native, Firebase, GPS Integration',
-    status: 'DEPLOYED',
-    statusColor: 'var(--accent-green)',
-    description: 'Real-time communication and location tracking system for mobile devices.'
+    id: 3,
+    title: 'Mobile Task Manager',
+    description: 'Cross-platform mobile application for task management with real-time synchronization.',
+    technologies: ['React Native', 'Firebase', 'TypeScript'],
+    imageColor: '#DC2626',
+    icon: '📱',
+    liveUrl: 'https://example.com',
+    githubUrl: 'https://github.com/example/task-manager'
+  },
+  {
+    id: 4,
+    title: 'Portfolio Website',
+    description: 'Responsive portfolio website with modern design and interactive animations.',
+    technologies: ['Vue.js', 'CSS3', 'JavaScript'],
+    imageColor: '#7C3AED',
+    icon: '🎨',
+    liveUrl: 'https://example.com',
+    githubUrl: 'https://github.com/example/portfolio'
+  },
+  {
+    id: 5,
+    title: 'Chat Application',
+    description: 'Real-time chat application with WebSocket support and message encryption.',
+    technologies: ['Node.js', 'Socket.io', 'React', 'MongoDB'],
+    imageColor: '#0891B2',
+    icon: '💬',
+    liveUrl: 'https://example.com',
+    githubUrl: 'https://github.com/example/chat-app'
+  },
+  {
+    id: 6,
+    title: 'Weather Dashboard',
+    description: 'Interactive weather dashboard with location-based forecasts and data visualization.',
+    technologies: ['JavaScript', 'Chart.js', 'API Integration'],
+    imageColor: '#EA580C',
+    icon: '🌤️',
+    liveUrl: 'https://example.com',
+    githubUrl: 'https://github.com/example/weather-dashboard'
   }
-]
+])
 
-const toggleCase = (caseId: string) => {
+// Get all unique technologies for filter buttons
+const availableTechnologies = computed(() => {
+  const allTechs = projects.value.flatMap(project => project.technologies)
+  return [...new Set(allTechs)].sort()
+})
+
+// Filter projects based on selected technology
+const filteredProjects = computed(() => {
+  if (activeFilter.value === 'all') {
+    return projects.value
+  }
+  return projects.value.filter(project => 
+    project.technologies.includes(activeFilter.value)
+  )
+})
+
+const setFilter = (filter: string) => {
+  activeFilter.value = filter
   playSound('click')
-  const index = expandedCases.value.indexOf(caseId)
-  if (index > -1) {
-    expandedCases.value.splice(index, 1)
-  } else {
-    expandedCases.value.push(caseId)
-  }
 }
 </script>
 
 <style scoped>
-.case-file {
-  border: 1px solid rgba(0, 255, 255, 0.3);
-  margin-bottom: 20px;
-  border-radius: 5px;
-  overflow: hidden;
-  transition: all 0.3s ease;
+.projects-content {
+  max-height: 80vh;
+  overflow-y: auto;
+  padding-right: 10px;
 }
 
-.case-file:hover {
-  border-color: var(--accent-cyan);
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+.projects-content::-webkit-scrollbar {
+  width: 6px;
 }
 
-.case-header {
-  background: rgba(0, 255, 255, 0.1);
-  padding: 15px;
-  border-bottom: 1px solid rgba(0, 255, 255, 0.3);
-  cursor: pointer;
+.projects-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
 }
 
-.case-title {
+.projects-content::-webkit-scrollbar-thumb {
+  background-color: var(--accent-cyan);
+  border-radius: 3px;
+}
+
+/* Filter Section */
+.filter-section {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.filter-title {
   font-family: 'Orbitron', monospace;
   color: var(--accent-cyan);
   font-size: 1.1em;
-  margin-bottom: 5px;
+  margin-bottom: 15px;
   text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
-.case-classification {
-  color: var(--danger-red);
+.filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.filter-btn {
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid var(--accent-cyan);
+  color: var(--text-primary);
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 20px;
+  font-family: 'Share Tech Mono', monospace;
   font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+  background: rgba(0, 255, 255, 0.2);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+.filter-btn.active {
+  background: var(--accent-cyan);
+  color: var(--bg-primary);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+}
+
+/* Projects Grid */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 25px;
+  padding: 10px 0;
+}
+
+/* Card Styles */
+.card {
+  --font-color: #E0E0E0;
+  --bg-color: rgba(0, 31, 63, 0.8);
+  width: 250px;
+  height: 380px;
+  border-radius: 20px;
+  background: var(--bg-color);
+  box-shadow: 
+    -9px 9px 18px rgba(0, 0, 0, 0.3),
+    9px -9px 18px rgba(0, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  transition: .4s;
+  position: relative;
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.card:hover {
+  transform: scale(1.02);
+  box-shadow: 0px 0px 20px 2px rgba(0, 255, 255, 0.4);
+}
+
+.card__img {
+  width: 100%;
+  height: 140px;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.project-icon {
+  font-size: 3em;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+}
+
+.card__descr-wrapper {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.card__title {
+  color: var(--accent-cyan);
+  text-align: center;
+  margin-bottom: 15px;
+  font-weight: 900;
+  font-size: 16px;
+  font-family: 'Orbitron', monospace;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
-.case-content {
-  padding: 15px;
-  display: none;
-  background: rgba(0, 0, 0, 0.3);
+.tech-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 15px;
+  justify-content: center;
 }
 
-.case-content.expanded {
-  display: block;
-  animation: expandCase 0.3s ease-out;
+.tech-tag {
+  background: rgba(0, 255, 255, 0.2);
+  color: var(--accent-cyan);
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.7em;
+  font-family: 'Share Tech Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(0, 255, 255, 0.3);
 }
 
-@keyframes expandCase {
-  from {
-    opacity: 0;
-    max-height: 0;
+.card__descr {
+  color: var(--text-secondary);
+  font-size: 0.9em;
+  line-height: 1.4;
+  flex: 1;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.svg {
+  width: 18px;
+  height: 18px;
+  transform: translateY(25%);
+  fill: var(--accent-cyan);
+  margin-right: 5px;
+}
+
+.card__links {
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-self: flex-end;
+  width: 100%;
+}
+
+.card__links > div {
+  display: flex;
+  align-items: center;
+}
+
+.card__links .link {
+  color: var(--accent-cyan);
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+  font-family: 'Share Tech Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.card__links .link:hover {
+  color: var(--accent-green);
+  text-shadow: 0 0 5px var(--accent-green);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
+    justify-items: center;
   }
-  to {
-    opacity: 1;
-    max-height: 200px;
+  
+  .filter-buttons {
+    gap: 8px;
+  }
+  
+  .filter-btn {
+    padding: 6px 12px;
+    font-size: 0.75em;
   }
 }
 </style>
