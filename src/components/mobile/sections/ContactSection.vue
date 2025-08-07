@@ -77,21 +77,6 @@ onMounted(async()=>{
 
 
 
-defineProps<{
-  active: boolean
-  maximized?: boolean
-  position: { x: number, y: number }
-}>()
-
-defineEmits<{
-  close: []
-  minimize: []
-  maximize: []
-  move: [position: { x: number, y: number }]
-}>()
-
-const { playSound } = useSoundEffects()
-
 const form = reactive({
   agentId: '',
   email: '',

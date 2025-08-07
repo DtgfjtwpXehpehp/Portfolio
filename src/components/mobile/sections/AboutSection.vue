@@ -106,6 +106,7 @@
 import { useAbout } from '../../../composables/useAbout'
 import { useContact } from '../../../composables/useContact'
 import { useResume } from '../../../composables/useResume'
+import { useSoundEffects } from '../../../composables/useSoundEffects'
 // import { ref, onMounted } from 'vue'
 import { defineProps, defineEmits, ref, onMounted, nextTick } from 'vue'
 import gsap from 'gsap'
@@ -116,6 +117,7 @@ import textSound from '../../../assets/sounds/textsound.mp3'
 const { about, fetchAbout } = useAbout()
 const { contact, fetchContact } = useContact()
 const { document, fetchDocument } = useResume()
+const { playSound } = useSoundEffects()
 
 defineProps<{
   soundEnabled: boolean
@@ -228,6 +230,7 @@ const resetPhotoCard = () => {
 const handleSocialClick = (event: Event) => {
   const target = event.currentTarget as HTMLElement
   target.style.transform = 'translateY(-2px) scale(1.1)'
+  playSound('click')
   setTimeout(() => {
     target.style.transform = 'translateY(-2px) scale(1)'
   }, 150)

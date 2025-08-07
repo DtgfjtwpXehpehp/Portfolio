@@ -23,8 +23,10 @@
 import { onMounted } from 'vue';
 import BaseWindow from './BaseWindow.vue';
 import { useResume } from '../composables/useResume';
+import { useSoundEffects } from '../composables/useSoundEffects';
 
 const { document, fetchDocument } = useResume();
+const { playSound } = useSoundEffects();
 
 defineProps<{
   active: boolean;
@@ -41,6 +43,7 @@ defineEmits<{
 
 onMounted(async () => {
   await fetchDocument();
+  playSound('systemReady');
 });
 </script>
 

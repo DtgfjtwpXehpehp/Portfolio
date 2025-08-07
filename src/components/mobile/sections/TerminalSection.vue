@@ -46,6 +46,8 @@ const terminalLines = reactive([
 const handleCommand = () => {
   const command = currentInput.value.trim()
   if (!command) return
+  
+  playSound('beep')
 
   // Remove blinking cursor from last line
   const lastIndex = terminalLines.length - 1
@@ -70,8 +72,6 @@ const handleCommand = () => {
       terminalOutput.value.scrollTop = terminalOutput.value.scrollHeight
     }
   })
-  
-  playSound('beep')
 }
 
 const processCommand = (command: string): string => {

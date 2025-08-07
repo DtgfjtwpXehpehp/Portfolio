@@ -63,6 +63,7 @@ import { onMounted, computed, ref } from 'vue';
 import BaseWindow from './BaseWindow.vue';
 import { useAbout } from '../composables/useAbout';
 import { skillsApi, Skill } from '../services/api';
+import { useSoundEffects } from '../composables/useSoundEffects';
 
 defineProps<{
   active: boolean
@@ -78,6 +79,7 @@ defineEmits<{
 }>();
 
 
+const { playSound } = useSoundEffects()
 const { about, loading, error, fetchAbout } = useAbout();
 
 const skills = ref<Skill[]>([]);
@@ -102,6 +104,7 @@ const categoryLabels = {
 
 onMounted(async () => {
   fetchAbout();
+  playSound('systemReady');
   try {
     skillsLoading.value = true;
     const res = await skillsApi.getAll();

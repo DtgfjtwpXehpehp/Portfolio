@@ -36,6 +36,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useSoundEffects } from '../composables/useSoundEffects'
 
 interface Position {
   x: number
@@ -56,6 +57,8 @@ const emit = defineEmits<{
   maximize: []
 }>()
 
+const { playSound } = useSoundEffects()
+
 const windowRef = ref<HTMLElement>()
 const isDragging = ref(false)
 const dragOffset = ref({ x: 0, y: 0 })
@@ -68,6 +71,8 @@ const resizeStartSize = ref({ width: 0, height: 0 })
 
 const toggleMaximize = () => {
   if (!windowRef.value) return
+  
+  playSound('click')
   
   if (!props.maximized) {
     // Store original position and size before maximizing
