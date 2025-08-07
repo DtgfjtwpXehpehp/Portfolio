@@ -242,14 +242,14 @@ onMounted(() => {
 /* Card Styles */
 .card {
   --font-color: var(--text-primary);
-  --bg-color: rgba(0, 31, 63, 0.4);
+  --bg-color: rgba(0, 31, 63, 0.3);
   --border-color: rgba(0, 255, 255, 0.3);
   width: 250px;
   height: 400px;
   border-radius: 20px;
   background: var(--bg-color);
   border: 1px solid var(--border-color);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   transition: .4s;
@@ -260,7 +260,7 @@ onMounted(() => {
 .card:hover {
   transform: scale(1.02);
   border-color: var(--accent-cyan);
-  box-shadow: 0 8px 25px rgba(0, 255, 255, 0.4);
+  box-shadow: 0 8px 25px rgba(0, 255, 255, 0.2);
 }
 
 .card__img {
@@ -269,7 +269,7 @@ onMounted(() => {
   border-radius: 20px 20px 0 0;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #4F46E5, #7C3AED);
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
 }
 
 .project-image {
@@ -286,7 +286,7 @@ onMounted(() => {
 .project-placeholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #4F46E5, #7C3AED);
+  background: linear-gradient(135deg, var(--bg-secondary), rgba(0, 255, 255, 0.1));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -295,7 +295,7 @@ onMounted(() => {
 .project-icon {
   font-size: 2em;
   opacity: 0.9;
-  color: white;
+  color: var(--accent-cyan);
 }
 
 .card__descr-wrapper {
@@ -339,8 +339,8 @@ onMounted(() => {
 }
 
 .tech-tag:hover {
-  background: rgba(0, 255, 255, 0.2);
-  box-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+  background: rgba(0, 255, 255, 0.15);
+  box-shadow: 0 0 5px rgba(0, 255, 255, 0.2);
 }
 
 .card__descr {
@@ -372,7 +372,7 @@ onMounted(() => {
 .card__links > div {
   display: flex;
   align-items: center;
-  background: rgba(0, 255, 255, 0.1);
+  background: rgba(0, 31, 63, 0.4);
   border: 1px solid rgba(0, 255, 255, 0.3);
   border-radius: 8px;
   padding: 8px 12px;
@@ -382,9 +382,9 @@ onMounted(() => {
 }
 
 .card__links > div:hover {
-  background: rgba(0, 255, 255, 0.2);
+  background: rgba(0, 255, 255, 0.15);
   border-color: var(--accent-cyan);
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.2);
 }
 
 .card__links > div:hover .svg {
