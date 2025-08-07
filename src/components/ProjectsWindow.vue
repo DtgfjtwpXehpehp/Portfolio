@@ -48,7 +48,7 @@
         <div 
           v-for="project in filteredProjects" 
           :key="project.id"
-          class="card"
+          class="card group relative"
         >
           <div class="card__img">
             <img 
@@ -75,7 +75,38 @@
               </span>
             </div>
             
-            <p class="card__descr">{{ project.description }}</p>
+          <!-- Tooltip -->
+          <div class="tooltip">
+            <div class="tooltip-content">
+              <div class="tooltip-header">
+                <!-- <div class="tooltip-icon-wrapper">
+                  <svg viewBox="0 0 20 20" fill="currentColor" class="tooltip-icon">
+                    <path
+                      clip-rule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                      fill-rule="evenodd"
+                    ></path>
+                  </svg>
+                </div> -->
+                <!-- <h3 class="tooltip-title">{{ project.title }}</h3> -->
+              </div>
+              <div class="tooltip-body">
+                <p class="tooltip-description">{{ project.description }}</p>
+                <div class="tooltip-footer">
+                  <!-- <svg viewBox="0 0 20 20" fill="currentColor" class="tooltip-check">
+                    <path
+                      clip-rule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      fill-rule="evenodd"
+                    ></path>
+                  </svg> -->
+                  <!-- <span>Active Project</span> -->
+                </div>
+              </div>
+              <div class="tooltip-glow"></div>
+              <div class="tooltip-arrow"></div>
+            </div>
+          </div>
             
             <div class="card__links">
               <div v-if="getProjectLiveUrl(project)">
@@ -167,7 +198,9 @@ onMounted(() => {
 .projects-content {
   max-height: 80vh;
   overflow-y: auto;
+  overflow-x: visible;
   padding-right: 10px;
+  padding-top: 120px; /* Add space at top for tooltips */
 }
 
 .projects-content::-webkit-scrollbar {
@@ -234,38 +267,42 @@ onMounted(() => {
 /* Projects Grid */
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 25px;
   padding: 10px 0;
+  width: 100%;
+  justify-items: center;
+  overflow: visible; /* Ensure tooltips aren't clipped */
 }
 
-/* Card Styles */
+/* Card Styles - Neumorphism Design */
 .card {
-  --font-color: var(--text-primary);
-  --bg-color: rgba(0, 31, 63, 0.4);
-  --border-color: rgba(0, 255, 255, 0.3);
-  width: 250px;
-  height: 400px;
+  --font-color: #323232;
+  --bg-color: #e0e0e0;
+  width: 100%;
+  max-width: 300px;
+  height: 420px;
   border-radius: 20px;
   background: var(--bg-color);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: -9px 9px 18px #5a5a5a,
+              9px -9px 18px #ffffff;
   display: flex;
   flex-direction: column;
   transition: .4s;
   position: relative;
-  backdrop-filter: blur(10px);
+  margin: 0 auto;
 }
 
 .card:hover {
   transform: scale(1.02);
-  border-color: var(--accent-cyan);
-  box-shadow: 0 8px 25px rgba(0, 255, 255, 0.4);
+  box-shadow: 0px 0px 15px 4px #5a5a5a,
+              inset -2px 2px 6px #c0c0c0,
+              inset 2px -2px 6px #f0f0f0;
 }
 
 .card__img {
   width: 100%;
-  height: 140px;
+  height: 180px;
   border-radius: 20px 20px 0 0;
   position: relative;
   overflow: hidden;
@@ -286,16 +323,19 @@ onMounted(() => {
 .project-placeholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #4F46E5, #7C3AED);
+  background: linear-gradient(135deg, #b8b8b8, #d0d0d0);
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: inset -4px 4px 8px #a0a0a0,
+              inset 4px -4px 8px #e8e8e8;
 }
 
 .project-icon {
-  font-size: 2em;
-  opacity: 0.9;
-  color: white;
+  font-size: 3em;
+  opacity: 0.6;
+  color: #666;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
 .card__descr-wrapper {
@@ -303,6 +343,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   flex: 1;
+  overflow: hidden;
 }
 
 .card__title {
@@ -311,45 +352,145 @@ onMounted(() => {
   margin-bottom: 15px;
   font-weight: 900;
   font-size: 18px;
-  font-family: 'Orbitron', monospace;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--accent-cyan);
 }
 
 .tech-tags {
-  display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 15px;
+  gap: 4px;
+  margin-bottom: 12px;
   justify-content: center;
 }
 
 .tech-tag {
-  background: rgba(0, 255, 255, 0.1);
-  border: 1px solid var(--accent-cyan);
-  color: var(--text-primary);
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.7em;
+  background: #d0d0d0;
+  color: var(--font-color);
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 0.65em;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  box-shadow: inset -1px 1px 2px #b0b0b0,
+              inset 1px -1px 2px #f0f0f0;
   transition: all 0.3s ease;
 }
 
 .tech-tag:hover {
-  background: rgba(0, 255, 255, 0.2);
-  box-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+  background: #c8c8c8;
+  transform: translateY(-0.5px);
+  box-shadow: inset -0.5px 0.5px 2px #a8a8a8,
+              inset 0.5px -0.5px 2px #f8f8f8;
 }
 
-.card__descr {
-  color: var(--font-color);
-  font-size: 0.85em;
-  line-height: 1.5;
-  margin-bottom: auto;
-  text-align: center;
+/* Tooltip Styles */
+.tooltip {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100%);
+  width: 280px;
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  pointer-events: none;
+  margin-top: -20px; /* Increased spacing from card */
+}
+
+.card:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip-content {
+  position: relative;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(31, 41, 55, 0.95));
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 30px rgba(79, 70, 229, 0.15);
+}
+
+.tooltip-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.tooltip-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(79, 70, 229, 0.2);
+}
+
+.tooltip-icon {
+  width: 16px;
+  height: 16px;
+  color: rgb(129, 140, 248);
+}
+
+.tooltip-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
   font-family: 'Share Tech Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tooltip-body {
+  margin-bottom: 0;
+}
+
+.tooltip-description {
+  font-size: 13px;
+  color: rgb(209, 213, 219);
+  line-height: 1.5;
+  margin-bottom: 12px;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.tooltip-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: rgb(156, 163, 175);
+  font-family: 'Share Tech Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tooltip-check {
+  width: 16px;
+  height: 16px;
+  color: rgb(34, 197, 94);
+}
+
+.tooltip-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(147, 51, 234, 0.1));
+  filter: blur(10px);
+  opacity: 0.5;
+}
+
+.tooltip-arrow {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 12px;
+  height: 12px;
+  background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(31, 41, 55, 0.95));
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .svg {
@@ -357,8 +498,9 @@ onMounted(() => {
   height: 20px;
   transform: translateY(25%);
   fill: var(--font-color);
-  margin-right: 5px;
+  margin-right: 6px;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .card__links {
@@ -366,29 +508,35 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  gap: 10px;
+  gap: 12px;
+  box-sizing: border-box;
 }
 
 .card__links > div {
   display: flex;
   align-items: center;
-  background: rgba(0, 255, 255, 0.1);
-  border: 1px solid rgba(0, 255, 255, 0.3);
-  border-radius: 8px;
+  background: var(--bg-color);
+  border-radius: 12px;
   padding: 8px 12px;
+  box-shadow: -4px 4px 8px #b0b0b0,
+              4px -4px 8px #f0f0f0;
   transition: all 0.3s ease;
   flex: 1;
   justify-content: center;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .card__links > div:hover {
-  background: rgba(0, 255, 255, 0.2);
-  border-color: var(--accent-cyan);
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  background: #d8d8d8;
+  box-shadow: inset -2px 2px 4px #a8a8a8,
+              inset 2px -2px 4px #f8f8f8;
+  transform: translateY(1px);
 }
 
 .card__links > div:hover .svg {
-  fill: var(--accent-cyan);
+  fill: #4F46E5;
+  transform: translateY(25%) scale(1.1);
 }
 
 .card__links .link {
@@ -400,10 +548,14 @@ onMounted(() => {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   transition: all 0.3s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .card__links > div:hover .link {
-  color: var(--accent-cyan);
+  color: #4F46E5;
+  font-weight: 700;
 }
 
 /* Responsive Design */
@@ -411,6 +563,12 @@ onMounted(() => {
   .projects-grid {
     grid-template-columns: 1fr;
     justify-items: center;
+    gap: 20px;
+  }
+  
+  .card {
+    width: 90%;
+    max-width: 320px;
   }
   
   .filter-buttons {
@@ -420,6 +578,22 @@ onMounted(() => {
   .filter-btn {
     padding: 6px 12px;
     font-size: 0.75em;
+  }
+
+  .tooltip {
+    width: 250px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1200px) {
+  .projects-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1201px) {
+  .projects-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
