@@ -50,8 +50,16 @@
           :key="project.id"
           class="card"
         >
-          <div class="card__img" :style="{ backgroundColor: getProjectImageColor(project) }">
-            <div class="project-icon">{{ project.icon || '📁' }}</div>
+          <div class="card__img">
+            <img 
+              v-if="getProjectImageUrl(project)" 
+              :src="getProjectImageUrl(project)" 
+              :alt="project.title + ' screenshot'"
+              class="project-image"
+            >
+            <div v-else class="project-placeholder">
+              <div class="project-icon">{{ project.icon || '📁' }}</div>
+            </div>
           </div>
           <div class="card__descr-wrapper">
             <p class="card__title">{{ project.title }}</p>
@@ -136,9 +144,9 @@ const setFilter = (filter: string) => {
   playSound('click')
 }
 
-// Helper function to get project image color
-const getProjectImageColor = (project: any) => {
-  return project.image_color || project.imageColor || '#4F46E5'
+// Helper function to get project image URL
+const getProjectImageUrl = (project: any) => {
+  return project.image_url || project.imageUrl
 }
 
 // Helper function to get project URLs
@@ -257,6 +265,33 @@ onMounted(() => {
   width: 100%;
   height: 120px;
   border-radius: 20px 20px 0 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.project-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .project-image {
+  transform: scale(1.05);
+}
+
+.project-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #4F46E5, #7C3AED);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.project-icon {
+  font-size: 2em;
+  opacity: 0.8;
 }
 
 .card__descr-wrapper {
