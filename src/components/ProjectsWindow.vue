@@ -79,7 +79,7 @@
           <div class="tooltip">
             <div class="tooltip-content">
               <div class="tooltip-header">
-                <!-- <div class="tooltip-icon-wrapper">
+                <div class="tooltip-icon-wrapper">
                   <svg viewBox="0 0 20 20" fill="currentColor" class="tooltip-icon">
                     <path
                       clip-rule="evenodd"
@@ -87,20 +87,20 @@
                       fill-rule="evenodd"
                     ></path>
                   </svg>
-                </div> -->
-                <!-- <h3 class="tooltip-title">{{ project.title }}</h3> -->
+                </div>
+                <h3 class="tooltip-title">{{ project.title }}</h3>
               </div>
               <div class="tooltip-body">
                 <p class="tooltip-description">{{ project.description }}</p>
                 <div class="tooltip-footer">
-                  <!-- <svg viewBox="0 0 20 20" fill="currentColor" class="tooltip-check">
+                  <svg viewBox="0 0 20 20" fill="currentColor" class="tooltip-check">
                     <path
                       clip-rule="evenodd"
                       d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                       fill-rule="evenodd"
                     ></path>
-                  </svg> -->
-                  <!-- <span>Active Project</span> -->
+                  </svg>
+                  <span>Active Project</span>
                 </div>
               </div>
               <div class="tooltip-glow"></div>
@@ -277,15 +277,15 @@ onMounted(() => {
 
 /* Card Styles - Neumorphism Design */
 .card {
-  --font-color: var(--text-primary);
-  --bg-color: rgba(0, 31, 63, 0.3);
-  --border-color: rgba(0, 255, 255, 0.3);
-  width: 250px;
-  height: 400px;
+  --font-color: #323232;
+  --bg-color: #e0e0e0;
+  width: 100%;
+  max-width: 300px;
+  height: 420px;
   border-radius: 20px;
   background: var(--bg-color);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: -9px 9px 18px #5a5a5a,
+              9px -9px 18px #ffffff;
   display: flex;
   flex-direction: column;
   transition: .4s;
@@ -295,8 +295,9 @@ onMounted(() => {
 
 .card:hover {
   transform: scale(1.02);
-  border-color: var(--accent-cyan);
-  box-shadow: 0 8px 25px rgba(0, 255, 255, 0.2);
+  box-shadow: 0px 0px 15px 4px #5a5a5a,
+              inset -2px 2px 6px #c0c0c0,
+              inset 2px -2px 6px #f0f0f0;
 }
 
 .card__img {
@@ -305,7 +306,7 @@ onMounted(() => {
   border-radius: 20px 20px 0 0;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
+  background: linear-gradient(135deg, #4F46E5, #7C3AED);
 }
 
 .project-image {
@@ -322,7 +323,7 @@ onMounted(() => {
 .project-placeholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, var(--bg-secondary), rgba(0, 255, 255, 0.1));
+  background: linear-gradient(135deg, #b8b8b8, #d0d0d0);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -331,9 +332,10 @@ onMounted(() => {
 }
 
 .project-icon {
-  font-size: 2em;
-  opacity: 0.9;
-  color: var(--accent-cyan);
+  font-size: 3em;
+  opacity: 0.6;
+  color: #666;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
 .card__descr-wrapper {
@@ -373,13 +375,81 @@ onMounted(() => {
 }
 
 .tech-tag:hover {
-  background: rgba(0, 255, 255, 0.15);
-  box-shadow: 0 0 5px rgba(0, 255, 255, 0.2);
+  background: #c8c8c8;
+  transform: translateY(-0.5px);
+  box-shadow: inset -0.5px 0.5px 2px #a8a8a8,
+              inset 0.5px -0.5px 2px #f8f8f8;
 }
 
-.card__descr {
-  color: var(--font-color);
-  font-size: 0.85em;
+/* Tooltip Styles */
+.tooltip {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100%);
+  width: 280px;
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  pointer-events: none;
+  margin-top: -20px; /* Increased spacing from card */
+}
+
+.card:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip-content {
+  position: relative;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(31, 41, 55, 0.95));
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 30px rgba(79, 70, 229, 0.15);
+}
+
+.tooltip-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.tooltip-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(79, 70, 229, 0.2);
+}
+
+.tooltip-icon {
+  width: 16px;
+  height: 16px;
+  color: rgb(129, 140, 248);
+}
+
+.tooltip-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  font-family: 'Share Tech Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tooltip-body {
+  margin-bottom: 0;
+}
+
+.tooltip-description {
+  font-size: 13px;
+  color: rgb(209, 213, 219);
   line-height: 1.5;
   margin-bottom: 12px;
   font-family: 'Share Tech Mono', monospace;
@@ -445,9 +515,8 @@ onMounted(() => {
 .card__links > div {
   display: flex;
   align-items: center;
-  background: rgba(0, 31, 63, 0.4);
-  border: 1px solid rgba(0, 255, 255, 0.3);
-  border-radius: 8px;
+  background: var(--bg-color);
+  border-radius: 12px;
   padding: 8px 12px;
   box-shadow: -4px 4px 8px #b0b0b0,
               4px -4px 8px #f0f0f0;
@@ -459,9 +528,10 @@ onMounted(() => {
 }
 
 .card__links > div:hover {
-  background: rgba(0, 255, 255, 0.15);
-  border-color: var(--accent-cyan);
-  box-shadow: 0 0 8px rgba(0, 255, 255, 0.2);
+  background: #d8d8d8;
+  box-shadow: inset -2px 2px 4px #a8a8a8,
+              inset 2px -2px 4px #f8f8f8;
+  transform: translateY(1px);
 }
 
 .card__links > div:hover .svg {
