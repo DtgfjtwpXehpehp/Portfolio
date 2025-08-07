@@ -18,7 +18,7 @@ import { useSoundEffects } from '../../composables/useSoundEffects'
 
 const { playSound } = useSoundEffects()
 
-defineEmits<{
+const emit = defineEmits<{
   'open-window': [windowType: string]
 }>()
 
@@ -26,10 +26,6 @@ const handleOpenWindow = (windowType: string) => {
   playSound('click')
   emit('open-window', windowType)
 }
-
-const emit = defineEmits<{
-  'open-window': [windowType: string]
-}>()
 
 const buttons = [
   { id: 'about', label: 'PERSONNEL FILE', icon: '👤' },
