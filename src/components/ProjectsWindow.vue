@@ -276,38 +276,72 @@ onMounted(() => {
   overflow: visible; /* Ensure tooltips aren't clipped */
 }
 
-/* Card Styles - Neumorphism Design */
+/* Card Styles - Spy Theme Design */
 .card {
-  --font-color: #323232;
-  --bg-color: #e0e0e0;
+  --font-color: var(--text-primary);
+  --bg-color: rgba(0, 31, 63, 0.4);
+  --border-color: var(--accent-cyan);
   width: 100%;
   max-width: 300px;
   height: 420px;
-  border-radius: 20px;
-  background: var(--bg-color);
-  box-shadow: -9px 9px 18px #5a5a5a,
-              9px -9px 18px #ffffff;
+  border-radius: 8px;
+  background: linear-gradient(145deg, 
+    rgba(0, 31, 63, 0.6), 
+    rgba(0, 15, 31, 0.8)
+  );
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(0, 255, 255, 0.1),
+    inset 0 1px 0 rgba(0, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
-  transition: .4s;
+  transition: all 0.3s ease;
   position: relative;
   margin: 0 auto;
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 255, 0.02) 2px,
+    rgba(0, 255, 255, 0.02) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
 }
 
 .card:hover {
-  transform: scale(1.02);
-  box-shadow: 0px 0px 15px 4px #5a5a5a,
-              inset -2px 2px 6px #c0c0c0,
-              inset 2px -2px 6px #f0f0f0;
+  transform: translateY(-5px) scale(1.02);
+  border-color: var(--accent-cyan);
+  box-shadow: 
+    0 15px 40px rgba(0, 0, 0, 0.5),
+    0 0 0 2px var(--accent-cyan),
+    0 0 20px rgba(0, 255, 255, 0.4),
+    inset 0 1px 0 rgba(0, 255, 255, 0.2);
 }
 
 .card__img {
   width: 100%;
   height: 180px;
-  border-radius: 20px 20px 0 0;
+  border-radius: 8px 8px 0 0;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #4F46E5, #7C3AED);
+  background: linear-gradient(135deg, 
+    var(--bg-secondary), 
+    rgba(0, 255, 255, 0.1)
+  );
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
 }
 
 .project-image {
@@ -315,28 +349,47 @@ onMounted(() => {
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
+  filter: contrast(1.1) saturate(0.9) hue-rotate(10deg);
 }
 
 .card:hover .project-image {
-  transform: scale(1.05);
+  transform: scale(1.08);
+  filter: contrast(1.2) saturate(1.1) hue-rotate(10deg) brightness(1.1);
 }
 
 .project-placeholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #b8b8b8, #d0d0d0);
+  background: linear-gradient(135deg, 
+    var(--bg-secondary), 
+    rgba(0, 255, 255, 0.1)
+  );
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: inset -4px 4px 8px #a0a0a0,
-              inset 4px -4px 8px #e8e8e8;
+  position: relative;
+}
+
+.project-placeholder::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, 
+    rgba(0, 255, 255, 0.1) 0%, 
+    transparent 70%
+  );
 }
 
 .project-icon {
   font-size: 3em;
-  opacity: 0.6;
-  color: #666;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  opacity: 0.8;
+  color: var(--accent-cyan);
+  text-shadow: 0 0 10px var(--accent-cyan);
+  z-index: 2;
+  position: relative;
 }
 
 .card__descr-wrapper {
@@ -345,18 +398,24 @@ onMounted(() => {
   flex-direction: column;
   flex: 1;
   overflow: hidden;
+  position: relative;
+  z-index: 2;
 }
 
 .card__title {
   color: var(--font-color);
   text-align: center;
   margin-bottom: 15px;
-  font-weight: 900;
+  font-weight: 700;
   font-size: 18px;
   text-transform: uppercase;
+  font-family: 'Orbitron', monospace;
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
 }
 
 .tech-tags {
+  display: flex;
   flex-wrap: wrap;
   gap: 4px;
   margin-bottom: 12px;
@@ -364,22 +423,23 @@ onMounted(() => {
 }
 
 .tech-tag {
-  background: #d0d0d0;
-  color: var(--font-color);
-  padding: 3px 8px;
-  border-radius: 10px;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid var(--accent-cyan);
+  color: var(--text-primary);
+  padding: 4px 8px;
+  border-radius: 20px;
   font-size: 0.65em;
   text-transform: uppercase;
-  box-shadow: inset -1px 1px 2px #b0b0b0,
-              inset 1px -1px 2px #f0f0f0;
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 0.5px;
   transition: all 0.3s ease;
 }
 
 .tech-tag:hover {
-  background: #c8c8c8;
-  transform: translateY(-0.5px);
-  box-shadow: inset -0.5px 0.5px 2px #a8a8a8,
-              inset 0.5px -0.5px 2px #f8f8f8;
+  background: rgba(0, 255, 255, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  border-color: var(--accent-cyan);
 }
 
 /* Tooltip Styles */
@@ -405,11 +465,14 @@ onMounted(() => {
 .tooltip-content {
   position: relative;
   padding: 16px;
-  background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(31, 41, 55, 0.95));
+  background: linear-gradient(135deg, 
+    rgba(0, 15, 31, 0.95), 
+    rgba(0, 31, 63, 0.95)
+  );
   backdrop-filter: blur(12px);
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 30px rgba(79, 70, 229, 0.15);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
 }
 
 .tooltip-header {
@@ -426,19 +489,19 @@ onMounted(() => {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: rgba(79, 70, 229, 0.2);
+  background: rgba(0, 255, 255, 0.2);
 }
 
 .tooltip-icon {
   width: 16px;
   height: 16px;
-  color: rgb(129, 140, 248);
+  color: var(--accent-cyan);
 }
 
 .tooltip-title {
   font-size: 14px;
   font-weight: 600;
-  color: white;
+  color: var(--text-primary);
   font-family: 'Share Tech Mono', monospace;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -450,7 +513,7 @@ onMounted(() => {
 
 .tooltip-description {
   font-size: 13px;
-  color: rgb(209, 213, 219);
+  color: var(--text-secondary);
   line-height: 1.5;
   margin-bottom: 12px;
   font-family: 'Share Tech Mono', monospace;
@@ -461,7 +524,7 @@ onMounted(() => {
   align-items: center;
   gap: 8px;
   font-size: 11px;
-  color: rgb(156, 163, 175);
+  color: var(--text-secondary);
   font-family: 'Share Tech Mono', monospace;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -470,14 +533,17 @@ onMounted(() => {
 .tooltip-check {
   width: 16px;
   height: 16px;
-  color: rgb(34, 197, 94);
+  color: var(--accent-green);
 }
 
 .tooltip-glow {
   position: absolute;
   inset: 0;
   border-radius: 16px;
-  background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(147, 51, 234, 0.1));
+  background: linear-gradient(135deg, 
+    rgba(0, 255, 255, 0.1), 
+    rgba(0, 255, 65, 0.1)
+  );
   filter: blur(10px);
   opacity: 0.5;
 }
@@ -489,16 +555,19 @@ onMounted(() => {
   transform: translateX(-50%) rotate(45deg);
   width: 12px;
   height: 12px;
-  background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(31, 41, 55, 0.95));
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, 
+    rgba(0, 15, 31, 0.95), 
+    rgba(0, 31, 63, 0.95)
+  );
+  border-right: 1px solid rgba(0, 255, 255, 0.3);
+  border-bottom: 1px solid rgba(0, 255, 255, 0.3);
 }
 
 .svg {
   width: 20px;
   height: 20px;
   transform: translateY(25%);
-  fill: var(--font-color);
+  fill: var(--accent-cyan);
   margin-right: 6px;
   transition: all 0.3s ease;
   flex-shrink: 0;
@@ -516,32 +585,52 @@ onMounted(() => {
 .card__links > div {
   display: flex;
   align-items: center;
-  background: var(--bg-color);
-  border-radius: 12px;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid var(--accent-cyan);
+  border-radius: 20px;
   padding: 8px 12px;
-  box-shadow: -4px 4px 8px #b0b0b0,
-              4px -4px 8px #f0f0f0;
   transition: all 0.3s ease;
   flex: 1;
   justify-content: center;
   min-width: 0;
   overflow: hidden;
+  position: relative;
+}
+
+.card__links > div::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(0, 255, 255, 0.2), 
+    transparent
+  );
+  transition: left 0.5s ease;
 }
 
 .card__links > div:hover {
-  background: #d8d8d8;
-  box-shadow: inset -2px 2px 4px #a8a8a8,
-              inset 2px -2px 4px #f8f8f8;
-  transform: translateY(1px);
+  background: rgba(0, 255, 255, 0.2);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+  transform: translateY(-2px);
+  border-color: var(--accent-cyan);
+}
+
+.card__links > div:hover::before {
+  left: 100%;
 }
 
 .card__links > div:hover .svg {
-  fill: #4F46E5;
+  fill: var(--accent-green);
   transform: translateY(25%) scale(1.1);
+  filter: drop-shadow(0 0 5px var(--accent-green));
 }
 
 .card__links .link {
-  color: var(--font-color);
+  color: var(--text-primary);
   font-weight: 600;
   font-size: 12px;
   text-decoration: none;
@@ -555,8 +644,9 @@ onMounted(() => {
 }
 
 .card__links > div:hover .link {
-  color: #4F46E5;
+  color: var(--accent-green);
   font-weight: 700;
+  text-shadow: 0 0 5px var(--accent-green);
 }
 
 /* Responsive Design */
