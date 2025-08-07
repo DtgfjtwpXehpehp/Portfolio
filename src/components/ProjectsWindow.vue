@@ -265,99 +265,63 @@ const setFilter = (filter: string) => {
 
 /* Card Styles */
 .card {
-  --font-color: #E0E0E0;
-  --bg-color: rgba(0, 31, 63, 0.8);
+  --font-color: #323232;
+  --bg-color: #e0e0e0;
   width: 250px;
-  height: 380px;
+  height: 350px;
   border-radius: 20px;
   background: var(--bg-color);
   box-shadow: 
-    -9px 9px 18px rgba(0, 0, 0, 0.3),
-    9px -9px 18px rgba(0, 255, 255, 0.1);
+    -9px 9px 18px #5a5a5a,
+    9px -9px 18px #ffffff;
   display: flex;
   flex-direction: column;
   transition: .4s;
   position: relative;
-  border: 1px solid rgba(0, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
 }
 
 .card:hover {
   transform: scale(1.02);
-  box-shadow: 0px 0px 20px 2px rgba(0, 255, 255, 0.4);
+  box-shadow: 0px 0px 10px 2px #5a5a5a;
 }
 
 .card__img {
   width: 100%;
-  height: 140px;
+  height: 120px;
   border-radius: 20px 20px 0 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.project-icon {
-  font-size: 3em;
-  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
 }
 
 .card__descr-wrapper {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
+  padding: 15px;
+  display: grid;
   flex: 1;
 }
 
 .card__title {
-  color: var(--accent-cyan);
+  color: var(--font-color);
   text-align: center;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   font-weight: 900;
   font-size: 16px;
-  font-family: 'Orbitron', monospace;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.tech-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 15px;
-  justify-content: center;
-}
-
-.tech-tag {
-  background: rgba(0, 255, 255, 0.2);
-  color: var(--accent-cyan);
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.7em;
-  font-family: 'Share Tech Mono', monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border: 1px solid rgba(0, 255, 255, 0.3);
 }
 
 .card__descr {
-  color: var(--text-secondary);
+  color: var(--font-color);
   font-size: 0.9em;
-  line-height: 1.4;
-  flex: 1;
-  font-family: 'Share Tech Mono', monospace;
+  line-height: 1.5;
+  margin-bottom: 15px;
 }
 
 .svg {
-  width: 18px;
-  height: 18px;
+  width: 25px;
+  height: 25px;
   transform: translateY(25%);
-  fill: var(--accent-cyan);
+  fill: var(--font-color);
   margin-right: 5px;
 }
 
 .card__links {
-  margin-top: 15px;
+  margin-top: 10px;
   display: flex;
   justify-content: space-between;
   align-self: flex-end;
@@ -370,19 +334,14 @@ const setFilter = (filter: string) => {
 }
 
 .card__links .link {
-  color: var(--accent-cyan);
+  color: var(--font-color);
   font-weight: 600;
-  font-size: 13px;
+  font-size: 15px;
   text-decoration: none;
-  font-family: 'Share Tech Mono', monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  transition: all 0.3s ease;
 }
 
 .card__links .link:hover {
-  color: var(--accent-green);
-  text-shadow: 0 0 5px var(--accent-green);
+  text-decoration: underline;
 }
 
 /* Responsive Design */
