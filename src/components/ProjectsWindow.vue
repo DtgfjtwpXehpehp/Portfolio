@@ -377,75 +377,9 @@ onMounted(() => {
   box-shadow: 0 0 5px rgba(0, 255, 255, 0.2);
 }
 
-/* Tooltip Styles */
-.tooltip {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%) translateY(-100%);
-  width: 280px;
-  visibility: hidden;
-  opacity: 0;
-  transition: all 0.3s ease;
-  z-index: 1000;
-  pointer-events: none;
-  margin-top: -20px; /* Increased spacing from card */
-}
-
-.card:hover .tooltip {
-  visibility: visible;
-  opacity: 1;
-}
-
-.tooltip-content {
-  position: relative;
-  padding: 16px;
-  background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(31, 41, 55, 0.95));
-  backdrop-filter: blur(12px);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 30px rgba(79, 70, 229, 0.15);
-}
-
-.tooltip-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.tooltip-icon-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(79, 70, 229, 0.2);
-}
-
-.tooltip-icon {
-  width: 16px;
-  height: 16px;
-  color: rgb(129, 140, 248);
-}
-
-.tooltip-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: white;
-  font-family: 'Share Tech Mono', monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.tooltip-body {
-  margin-bottom: 0;
-}
-
-.tooltip-description {
-  font-size: 13px;
-  color: rgb(209, 213, 219);
+.card__descr {
+  color: var(--font-color);
+  font-size: 0.85em;
   line-height: 1.5;
   margin-bottom: 12px;
   font-family: 'Share Tech Mono', monospace;
