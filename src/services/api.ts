@@ -14,9 +14,15 @@ export interface Project {
   title: string;
   description: string;
   technologies: string[];
-  imageUrl?: string;
+  image_url?: string;
+  image_color?: string;
+  icon?: string;
   githubUrl?: string;
+  github_url?: string;
   liveUrl?: string;
+  live_url?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 

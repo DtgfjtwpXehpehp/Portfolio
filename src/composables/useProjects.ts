@@ -11,7 +11,15 @@ export function useProjects() {
     error.value = null;
     try {
       const response = await projectsApi.getAll();
-      projects.value = response.data;
+      // Ensure technologies is always an array
+      projects.value = response.data.map(project => ({
+        ...project,
+        technologies: Array.isArray(project.technologies) 
+          ? project.technologies 
+          : typeof project.technologies === 'string'
+            ? project.technologies.split(',').map(tech => tech.trim())
+            : []
+      }));
     } catch (e) {
       error.value = 'Failed to fetch projects';
       console.error(e);
