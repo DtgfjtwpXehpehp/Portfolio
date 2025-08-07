@@ -183,7 +183,7 @@ import { useResume } from '../../composables/useResume'
 const {document , fetchDocument} = useResume()
 
 defineProps<{
-  soundEnabled: boolean
+  soundEnabled: boolean 
 }>()
 
 defineEmits<{
