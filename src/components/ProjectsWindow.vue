@@ -242,14 +242,12 @@ onMounted(() => {
 /* Card Styles */
 .card {
   --font-color: #323232;
-  --bg-color: #e0e0e0;
+  --bg-color: rgba(0, 255, 255, 0.2);
   width: 250px;
   height: 350px;
   border-radius: 20px;
   background: var(--bg-color);
-  box-shadow: 
-    -9px 9px 18px #5a5a5a,
-    9px -9px 18px #ffffff;
+  box-shadow: rgba(0, 255, 255, 0.5);
   display: flex;
   flex-direction: column;
   transition: .4s;

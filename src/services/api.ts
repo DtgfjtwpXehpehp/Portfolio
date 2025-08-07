@@ -15,7 +15,6 @@ export interface Project {
   description: string;
   technologies: string[];
   image_url?: string;
-  image_url?: string;
   icon?: string;
   githubUrl?: string;
   github_url?: string;
