@@ -238,7 +238,7 @@ watch(() => props.active, (newActive) => {
   min-height: 300px;
   box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
   backdrop-filter: blur(15px);
-  z-index: 50;
+  z-index: 200;
   resize: none; /* Disable default browser resize */
 }
 
