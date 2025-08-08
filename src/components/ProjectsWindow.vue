@@ -49,7 +49,6 @@
           v-for="project in filteredProjects" 
           :key="project.id"
           class="card group relative"
-         @mouseenter="handleCardHover"
         >
           <div class="card__img">
             <img 
@@ -94,14 +93,7 @@
               <div class="tooltip-body">
                 <p class="tooltip-description">{{ project.description }}</p>
                 <div class="tooltip-footer">
-                  <svg viewBox="0 0 20 20" fill="currentColor" class="tooltip-check">
-                    <path
-                      clip-rule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      fill-rule="evenodd"
-                    ></path>
-                  </svg>
-                  <span>Active Project</span>
+               
                 </div>
               </div>
               <div class="tooltip-glow"></div>
@@ -110,18 +102,52 @@
           </div>
             
             <div class="card__links">
-              <div v-if="getProjectLiveUrl(project)">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="svg">
-                  <path d="M562.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L405.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C189.5 251.2 196 330 246 380c56.5 56.5 148 56.5 204.5 0L562.8 267.7zM43.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C57 372 57 321 88.5 289.5L200.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C416.5 260.8 410 182 360 132c-56.5-56.5-148-56.5-204.5 0L43.2 244.3z"/>
-                </svg>
-                <a class="link" :href="getProjectLiveUrl(project)" target="_blank" rel="noopener">Preview</a>
-              </div>
-              <div v-if="getProjectGithubUrl(project)">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="svg">
-                  <path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/>
-                </svg>
-                <a class="link" :href="getProjectGithubUrl(project)" target="_blank" rel="noopener">Code</a>
-              </div>
+
+
+<div
+  class="card__tooltip"
+  @mouseenter="showTooltip = 'code'"
+  @mouseleave="showTooltip = null"
+>
+  <a
+    :href="getProjectGithubUrl(project)"
+    class="card__button"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <CodeIcon class="svg" />
+    <span class="link">Code</span>
+  </a>
+  <span
+    v-if="showTooltip === 'code'"
+    class="tooltip-text"
+  >
+    View Code
+  </span>
+</div>
+<div
+  class="card__tooltip"
+  @mouseenter="showTooltip = 'preview'"
+  @mouseleave="showTooltip = null"
+>
+  <a
+    :href="getProjectLiveUrl(project)"
+    class="card__button"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+       <!-- <svg viewBox="0 0 24 24" height="1.2em" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5c.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34c-.46-1.16-1.11-1.47-1.11-1.47c-.91-.62.07-.6.07-.6c1 .07 1.53 1.03 1.53 1.03c.87 1.52 2.34 1.07 2.91.83c.09-.65.35-1.09.63-1.34c-2.22-.25-4.55-1.11-4.55-4.92c0-1.11.38-2 1.03-2.71c-.1-.25-.45-1.29.1-2.64c0 0 .84-.27 2.75 1.02c.79-.22 1.65-.33 2.5-.33c.85 0 1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02c.55 1.35.2 2.39.1 2.64c.65.71 1.03 1.6 1.03 2.71c0 3.82-2.34 4.66-4.57 4.91c.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/>
+                        </svg> -->
+    <span class="link">Preview</span>
+  </a>
+  <span
+    v-if="showTooltip === 'preview'"
+    class="tooltip-text"
+  >
+    Live Preview
+  </span>
+</div>
             </div>
           </div>
         </div>
@@ -276,7 +302,7 @@ onMounted(() => {
   overflow: visible; /* Ensure tooltips aren't clipped */
 }
 
-/* Card Styles - Spy Theme Design */
+/* Card Styles - Neumorphism Design */
 .card {
   --font-color: var(--text-primary);
   --bg-color: rgba(0, 31, 63, 0.4);
@@ -284,64 +310,30 @@ onMounted(() => {
   width: 100%;
   max-width: 300px;
   height: 420px;
-  border-radius: 8px;
-  background: linear-gradient(145deg, 
-    rgba(0, 31, 63, 0.6), 
-    rgba(0, 15, 31, 0.8)
-  );
-  border: 1px solid rgba(0, 255, 255, 0.3);
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(0, 255, 255, 0.1),
-    inset 0 1px 0 rgba(0, 255, 255, 0.1);
+  border-radius: 20px;
+  background: var(--bg-color);
+  box-shadow:var(--accent-cyan);
   display: flex;
   flex-direction: column;
-  transition: all 0.3s ease;
+  transition: .4s;
   position: relative;
   margin: 0 auto;
-  backdrop-filter: blur(10px);
-  overflow: hidden;
-}
-
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: repeating-linear-gradient(
-    90deg,
-    transparent,
-    transparent 2px,
-    rgba(0, 255, 255, 0.02) 2px,
-    rgba(0, 255, 255, 0.02) 4px
-  );
-  pointer-events: none;
-  z-index: 1;
 }
 
 .card:hover {
-  transform: translateY(-5px) scale(1.02);
-  border-color: var(--accent-cyan);
-  box-shadow: 
-    0 15px 40px rgba(0, 0, 0, 0.5),
-    0 0 0 2px var(--accent-cyan),
-    0 0 20px rgba(0, 255, 255, 0.4),
-    inset 0 1px 0 rgba(0, 255, 255, 0.2);
+  transform: scale(1.02);
+  box-shadow: 0px 0px 15px 4px #5a5a5a,
+              inset -2px 2px 6px #c0c0c0,
+              inset 2px -2px 6px #f0f0f0;
 }
 
 .card__img {
   width: 100%;
   height: 180px;
-  border-radius: 8px 8px 0 0;
+  border-radius: 20px 20px 0 0;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, 
-    var(--bg-secondary), 
-    rgba(0, 255, 255, 0.1)
-  );
-  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+  background: linear-gradient(135deg, #4F46E5, #7C3AED);
 }
 
 .project-image {
@@ -349,47 +341,28 @@ onMounted(() => {
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
-  filter: contrast(1.1) saturate(0.9) hue-rotate(10deg);
 }
 
 .card:hover .project-image {
-  transform: scale(1.08);
-  filter: contrast(1.2) saturate(1.1) hue-rotate(10deg) brightness(1.1);
+  transform: scale(1.05);
 }
 
 .project-placeholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, 
-    var(--bg-secondary), 
-    rgba(0, 255, 255, 0.1)
-  );
+  background: linear-gradient(135deg, #b8b8b8, #d0d0d0);
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-}
-
-.project-placeholder::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at center, 
-    rgba(0, 255, 255, 0.1) 0%, 
-    transparent 70%
-  );
+  box-shadow: inset -4px 4px 8px #a0a0a0,
+              inset 4px -4px 8px #e8e8e8;
 }
 
 .project-icon {
   font-size: 3em;
-  opacity: 0.8;
-  color: var(--accent-cyan);
-  text-shadow: 0 0 10px var(--accent-cyan);
-  z-index: 2;
-  position: relative;
+  opacity: 0.6;
+  color: #666;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
 .card__descr-wrapper {
@@ -398,24 +371,18 @@ onMounted(() => {
   flex-direction: column;
   flex: 1;
   overflow: hidden;
-  position: relative;
-  z-index: 2;
 }
 
 .card__title {
   color: var(--font-color);
   text-align: center;
   margin-bottom: 15px;
-  font-weight: 700;
+  font-weight: 900;
   font-size: 18px;
   text-transform: uppercase;
-  font-family: 'Orbitron', monospace;
-  letter-spacing: 1px;
-  text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
 }
 
 .tech-tags {
-  display: flex;
   flex-wrap: wrap;
   gap: 4px;
   margin-bottom: 12px;
@@ -424,22 +391,19 @@ onMounted(() => {
 
 .tech-tag {
   background: rgba(0, 255, 255, 0.1);
-  border: 1px solid var(--accent-cyan);
-  color: var(--text-primary);
-  padding: 4px 8px;
-  border-radius: 20px;
+  color: var(--font-color);
+  padding: 3px 8px;
+  border-radius: 10px;
   font-size: 0.65em;
+  border: 1px solid var(--accent-cyan);
   text-transform: uppercase;
-  font-family: 'Share Tech Mono', monospace;
-  letter-spacing: 0.5px;
+  box-shadow: var(--accent-cyan);
   transition: all 0.3s ease;
 }
 
 .tech-tag:hover {
   background: rgba(0, 255, 255, 0.2);
-  transform: translateY(-1px);
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
-  border-color: var(--accent-cyan);
 }
 
 /* Tooltip Styles */
@@ -465,14 +429,11 @@ onMounted(() => {
 .tooltip-content {
   position: relative;
   padding: 16px;
-  background: linear-gradient(135deg, 
-    rgba(0, 15, 31, 0.95), 
-    rgba(0, 31, 63, 0.95)
-  );
+  background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(31, 41, 55, 0.95));
   backdrop-filter: blur(12px);
   border-radius: 16px;
-  border: 1px solid rgba(0, 255, 255, 0.3);
-  box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 30px rgba(79, 70, 229, 0.15);
 }
 
 .tooltip-header {
@@ -489,19 +450,19 @@ onMounted(() => {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: rgba(0, 255, 255, 0.2);
+  background: rgba(79, 70, 229, 0.2);
 }
 
 .tooltip-icon {
   width: 16px;
   height: 16px;
-  color: var(--accent-cyan);
+  color: rgb(129, 140, 248);
 }
 
 .tooltip-title {
   font-size: 14px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: white;
   font-family: 'Share Tech Mono', monospace;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -513,7 +474,7 @@ onMounted(() => {
 
 .tooltip-description {
   font-size: 13px;
-  color: var(--text-secondary);
+  color: rgb(209, 213, 219);
   line-height: 1.5;
   margin-bottom: 12px;
   font-family: 'Share Tech Mono', monospace;
@@ -524,7 +485,7 @@ onMounted(() => {
   align-items: center;
   gap: 8px;
   font-size: 11px;
-  color: var(--text-secondary);
+  color: rgb(156, 163, 175);
   font-family: 'Share Tech Mono', monospace;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -533,17 +494,14 @@ onMounted(() => {
 .tooltip-check {
   width: 16px;
   height: 16px;
-  color: var(--accent-green);
+  color: rgb(34, 197, 94);
 }
 
 .tooltip-glow {
   position: absolute;
   inset: 0;
   border-radius: 16px;
-  background: linear-gradient(135deg, 
-    rgba(0, 255, 255, 0.1), 
-    rgba(0, 255, 65, 0.1)
-  );
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(147, 51, 234, 0.1));
   filter: blur(10px);
   opacity: 0.5;
 }
@@ -555,19 +513,16 @@ onMounted(() => {
   transform: translateX(-50%) rotate(45deg);
   width: 12px;
   height: 12px;
-  background: linear-gradient(135deg, 
-    rgba(0, 15, 31, 0.95), 
-    rgba(0, 31, 63, 0.95)
-  );
-  border-right: 1px solid rgba(0, 255, 255, 0.3);
-  border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+  background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(31, 41, 55, 0.95));
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .svg {
   width: 20px;
   height: 20px;
   transform: translateY(25%);
-  fill: var(--accent-cyan);
+  fill: var(--font-color);
   margin-right: 6px;
   transition: all 0.3s ease;
   flex-shrink: 0;
@@ -585,69 +540,44 @@ onMounted(() => {
 .card__links > div {
   display: flex;
   align-items: center;
-  background: rgba(0, 255, 255, 0.1);
-  border: 1px solid var(--accent-cyan);
-  border-radius: 20px;
-  padding: 8px 12px;
-  transition: all 0.3s ease;
-  flex: 1;
   justify-content: center;
-  min-width: 0;
-  overflow: hidden;
-  position: relative;
-}
-
-.card__links > div::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(0, 255, 255, 0.2), 
-    transparent
-  );
-  transition: left 0.5s ease;
+  gap: 6px;
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 9999px;
+  background: rgba(0, 255, 255, 0.05);
+  border: 1px solid var(--accent-cyan);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: -4px 4px 10px rgba(0, 255, 255, 0.1),
+              4px -4px 10px rgba(0, 255, 255, 0.05);
 }
 
 .card__links > div:hover {
-  background: rgba(0, 255, 255, 0.2);
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
-  transform: translateY(-2px);
-  border-color: var(--accent-cyan);
+  background: var(--accent-cyan);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+  transform: scale(1.02);
 }
 
-.card__links > div:hover::before {
-  left: 100%;
+.card__links > div:hover .svg,
+.card__links > div:hover .link {
+  color: var(--bg-primary);
+  fill: var(--bg-primary);
+  font-weight: bold;
 }
 
-.card__links > div:hover .svg {
-  fill: var(--accent-green);
-  transform: translateY(25%) scale(1.1);
-  filter: drop-shadow(0 0 5px var(--accent-green));
-}
 
 .card__links .link {
-  color: var(--text-primary);
+  color: var(--font-color);
   font-weight: 600;
-  font-size: 12px;
-  text-decoration: none;
+  font-size: 13px;
   font-family: 'Share Tech Mono', monospace;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  transition: all 0.3s ease;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  letter-spacing: 0.7px;
+  text-decoration: none;
+  transition: color 0.3s ease;
 }
 
-.card__links > div:hover .link {
-  color: var(--accent-green);
-  font-weight: 700;
-  text-shadow: 0 0 5px var(--accent-green);
-}
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -723,4 +653,6 @@ onMounted(() => {
   0%, 50% { opacity: 1; }
   51%, 100% { opacity: 0; }
 }
+
+
 </style>
