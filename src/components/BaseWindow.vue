@@ -15,8 +15,8 @@
       <div class="window-title">{{ title }}</div>
       <div class="window-controls">
         <button class="window-btn maximize-btn" @click="toggleMaximize">{{ maximized ? '🗗' : '🗖' }}</button>
-        <button class="window-btn minimize-btn" @click="$emit('minimize')">−</button>
-        <button class="window-btn close-btn" @click="$emit('close')">×</button>
+        <button class="window-btn minimize-btn" @click="$emit('minimize')"><i class="fa-solid fa-window-minimize"></i></button>
+        <button class="window-btn close-btn" @click="$emit('close')"><i class="fa-solid fa-xmark"></i></button>
       </div>
     </div>
     <div class="window-content">

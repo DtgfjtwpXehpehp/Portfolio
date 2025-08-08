@@ -3,7 +3,7 @@
     :active="active"
     :maximized="maximized"
     :position="position"
-    title="SERVICE RECORD"
+    title="RESUME"
     @close="$emit('close')"
     @minimize="$emit('minimize')"
     @maximize="$emit('maximize')"

@@ -3,7 +3,7 @@
     :active="active"
     :maximized="maximized"
     :position="position"
-    title="CASE FILES - ACTIVE OPERATIONS"
+    title="PROJECTS"
     @close="$emit('close')"
     @minimize="$emit('minimize')"
     @maximize="$emit('maximize')"

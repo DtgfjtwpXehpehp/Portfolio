@@ -25,7 +25,7 @@
               @mouseleave="scrambleName"
             >{{ scrambledName }}</span>, a <span class="role-highlight">{{ about?.title }}</span>
           </h1>
-          <p class="hero-subtitle">Specialized in creating secure, scalable web applications for mission-critical operations</p>
+          <p class="hero-subtitle">Crafting innovative, scalable solutions that fuel business growth through seamless end-to-end project delivery</p>
         </div>
         <div class="hero-photo">
           <div class="card-container">

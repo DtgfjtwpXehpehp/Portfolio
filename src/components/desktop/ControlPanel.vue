@@ -1,13 +1,13 @@
 <template>
   <div class="control-panel">
-    <h3>COMMAND CENTER</h3>
+    <h3>QUICK ACCESS</h3>
     <button 
       v-for="button in buttons" 
       :key="button.id"
       class="control-btn" 
       @click="handleOpenWindow(button.id)"
     >
-      <span class="btn-icon">{{ button.icon }}</span>
+      <span class="btn-icon"> <i :class="button.icon"></i></span>
       <span class="btn-text">{{ button.label }}</span>
     </button>
   </div>
@@ -28,11 +28,11 @@ const handleOpenWindow = (windowType: string) => {
 }
 
 const buttons = [
-  { id: 'about', label: 'PERSONNEL FILE', icon: '👤' },
-  { id: 'projects', label: 'CASE FILES', icon: '📁' },
-  { id: 'resume', label: 'SERVICE RECORD', icon: '📋' },
-  { id: 'contact', label: 'SECURE COMM', icon: '📡' },
-  // { id: 'terminal', label: 'TERMINAL ACCESS', icon: '💻' }
+  { id: 'about', label: 'ABOUT ME', icon: 'fa-solid fa-user' },
+  { id: 'projects', label: 'MY PROJECTS', icon: 'fa-solid fa-folder-open' },
+  { id: 'resume', label: 'RESUME', icon: 'fa-solid fa-file-pdf' },
+  { id: 'contact', label: 'CONTACT ME', icon: 'fa-solid fa-phone' },
+  // { id: 'terminal', label: 'TERMINAL ACCESS', icon: '<i class="fa-solid fa-phone"></i>' }
 ]
 </script>
 

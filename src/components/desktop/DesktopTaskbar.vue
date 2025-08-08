@@ -21,7 +21,7 @@
         class="taskbar-btn"
         @click="$emit('restore-window', windowType)"
       >
-        <span class="window-icon">{{ getWindowIcon(windowType) }}</span>
+        <i :class="getWindowIcon(windowType)" class="window-icon"></i>
         <span class="window-title">{{ getWindowTitle(windowType) }}</span>
       </button>
     </div>
@@ -78,21 +78,27 @@ const handleStartClick = () => {
 
 const getWindowIcon = (windowType: string): string => {
   const icons: Record<string, string> = {
-    about: '👤',
-    projects: '📁',
-    resume: '📋',
-    contact: '📡',
-    terminal: '💻'
+    about: 'fa-solid fa-user',
+    projects: 'fa-solid fa-folder-open',
+    resume: 'fa-solid fa-file-pdf',
+    contact: 'fa-solid fa-phone',
+    // terminal: '💻'
   }
-  return icons[windowType] || '📄'
+  return icons[windowType] 
 }
+
+  // { id: 'about', label: '', icon: '' },
+  // { id: 'projects', label: '', icon: '' },
+  // { id: 'resume', label: '', icon: 'f' },
+  // { id: 'contact', label: '', icon: '' },
+  // { id: 'terminal', label: 'TERMINAL ACCESS', icon: '<i class="fa-soli
 
 const getWindowTitle = (windowType: string): string => {
   const titles: Record<string, string> = {
-    about: 'PERSONNEL',
-    projects: 'CASE FILES',
-    resume: 'SERVICE RECORD',
-    contact: 'SECURE COMM',
+    about: 'ABOUT ME',
+    projects: 'MY PROJECTS',
+    resume: 'RESUME',
+    contact: 'CONTACT ME',
     terminal: 'TERMINAL'
   }
   return titles[windowType] || windowType.toUpperCase()

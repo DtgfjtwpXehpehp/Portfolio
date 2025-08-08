@@ -3,7 +3,7 @@
     :active="active"
     :maximized="maximized"
     :position="position"
-    title="SECURE COMMUNICATION CHANNEL"
+    title="CONTACT ME"
     @close="$emit('close')"
     @minimize="$emit('minimize')"
     @maximize="$emit('maximize')"
