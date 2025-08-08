@@ -1,112 +1,171 @@
 <template>
   <BaseWindow
     :active="active"
-    title="Contact"
+    :maximized="maximized"
+    :position="position"
+    title="SECURE COMMUNICATION CHANNEL"
     @close="$emit('close')"
+    @minimize="$emit('minimize')"
+    @maximize="$emit('maximize')"
+    @move="$emit('move', $event)"
   >
-    <div class="contact-container">
-      <form @submit.prevent="submitForm" class="contact-form">
+    <div class="contact-content">
+      <!-- <div class="warning">
+        ⚠️ ENCRYPTED TRANSMISSION REQUIRED ⚠️
+      </div> -->
+
+      <form @submit="sendMessage" class="contact-form">
         <div class="form-group">
-          <label for="name">Name:</label>
-          <input
-            id="name"
-            v-model="form.name"
-            type="text"
+          <label>Name:</label>
+          <input 
+            v-model="form.agentId"
+            type="text" 
+            placeholder="Enter your name"
             class="form-input"
-            required
-          />
+          >
         </div>
         
         <div class="form-group">
-          <label for="email">Email:</label>
-          <input
-            id="email"
+          <label>Email:</label>
+          <input 
             v-model="form.email"
-            type="email"
+            type="email" 
+            placeholder="email@domain.com"
             class="form-input"
-            required
-          />
+          >
         </div>
         
         <div class="form-group">
-          <label for="message">Message:</label>
-          <textarea
-            id="message"
+          <label>Enter your Message:</label>
+          <textarea 
             v-model="form.message"
+            placeholder="Hi Sivuyile, I am reaching out to you because..." 
+            rows="6"
             class="form-textarea"
-            rows="5"
-            required
           ></textarea>
         </div>
         
-        <button type="submit" class="submit-btn" :disabled="isSubmitting">
-          {{ isSubmitting ? 'Sending...' : 'Send Message' }}
+        <button 
+          type="submit" 
+          class="submit-btn"
+          :disabled="isTransmitting"
+        >
+          {{ buttonText }}
         </button>
       </form>
-      
+
       <div class="contact-info">
-        <h4>Alternative Contact Methods:</h4>
-        <p>Email: contact@example.com</p>
-        <p>Phone: +1 (555) 123-4567</p>
-        <p>Location: Cyber City, Digital Realm</p>
+        <h4>ALTERNATIVE CONTACT METHODS:</h4>
+        <p>📧 Email: {{ contact?.email }}</p>
+        <p>📱 Secure Line: {{ contact?.phone }}</p>
+        <p>🔗 LinkedIn: <a :href="contact?.linkedin_url" target="_blank">{{ about?.name }}</a></p> 
+        <p>📍 Location: Cape Town, South Africa</p>
       </div>
     </div>
   </BaseWindow>
 </template>
 
-<script>
-export default {
-  name: 'ContactWindow',
-  props: {
-    active: {
-      type: Boolean,
-      default: false
-    }
-  },
-  data() {
-    return {
-      form: {
-        name: '',
-        email: '',
-        message: ''
-      },
-      isSubmitting: false
-    }
-  },
-  methods: {
-    async submitForm() {
-      this.isSubmitting = true
-      
-      // Simulate form submission
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      // Reset form
-      this.form = {
-        name: '',
-        email: '',
-        message: ''
-      }
-      
-      this.isSubmitting = false
-      alert('Message sent successfully!')
-    }
+<script setup lang="ts">
+import { ref, reactive, onMounted } from 'vue'
+import emailjs from '@emailjs/browser'
+import BaseWindow from './BaseWindow.vue'
+import { useSoundEffects } from '../composables/useSoundEffects'
+import { useContact } from '../composables/useContact'
+import { useAbout } from '../composables/useAbout'
+
+
+
+const {contact,fetchContact }= useContact()
+const {about, fetchAbout} = useAbout()
+
+onMounted(async()=>{
+  await fetchContact()
+  await fetchAbout()
+})
+
+
+
+defineProps<{
+  active: boolean
+  maximized?: boolean
+  position: { x: number, y: number }
+}>()
+
+defineEmits<{
+  close: []
+  minimize: []
+  maximize: []
+  move: [position: { x: number, y: number }]
+}>()
+
+const { playSound } = useSoundEffects()
+
+const form = reactive({
+  agentId: '',
+  email: '',
+  message: ''
+})
+
+const isTransmitting = ref(false)
+const buttonText = ref('SEND MESSAGE')
+
+// 🧠 REPLACE THESE with your actual EmailJS values
+const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
+const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+
+
+const sendMessage = async (event: Event) => {
+  event.preventDefault()
+  playSound('beep')
+
+  isTransmitting.value = true
+  buttonText.value = 'SENDING...'
+
+  const templateParams = {
+    agentId: form.agentId,
+    email: form.email,
+    message: form.message
+  }
+
+  try {
+    await emailjs.send(serviceId, templateId, templateParams, publicKey)
+    buttonText.value = 'MESSAGE SENT ✓'
+
+    setTimeout(() => {
+      buttonText.value = 'SEND MESSAGE'
+      isTransmitting.value = false
+      form.agentId = ''
+      form.email = ''
+      form.message = ''
+    }, 2000)
+  } catch (error) {
+    console.error('Failed to send message:', error)
+    buttonText.value = 'FAILED TO SEND ❌'
+    isTransmitting.value = false
+    setTimeout(() => {
+      buttonText.value = 'SEND MESSAGE'
+    }, 3000)
   }
 }
+
 </script>
 
 <style scoped>
-.contact-container {
-  padding: 20px;
-  max-width: 500px;
-  margin: 0 auto;
+.contact-content {
+  text-align: center;
 }
 
-.contact-form {
+.warning {
+  color: var(--danger-red);
+  font-size: 0.9em;
   margin-bottom: 20px;
 }
 
-.form-group {
-  margin-bottom: 15px;
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
   text-align: left;
 }
 

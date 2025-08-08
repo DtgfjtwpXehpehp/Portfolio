@@ -167,7 +167,7 @@ import AboutWindow from '../AboutWindow.vue'
 import ProjectsWindow from '../ProjectsWindow.vue'
 import ResumeWindow from '../ResumeWindow.vue'
 import ContactWindow from '../ContactWindow.vue'
-import TerminalWindow from '../TerminalWindow.vue'
+// import TerminalWindow from '../TerminalWindow.vue'
 
 import DesktopTaskbar from './DesktopTaskbar.vue'
 import textSound from '../../assets/sounds/textsound.mp3'
