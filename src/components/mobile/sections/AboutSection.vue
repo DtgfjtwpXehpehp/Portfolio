@@ -80,7 +80,7 @@
             </div>
 
 
-              <h2 class="section-title">About</h2>
+              <h2 class="section-title">ABOUT ME</h2>
 
             <div class="terminal">
                            <div class="terminal-line"><span class="terminal-prompt">></span> cat about_me.txt</div>

@@ -56,10 +56,10 @@
 
       <div class="contact-info">
         <h4>ALTERNATIVE CONTACT METHODS:</h4>
-        <p>📧 Email: {{ contact?.email }}</p>
-        <p>📱 Secure Line: {{ contact?.phone }}</p>
-        <p>🔗 LinkedIn: <a :href="contact?.linkedin_url" target="_blank">{{ about?.name }}</a></p> 
-        <p>📍 Location: Cape Town, South Africa</p>
+        <p><i class="fa-solid fa-envelope"></i> Email: {{ contact?.email }}</p>
+        <p><i class="fa-solid fa-mobile"></i> Secure Line: {{ contact?.phone }}</p>
+        <p><i class="fa-brands fa-linkedin"></i> LinkedIn: <a :href="contact?.linkedin_url" target="_blank">{{ about?.name }}</a></p> 
+        <p><i class="fa-solid fa-location-dot"></i> Location: Cape Town, South Africa</p>
       </div>
     </div>
   </BaseWindow>

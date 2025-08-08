@@ -1,7 +1,7 @@
 <template>
   <section class="skills-section mobile-section">
     <div class="section-content">
-      <h2 class="section-title">TECHNICAL EXPERTISE</h2>
+      <h2 class="section-title">TECHNICAL SKILLS</h2>
       
       <div class="skills-grid">
         <template v-if="Object.keys(groupedSkills).length">
@@ -133,7 +133,7 @@ const certifications = ref([
 }
 
 .skill-list li::before {
-  content: '•';
+
   color: var(--accent-cyan);
   position: absolute;
   left: 0;

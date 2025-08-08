@@ -2,8 +2,8 @@
   <div class="command-drawer" :class="{ open: isOpen }" @click="$emit('close')">
     <div class="drawer-content" @click.stop>
       <div class="drawer-header">
-        <h3>COMMAND CENTER</h3>
-        <button class="close-btn" @click="handleClose">✕</button>
+        <h3>QUICK ACCESS</h3>
+        <button class="close-btn" @click="handleClose"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <nav class="drawer-nav">
         <a 
@@ -13,8 +13,8 @@
           @click.prevent="handleNavigate(link.id)"
           class="nav-link"
         >
-          <span class="nav-icon">{{ link.icon }}</span>
-          <span class="nav-text">{{ link.text }}</span>
+          <i :class="link.icon"> </i>
+          <span class="nav-text"> {{ link.label }}</span>
         </a>
       </nav>
     </div>
@@ -46,10 +46,10 @@ const handleClose = () => {
 }
 
 const navLinks = [
-  { id: 'about', icon: '👤', text: 'About' },
-  { id: 'skills', icon: '⚡', text: 'Skills' },
-  { id: 'projects', icon: '📁', text: 'Projects' },
-  { id: 'contact', icon: '📡', text: 'Contact' }
+{ id: 'about', label: ' ABOUT ME', icon: 'fa-solid fa-user' },
+  { id: 'projects', label: ' MY PROJECTS', icon: 'fa-solid fa-folder-open' },
+  // { id: 'resume', label: ' RESUME', icon: 'fa-solid fa-file-pdf' },
+  { id: 'contact', label: ' CONTACT ME', icon: 'fa-solid fa-phone' },
 ]
 </script>
 
@@ -110,11 +110,11 @@ const navLinks = [
 
 .close-btn {
   background: none;
-  border: 1px solid var(--danger-red);
+  /* border: 1px solid var(--danger-red); */
   color: var(--danger-red);
   width: 30px;
   height: 30px;
-  border-radius: 50%;
+  /* border-radius: 50%; */
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -150,7 +150,7 @@ const navLinks = [
   padding-left: 17px;
 }
 
-.nav-icon {
+i {
   font-size: 1.2em;
   margin-right: 15px;
   width: 25px;
