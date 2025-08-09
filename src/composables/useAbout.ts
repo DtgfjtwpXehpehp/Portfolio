@@ -19,7 +19,7 @@ export function useAbout() {
     loading.value = true;
     error.value = null;
     try {
-      const response = await axios.get('http://localhost:3000/api/about');
+      const response = await axios.get('https://portfolio-backend-hazel-pi.vercel.app//api/about');
       
       // Ensure skills is always an array
       const data = response.data;
