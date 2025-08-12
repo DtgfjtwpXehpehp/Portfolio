@@ -15,10 +15,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, defineAsyncComponent } from 'vue'
+import { ref, computed, defineAsyncComponent } from 'vue'
 import LoadingScreen from './components/shared/LoadingScreen.vue'
 import { useResponsive } from './composables/useResponsive'
 import { useSoundEffects } from './composables/useSoundEffects'
+const soundEnabled = ref(true);
+const toggleSound = () => { soundEnabled.value = !soundEnabled.value; };
 
 // Lazy load layouts
 const DesktopInterface = defineAsyncComponent(() => import('./components/desktop/DesktopInterface.vue'))

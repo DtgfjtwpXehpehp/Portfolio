@@ -58,7 +58,6 @@
 </template>
 
 <script setup lang="ts">
-
 import { onMounted, computed, ref } from 'vue';
 import BaseWindow from './BaseWindow.vue';
 import { useAbout } from '../composables/useAbout';
@@ -78,29 +77,41 @@ defineEmits<{
   move: [position: { x: number, y: number }]
 }>();
 
-
-const { playSound } = useSoundEffects()
+const { playSound } = useSoundEffects();
 const { about, loading, error, fetchAbout } = useAbout();
 
 const skills = ref<Skill[]>([]);
 const skillsLoading = ref(true);
 const skillsError = ref('');
 
-const groupedSkills = computed(() => {
-  if (!skills.value.length) return {};
-  return skills.value.reduce((acc, skill) => {
-    (acc[skill.category] = acc[skill.category] || []).push(skill);
-    return acc;
-  }, {});
-});
+// Explicitly define skill categories
+type SkillCategory = 'frontend' | 'backend' | 'database' | 'devops' | 'uiux';
 
-const categoryLabels = {
+// Label mapping
+const categoryLabels: Record<SkillCategory, string> = {
   frontend: 'Frontend',
   backend: 'Backend',
   database: 'Databases',
   devops: 'DevOps',
   uiux: 'UI/UX'
 };
+
+// Group skills into categories with proper typing
+const groupedSkills = computed<Record<SkillCategory, Skill[]>>(() => {
+  const grouped: Record<SkillCategory, Skill[]> = {
+    frontend: [],
+    backend: [],
+    database: [],
+    devops: [],
+    uiux: []
+  };
+  skills.value.forEach(skill => {
+    if (grouped[skill.category as SkillCategory]) {
+      grouped[skill.category as SkillCategory].push(skill);
+    }
+  });
+  return grouped;
+});
 
 onMounted(async () => {
   fetchAbout();
@@ -118,6 +129,7 @@ onMounted(async () => {
   }
 });
 </script>
+
 
 <style scoped>
 .about-content {
