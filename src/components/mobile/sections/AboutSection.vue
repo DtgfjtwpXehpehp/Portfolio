@@ -3,8 +3,8 @@
     <div class="container">
       
       <div class="agent-info">
-            <div class="hero-text">
-<h1 class="hero-title">
+        <div class="hero-text">
+          <h1 class="hero-title">
             Hi, I'm <span 
               class="name-highlight"
               ref="nameSpan"
@@ -14,7 +14,7 @@
           </h1>
           <!-- <div class="clearance">CLEARANCE LEVEL: TOP SECRET</div> -->
         </div>
-        </div>
+      </div>
       
       <div class="about-content">
         <div class="photo-container">
@@ -24,7 +24,7 @@
               ref="photoCard" 
               @mousemove="handlePhotoCardMouseMove" 
               @mouseleave="resetPhotoCard"
-              >
+            >
               <!-- <div class="decorative-element"></div> -->
               
               <div class="photo-frame">
@@ -66,7 +66,6 @@
                         <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
                       </svg>
                     </a>
-                   
                   </div>
                   <div v-if="document?.file_url" class="social-icon" @click="handleSocialClick">
                     <a :href="document.file_url" target="_blank" rel="noopener">
@@ -79,22 +78,21 @@
               </div>
             </div>
 
-
-              <h2 class="section-title">ABOUT ME</h2>
+            <h2 class="section-title">ABOUT ME</h2>
 
             <div class="terminal">
-                           <div class="terminal-line"><span class="terminal-prompt">></span> cat about_me.txt</div>
-                                <div class="terminal-line">NAME: {{ about?.name }}</div>
-                    <!-- <div class="terminal-line">CODENAME: {{ about?.codename }}</div> -->
-                    <div class="terminal-line">SPECIALIZATION: {{ about?.title }}</div>
-                    <div class="terminal-line">EXPERIENCE: 3+ Years Active</div>
-                    <div class="terminal-line">STATUS: Active </div>
-                  </div>
-                  
-                  <div class="terminal mission-brief">
-                    <div class="terminal-line"><span class="terminal-prompt">></span> cat mission_brief.txt</div>
-                    <div class="terminal-line content-text" v-html="about?.content"></div><span class="blinking-cursor"></span>
-        </div>
+              <div class="terminal-line"><span class="terminal-prompt">></span> cat about_me.txt</div>
+              <div class="terminal-line">NAME: {{ about?.name }}</div>
+              <!-- <div class="terminal-line">CODENAME: {{ about?.codename }}</div> -->
+              <div class="terminal-line">SPECIALIZATION: {{ about?.title }}</div>
+              <div class="terminal-line">EXPERIENCE: 3+ Years Active</div>
+              <div class="terminal-line">STATUS: Active </div>
+            </div>
+            
+            <div class="terminal mission-brief">
+              <div class="terminal-line"><span class="terminal-prompt">></span> cat mission_brief.txt</div>
+              <div class="terminal-line content-text" v-html="about?.content"></div><span class="blinking-cursor"></span>
+            </div>
           </div>
         </div>
       </div>
@@ -107,35 +105,42 @@ import { useAbout } from '../../../composables/useAbout'
 import { useContact } from '../../../composables/useContact'
 import { useResume } from '../../../composables/useResume'
 import { useSoundEffects } from '../../../composables/useSoundEffects'
-// import { ref, onMounted } from 'vue'
-import { defineProps, defineEmits, ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted } from 'vue'
 import gsap from 'gsap'
 import ScrambleTextPlugin from 'gsap/ScrambleTextPlugin'
-gsap.registerPlugin(ScrambleTextPlugin)
 import textSound from '../../../assets/sounds/textsound.mp3'
 
-const { about, fetchAbout } = useAbout()
-const { contact, fetchContact } = useContact()
-const { document, fetchDocument } = useResume()
-const { playSound } = useSoundEffects()
+// Register GSAP plugin
+gsap.registerPlugin(ScrambleTextPlugin)
 
+// Props and Emits
 defineProps<{
-  soundEnabled: boolean
+  soundEnabled?: boolean
 }>()
 
 defineEmits<{
   'toggle-sound': []
 }>()
 
-const nameSpan = ref()
+// Composables
+const { about, fetchAbout } = useAbout()
+const { contact, fetchContact } = useContact()
+const { document, fetchDocument } = useResume()
+const { playSound } = useSoundEffects()
+
+// Reactive refs
+const nameSpan = ref<HTMLElement>()
+const photoCard = ref<HTMLElement>()
 const realName = ref('')
 const scrambledName = ref('')
-const shift = 11
 
-// Sound effect for unscramble
+// Constants
+const shift = 11
+let animationInProgress = false
 let textAudio: HTMLAudioElement | null = null
 
-function caesarCipher(str, shift) {
+// Caesar cipher function with proper typing
+function caesarCipher(str: string, shift: number): string {
   return str.split('').map(char => {
     if (char.match(/[a-z]/i)) {
       const code = char.charCodeAt(0)
@@ -146,15 +151,15 @@ function caesarCipher(str, shift) {
   }).join('')
 }
 
-
-let animationInProgress = false
-
+// Scramble animation function
 function runScramble(toReal: boolean) {
   if (!nameSpan.value) return
   if (animationInProgress) return
+  
   animationInProgress = true
   const from = toReal ? caesarCipher(realName.value, shift) : realName.value
   const to = toReal ? realName.value : caesarCipher(realName.value, shift)
+  
   gsap.to(nameSpan.value, {
     scrambleText: {
       text: to,
@@ -164,47 +169,42 @@ function runScramble(toReal: boolean) {
     },
     duration: 1.2,
     ease: 'power1.inOut',
-    onStart: () => { nameSpan.value.textContent = from },
+    onStart: () => { 
+      if (nameSpan.value) nameSpan.value.textContent = from 
+    },
     onComplete: () => {
-      nameSpan.value.textContent = toReal ? realName.value : to
-      scrambledName.value = toReal ? realName.value : to
-      animationInProgress = false
-      // Stop sound when animation is done
-      if (toReal && textAudio) {
-        textAudio.pause()
-        textAudio.currentTime = 0
+      if (nameSpan.value) {
+        nameSpan.value.textContent = toReal ? realName.value : to
+        scrambledName.value = toReal ? realName.value : to
+        animationInProgress = false
+        // Stop sound when animation is done
+        if (toReal && textAudio) {
+          textAudio.pause()
+          textAudio.currentTime = 0
+        }
       }
     }
   })
 }
 
-
+// Name scrambling functions
 function unscrambleName() {
   if (scrambledName.value !== realName.value) {
     if (textAudio) {
       textAudio.currentTime = 0
-      textAudio.play()
+      textAudio.play().catch(e => console.log('Audio play failed:', e))
     }
     runScramble(true)
   }
 }
 
+function scrambleName() {
+  if (scrambledName.value === realName.value) {
+    runScramble(false)
+  }
+}
 
-
-
-onMounted(async () => {
-  textAudio = new Audio(textSound)
-  textAudio.preload = 'auto'
-  await fetchAbout()
-  await fetchDocument()
-  realName.value = about.value?.name || 'Your Real Name'
-  scrambledName.value = caesarCipher(realName.value, shift)
-  if (nameSpan.value) nameSpan.value.textContent = scrambledName.value
-})
-
-
-const photoCard = ref<HTMLElement>()
-
+// Photo card interaction functions
 const handlePhotoCardMouseMove = (event: MouseEvent) => {
   if (!photoCard.value) return
   
@@ -236,10 +236,26 @@ const handleSocialClick = (event: Event) => {
   }, 150)
 }
 
+// Lifecycle
 onMounted(async () => {
-  await fetchAbout()
-  await fetchContact()
-  await fetchDocument()
+  // Initialize audio
+  textAudio = new Audio(textSound)
+  textAudio.preload = 'auto'
+  
+  // Fetch data
+  await Promise.all([
+    fetchAbout(),
+    fetchContact(),
+    fetchDocument()
+  ])
+  
+  // Initialize name scrambling
+  realName.value = about.value?.name || 'Your Real Name'
+  scrambledName.value = caesarCipher(realName.value, shift)
+  
+  if (nameSpan.value) {
+    nameSpan.value.textContent = scrambledName.value
+  }
 })
 </script>
 
