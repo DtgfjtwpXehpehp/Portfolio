@@ -327,14 +327,14 @@ const terminalLines = reactive([
   '<span class="terminal-prompt">root@classified:~$</span> <span class="blinking-cursor"></span>'
 ])
 
-let timeInterval: NodeJS.Timeout | null = null
+// let timeInterval: NodeJS.Timeout | null = null
 
 // Fetch about info (name, image)
 const { about, fetchAbout } = useAbout()
 onMounted(() => {
   fetchAbout()
   updateTime()
-  timeInterval = setInterval(updateTime, 1000)
+  // timeInterval = setInterval(updateTime, 1000)
 })
 
 const playSound = (type: 'beep' | 'click') => {
@@ -484,13 +484,13 @@ const updateTime = () => {
 onMounted(() => {
   fetchAbout()
   updateTime()
-  timeInterval = setInterval(updateTime, 1000)
+  // timeInterval = setInterval(updateTime, 1000)
 })
 
 onUnmounted(() => {
-  if (timeInterval) {
-    clearInterval(timeInterval)
-  }
+  // if (timeInterval) {
+  //   clearInterval(timeInterval)
+  // }
 })
 </script>
 
