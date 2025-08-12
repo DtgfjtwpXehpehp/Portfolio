@@ -2,11 +2,11 @@
   <section class="skills-section mobile-section">
     <div class="section-content">
       <h2 class="section-title">TECHNICAL SKILLS</h2>
-      
+     
       <div class="skills-grid">
         <template v-if="Object.keys(groupedSkills).length">
           <div v-for="(skills, category) in groupedSkills" :key="category" class="skill-category">
-            <h4>{{ categoryLabels[category] }}</h4>
+            <h4>{{ categoryLabels[category as keyof typeof categoryLabels] || category }}</h4>
             <ul class="skill-list">
               <li v-for="skill in skills" :key="skill.id">
                 <i v-if="skill.icon" :class="['skill-icon', skill.icon]"></i>
@@ -17,7 +17,6 @@
         </template>
         <div v-else style="color:var(--danger-red);padding:10px;">No skills found.</div>
       </div>
-
       <!-- <div class="terminal">
         <div class="terminal-line"><span class="terminal-prompt">root@classified:~$</span> cat certifications.txt</div>
         <div v-for="cert in certifications" :key="cert" class="terminal-line">• {{ cert }}</div>
@@ -35,15 +34,21 @@ const skills = ref<Skill[]>([])
 const skillsLoading = ref(true)
 const skillsError = ref('')
 
+// Define the proper type for groupedSkills
 const groupedSkills = computed(() => {
-  if (!skills.value.length) return {}
-  return skills.value.reduce((acc, skill) => {
-    (acc[skill.category] = acc[skill.category] || []).push(skill)
+  if (!skills.value.length) return {} as Record<string, Skill[]>
+  
+  return skills.value.reduce((acc: Record<string, Skill[]>, skill: Skill) => {
+    if (!acc[skill.category]) {
+      acc[skill.category] = []
+    }
+    acc[skill.category].push(skill)
     return acc
-  }, {})
+  }, {} as Record<string, Skill[]>)
 })
 
-const categoryLabels = {
+// Define proper type for category labels
+const categoryLabels: Record<string, string> = {
   frontend: 'Frontend',
   backend: 'Backend',
   database: 'Databases',
@@ -65,13 +70,14 @@ onMounted(async () => {
   }
 })
 
-const certifications = ref([
-  'Certified Ethical Hacker (CEH)',
-  'AWS Solutions Architect',
-  'Google Cloud Professional Developer',
-  'Cybersecurity Fundamentals',
-  'Docker Certified Associate'
-])
+// Remove unused certifications if not being used
+// const certifications = ref([
+//   'Certified Ethical Hacker (CEH)',
+//   'AWS Solutions Architect',
+//   'Google Cloud Professional Developer',
+//   'Cybersecurity Fundamentals',
+//   'Docker Certified Associate'
+// ])
 </script>
 
 <style scoped>
@@ -133,7 +139,6 @@ const certifications = ref([
 }
 
 .skill-list li::before {
-
   color: var(--accent-cyan);
   position: absolute;
   left: 0;

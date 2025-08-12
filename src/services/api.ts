@@ -13,12 +13,9 @@ export interface Project {
   id: number;
   title: string;
   description: string;
-  technologies: string[];
+  technologies: string[] | string; // Allow both array and string
   image_url?: string;
-  icon?: string;
-  githubUrl?: string;
   github_url?: string;
-  liveUrl?: string;
   live_url?: string;
   created_at?: string;
   updated_at?: string;

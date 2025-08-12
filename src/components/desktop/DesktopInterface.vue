@@ -157,7 +157,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits, ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted } from 'vue'
 import gsap from 'gsap'
 import ScrambleTextPlugin from 'gsap/ScrambleTextPlugin'
 gsap.registerPlugin(ScrambleTextPlugin)
@@ -178,11 +178,13 @@ import { useWindowManagement } from '../../composables/useWindowManagement'
 import { useResume } from '../../composables/useResume'
 import { useSoundEffects } from '../../composables/useSoundEffects'
 
+// Define window type
+type WindowType = 'about' | 'projects' | 'contact' | 'resume' | 'terminal'
+
+
 
 const {document , fetchDocument} = useResume()
 const { playSound } = useSoundEffects()
-
-// Remove props and emits since we're using global sound state now
 
 const commandCenterOpen = ref(true)
 const photoCard = ref<HTMLElement>()
@@ -191,7 +193,7 @@ const photoCard = ref<HTMLElement>()
 const { about, fetchAbout } = useAbout()
 const { contact, fetchContact } = useContact()
 
-const nameSpan = ref()
+const nameSpan = ref<HTMLElement>()
 const realName = ref('')
 const scrambledName = ref('')
 const shift = 11
@@ -199,8 +201,8 @@ const shift = 11
 // Sound effect for unscramble
 let textAudio: HTMLAudioElement | null = null
 
-function caesarCipher(str, shift) {
-  return str.split('').map(char => {
+function caesarCipher(str: string, shift: number): string {
+  return str.split('').map((char: string) => {
     if (char.match(/[a-z]/i)) {
       const code = char.charCodeAt(0)
       const base = code >= 97 ? 97 : 65
@@ -209,7 +211,6 @@ function caesarCipher(str, shift) {
     return char
   }).join('')
 }
-
 
 let animationInProgress = false
 
@@ -228,10 +229,14 @@ function runScramble(toReal: boolean) {
     },
     duration: 1.2,
     ease: 'power1.inOut',
-    onStart: () => { nameSpan.value.textContent = from },
+    onStart: () => { 
+      if (nameSpan.value) nameSpan.value.textContent = from 
+    },
     onComplete: () => {
-      nameSpan.value.textContent = toReal ? realName.value : to
-      scrambledName.value = toReal ? realName.value : to
+      if (nameSpan.value) {
+        nameSpan.value.textContent = toReal ? realName.value : to
+        scrambledName.value = toReal ? realName.value : to
+      }
       animationInProgress = false
       // Stop sound when animation is done
       if (toReal && textAudio) {
@@ -242,7 +247,6 @@ function runScramble(toReal: boolean) {
   })
 }
 
-
 function unscrambleName() {
   if (scrambledName.value !== realName.value) {
     if (textAudio) {
@@ -252,7 +256,6 @@ function unscrambleName() {
     runScramble(true)
   }
 }
-
 
 function scrambleName() {
   // Do nothing if the real name is already shown
@@ -312,11 +315,6 @@ const resetPhotoCard = () => {
     photoCard.value.style.transform = 'translateY(0px) rotateX(0deg) rotateY(0deg)'
   }
 }
-
-
-// function fetchContact() {
-//   throw new Error('Function not implemented.')
-// }
 </script>
 
 <style scoped>
@@ -763,4 +761,5 @@ const resetPhotoCard = () => {
     font-size: 14px;
   }
 }
+
 </style>

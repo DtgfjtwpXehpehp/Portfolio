@@ -12,12 +12,12 @@ export function useProjects() {
     try {
       const response = await projectsApi.getAll();
       // Ensure technologies is always an array
-      projects.value = response.data.map(project => ({
+      projects.value = response.data.map((project: any) => ({
         ...project,
         technologies: Array.isArray(project.technologies) 
           ? project.technologies 
           : typeof project.technologies === 'string'
-            ? project.technologies.split(',').map(tech => tech.trim())
+            ? project.technologies.split(',').map((tech: string) => tech.trim())
             : []
       }));
     } catch (e) {
