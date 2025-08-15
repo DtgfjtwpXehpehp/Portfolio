@@ -178,11 +178,6 @@ import { useWindowManagement } from '../../composables/useWindowManagement'
 import { useResume } from '../../composables/useResume'
 import { useSoundEffects } from '../../composables/useSoundEffects'
 
-// Define window type
-type WindowType = 'about' | 'projects' | 'contact' | 'resume' | 'terminal'
-
-
-
 const {document , fetchDocument} = useResume()
 const { playSound } = useSoundEffects()
 
@@ -316,7 +311,6 @@ const resetPhotoCard = () => {
   }
 }
 </script>
-
 <style scoped>
 .desktop-interface {
   width: 100vw;
