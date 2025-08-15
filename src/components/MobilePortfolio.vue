@@ -307,6 +307,9 @@ const currentInput = ref('')
 const terminalOutput = ref<HTMLElement>()
 const terminalInput = ref<HTMLInputElement>()
 
+// Declare timeInterval with proper typing
+let timeInterval: ReturnType<typeof setInterval> | null = null
+
 const weatherData = reactive({
   icon: '☀️',
   temp: 22,
@@ -327,15 +330,17 @@ const terminalLines = reactive([
   '<span class="terminal-prompt">root@classified:~$</span> <span class="blinking-cursor"></span>'
 ])
 
-// let timeInterval: NodeJS.Timeout | null = null
-
 // Fetch about info (name, image)
 const { about, fetchAbout } = useAbout()
-onMounted(() => {
-  fetchAbout()
-  updateTime()
-  timeInterval = setInterval(updateTime, 1000)
-})
+
+const updateTime = () => {
+  const now = new Date()
+  currentTime.value = now.toLocaleTimeString('en-US', { 
+    hour12: false,
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
 
 const playSound = (type: 'beep' | 'click') => {
   if (!soundEnabled.value) return
@@ -471,15 +476,6 @@ const processCommand = (command: string): string => {
   }
 }
 
-const updateTime = () => {
-  const now = new Date()
-  currentTime.value = now.toLocaleTimeString('en-US', { 
-    hour12: false,
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-}
-
 // Lifecycle
 onMounted(() => {
   fetchAbout()
@@ -488,9 +484,9 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  // if (timeInterval) {
+  if (timeInterval) {
     clearInterval(timeInterval)
-  // }
+  }
 })
 </script>
 
