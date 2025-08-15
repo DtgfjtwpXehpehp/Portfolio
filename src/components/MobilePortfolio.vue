@@ -334,7 +334,7 @@ const { about, fetchAbout } = useAbout()
 onMounted(() => {
   fetchAbout()
   updateTime()
-  // timeInterval = setInterval(updateTime, 1000)
+  timeInterval = setInterval(updateTime, 1000)
 })
 
 const playSound = (type: 'beep' | 'click') => {
@@ -484,12 +484,12 @@ const updateTime = () => {
 onMounted(() => {
   fetchAbout()
   updateTime()
-  // timeInterval = setInterval(updateTime, 1000)
+  timeInterval = setInterval(updateTime, 1000)
 })
 
 onUnmounted(() => {
   // if (timeInterval) {
-  //   clearInterval(timeInterval)
+    clearInterval(timeInterval)
   // }
 })
 </script>
