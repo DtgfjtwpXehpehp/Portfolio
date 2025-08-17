@@ -11,7 +11,7 @@ fetch("https://portfolio-backend-hazel-pi.vercel.app/api/about")
   .then(res => res.json())
   .then(data => {
     if (data && data.title) {
-      document.getElementsByName("title")[0].innerText = data.title + " | " + data.name; 
+      document.title = data.title + " | " + data.name; 
     }
   })
   .catch(err => console.error("Failed to fetch title:", err));
