@@ -7,7 +7,7 @@ import App from './App.vue'
 // Existing imports (Vue/React/whatever you're using)
 
 // Fetch title from backend and set <title>
-fetch("https://portfolio-backend-hazel-pi.vercel.app/api")
+fetch("https://portfolio-backend-hazel-pi.vercel.app/api/about")
   .then(res => res.json())
   .then(data => {
     if (data && data.title) {
