@@ -178,6 +178,7 @@ import { useWindowManagement } from '../../composables/useWindowManagement'
 import { useResume } from '../../composables/useResume'
 import { useSoundEffects } from '../../composables/useSoundEffects'
 
+
 const {document , fetchDocument} = useResume()
 const { playSound } = useSoundEffects()
 

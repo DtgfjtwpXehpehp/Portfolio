@@ -1,34 +1,34 @@
 import { ref, reactive } from 'vue'
-import type { WindowType, WindowPosition, WindowState } from '../types/windows'
+import { WindowType, WindowTypeString, WindowPosition, WindowState } from '../types/windows'
 import { useSoundEffects } from './useSoundEffects'
 
 export function useWindowManagement() {
   const { playSound } = useSoundEffects()
-
-  const minimizedWindows = reactive<Record<WindowType, boolean>>({
+  
+  const minimizedWindows = reactive<Record<WindowTypeString, boolean>>({
     about: false,
     projects: false,
     resume: false,
     contact: false,
     terminal: false
   })
-
-  const activeWindows = reactive<Record<WindowType, boolean>>({
+  
+  const activeWindows = reactive<Record<WindowTypeString, boolean>>({
     about: false,
     projects: false,
     resume: false,
     contact: false,
     terminal: false
   })
-
-  const maximizedWindows = reactive<Record<WindowType, boolean>>({
+  
+  const maximizedWindows = reactive<Record<WindowTypeString, boolean>>({
     about: false,
     projects: false,
     resume: false,
     contact: false,
     terminal: false
   })
-
+  
   const windowPositions = reactive<WindowState>({
     about: { x: 100, y: 100 },
     projects: { x: 150, y: 150 },
@@ -36,43 +36,54 @@ export function useWindowManagement() {
     contact: { x: 250, y: 250 },
     terminal: { x: 300, y: 300 }
   })
-
+  
   const isDangling = ref(false)
-
-  const openWindow = (windowType: WindowType) => {
-    activeWindows[windowType] = true
-    minimizedWindows[windowType] = false
+  
+  // Helper function to convert enum to string
+  const getWindowKey = (windowType: WindowType | WindowTypeString): WindowTypeString => {
+    return typeof windowType === 'string' ? windowType : windowType.valueOf() as WindowTypeString
+  }
+  
+  const openWindow = (windowType: WindowType | WindowTypeString) => {
+    const key = getWindowKey(windowType)
+    activeWindows[key] = true
+    minimizedWindows[key] = false
     playSound('click')
   }
-
-  const closeWindow = (windowType: WindowType) => {
-    activeWindows[windowType] = false
-    maximizedWindows[windowType] = false
+  
+  const closeWindow = (windowType: WindowType | WindowTypeString) => {
+    const key = getWindowKey(windowType)
+    activeWindows[key] = false
+    maximizedWindows[key] = false
     playSound('click')
   }
-
-  const minimizeWindow = (windowType: WindowType) => {
-    activeWindows[windowType] = false
-    minimizedWindows[windowType] = true
-    maximizedWindows[windowType] = false
+  
+  const minimizeWindow = (windowType: WindowType | WindowTypeString) => {
+    const key = getWindowKey(windowType)
+    activeWindows[key] = false
+    minimizedWindows[key] = true
+    maximizedWindows[key] = false
     playSound('click')
   }
-
-  const restoreWindow = (windowType: WindowType) => {
-    activeWindows[windowType] = true
-    minimizedWindows[windowType] = false
+  
+  const restoreWindow = (windowType: WindowType | WindowTypeString) => {
+    const key = getWindowKey(windowType)
+    activeWindows[key] = true
+    minimizedWindows[key] = false
     playSound('click')
   }
-
-  const maximizeWindow = (windowType: WindowType) => {
-    maximizedWindows[windowType] = !maximizedWindows[windowType]
+  
+  const maximizeWindow = (windowType: WindowType | WindowTypeString) => {
+    const key = getWindowKey(windowType)
+    maximizedWindows[key] = !maximizedWindows[key]
     playSound('click')
   }
-
-  const updateWindowPosition = (windowType: WindowType, position: WindowPosition) => {
-    windowPositions[windowType] = position
+  
+  const updateWindowPosition = (windowType: WindowType | WindowTypeString, position: WindowPosition) => {
+    const key = getWindowKey(windowType)
+    windowPositions[key] = position
   }
-
+  
   const triggerDangle = () => {
     isDangling.value = true
     playSound('click')
@@ -80,7 +91,7 @@ export function useWindowManagement() {
       isDangling.value = false
     }, 1000)
   }
-
+  
   return {
     minimizedWindows,
     activeWindows,

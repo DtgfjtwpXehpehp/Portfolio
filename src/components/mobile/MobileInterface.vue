@@ -49,6 +49,7 @@ import ContactSection from './sections/ContactSection.vue'
 // import TerminalSection from './sections/TerminalSection.vue'
 import { useSoundEffects } from '../../composables/useSoundEffects'
 
+
 // Composables
 const { playSound } = useSoundEffects()
 
