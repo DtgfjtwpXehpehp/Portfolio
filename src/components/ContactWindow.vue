@@ -22,6 +22,7 @@
             type="text" 
             placeholder="Enter your name"
             class="form-input"
+            required
           >
         </div>
         
@@ -32,6 +33,7 @@
             type="email" 
             placeholder="email@domain.com"
             class="form-input"
+            required
           >
         </div>
         
@@ -42,6 +44,7 @@
             placeholder="Hi Sivuyile, I am reaching out to you because..." 
             rows="6"
             class="form-textarea"
+            required
           ></textarea>
         </div>
         
