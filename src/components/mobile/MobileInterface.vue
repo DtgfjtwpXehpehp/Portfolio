@@ -16,21 +16,36 @@
     />
     
     <!-- Main Content -->
+<!-- Main Content -->
     <main class="mobile-main">
       <!-- About Section -->
-      <AboutSection 
-        id="about" 
+      <AboutSection
+        id="about"
+        :active="true"
+        :position="{ x: 0, y: 0 }"
         @toggle-sound="handleToggleSound"
       />
      
       <!-- Skills Section -->
-      <SkillsSection id="skills" />
+      <SkillsSection 
+        id="skills"
+        :active="true"
+        :position="{ x: 0, y: 0 }"
+      />
      
       <!-- Projects Section -->
-      <ProjectsSection id="projects" />
+      <ProjectsSection 
+        id="projects"
+        :active="true"
+        :position="{ x: 0, y: 0 }"
+      />
      
       <!-- Contact Section -->
-      <ContactSection id="contact" />
+      <ContactSection 
+        id="contact"
+        :active="true"
+        :position="{ x: 0, y: 0 }"
+      />
      
       <!-- Terminal Section (uncomment when needed) -->
       <!-- <TerminalSection id="terminal" /> -->

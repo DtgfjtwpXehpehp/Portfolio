@@ -41,46 +41,46 @@ export function useWindowManagement() {
   
   // Helper function to convert enum to string
   const getWindowKey = (windowType: WindowType | WindowTypeString): WindowTypeString => {
-    return typeof windowType === 'string' ? windowType : windowType.valueOf() as WindowTypeString
+    return typeof windowType === 'string' ? windowType : windowType as WindowTypeString
   }
   
-  const openWindow = (windowType: WindowType | WindowTypeString) => {
-    const key = getWindowKey(windowType)
+  const openWindow = (windowType: string) => {
+    const key = getWindowKey(windowType as WindowTypeString)
     activeWindows[key] = true
     minimizedWindows[key] = false
     playSound('click')
   }
   
-  const closeWindow = (windowType: WindowType | WindowTypeString) => {
-    const key = getWindowKey(windowType)
+  const closeWindow = (windowType: string) => {
+    const key = getWindowKey(windowType as WindowTypeString)
     activeWindows[key] = false
     maximizedWindows[key] = false
     playSound('click')
   }
   
-  const minimizeWindow = (windowType: WindowType | WindowTypeString) => {
-    const key = getWindowKey(windowType)
+  const minimizeWindow = (windowType: string) => {
+    const key = getWindowKey(windowType as WindowTypeString)
     activeWindows[key] = false
     minimizedWindows[key] = true
     maximizedWindows[key] = false
     playSound('click')
   }
   
-  const restoreWindow = (windowType: WindowType | WindowTypeString) => {
-    const key = getWindowKey(windowType)
+  const restoreWindow = (windowType: string) => {
+    const key = getWindowKey(windowType as WindowTypeString)
     activeWindows[key] = true
     minimizedWindows[key] = false
     playSound('click')
   }
   
-  const maximizeWindow = (windowType: WindowType | WindowTypeString) => {
-    const key = getWindowKey(windowType)
+  const maximizeWindow = (windowType: string) => {
+    const key = getWindowKey(windowType as WindowTypeString)
     maximizedWindows[key] = !maximizedWindows[key]
     playSound('click')
   }
   
-  const updateWindowPosition = (windowType: WindowType | WindowTypeString, position: WindowPosition) => {
-    const key = getWindowKey(windowType)
+  const updateWindowPosition = (windowType: string, position: WindowPosition) => {
+    const key = getWindowKey(windowType as WindowTypeString)
     windowPositions[key] = position
   }
   
