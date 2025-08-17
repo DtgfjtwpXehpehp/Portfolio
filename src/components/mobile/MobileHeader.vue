@@ -1,7 +1,7 @@
 <template>
   <header class="mobile-header">
     <div class="header-left">
-      <div class="logo glitch">{{ about?.name }}</div>
+      <div class="logo glitch"> <a href="/">{{ about?.name }}</a></div>
     </div>
     
     <div class="header-center">
