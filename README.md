@@ -4,7 +4,7 @@
 
 <h2>🚀 Demo</h2>
 
-[sivuyilemtwetwe.co.za](sivuyilemtwetwe.co.za)
+[sivuyilemtwetwe.co.za](https://sivuyilemtwetwe.co.za)
 
 <h2>Project Screenshots:</h2>
 
